@@ -1,7 +1,4 @@
-import dotenv from 'dotenv';
-dotenv.config({
-	path: "../.env"
-});
+import './env';
 
 import { app, BrowserWindow, ipcMain } from 'electron'
 // import { createRequire } from 'node:module'
@@ -9,7 +6,7 @@ import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
 import EzUdpServer from './net/ezUdp'
-import { EzTcpServer, EzTcpClient } from './net/ezTcp'
+import EzTcpClient from './net/ezTcp'
 import { ezDeserialize, ezSerialize } from './net/ez-proto/ezproto';
 import ezRoute from './net/ezMsgRouter';
 
@@ -35,9 +32,8 @@ export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist')
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 'public') : RENDERER_DIST
 
 let win: BrowserWindow | null;
-let UdpClient: EzUdpServer | null;
+let UdpServer: EzUdpServer | null;
 let TcpClient: EzTcpClient | null;
-let TcpServer: EzTcpServer | null;
 
 function createWindow() {
   win = new BrowserWindow({
@@ -62,26 +58,33 @@ function createWindow() {
 }
 
 const initHandlers = (win: BrowserWindow) => {
-	const udpServer = new EzUdpServer((msg: Buffer) => {
+	UdpServer = new EzUdpServer((msg: Buffer) => {
 		const data: any = ezDeserialize(msg, msg.length);
-		ezRoute(data);
+		ezRoute(win, data);
+	});
+	TcpClient = new EzTcpClient((msg: Buffer) => {
+		const data: any = ezDeserialize(msg, msg.length);
+		ezRoute(win, data);
 	});
 
-	const tcpServer = new EzTcpServer((msg: Buffer) => {
-		const data: any = ezDeserialize(msg, msg.length);
-		ezRoute(data);
-	});
-
-	const tcpClient = new EzTcpClient();
-
-	ipcMain.handle('send-tcp-message', async (data: any) => {
+	ipcMain.on('send-tcp-message', async (data: any) => {
 		try {
-			tcpClient.send(ezSerialize(data));
-			return { success: 'Message sent' }
+			TcpClient?.sendMessage(ezSerialize(data));
 		} catch(e:any) {
 			console.log(e);
-			return { error: 'An error occurred' }
 		}
+	});
+
+	ipcMain.on('exit', () => {
+		win.close();
+	});
+
+	ipcMain.on('minimize', () => {
+		win.isMinimized() ? win.restore() : win.minimize()
+	});
+
+	ipcMain.on('maximize', () => {
+		win.isMaximized() ? win.unmaximize() : win.maximize();
 	});
 }
 
@@ -90,9 +93,8 @@ const initHandlers = (win: BrowserWindow) => {
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
-		UdpClient?.close();
+		UdpServer?.close();
 		TcpClient?.close();
-		TcpServer?.close();
 
     app.quit()
     win = null

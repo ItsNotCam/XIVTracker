@@ -1,7 +1,7 @@
 // udpServer.ts
 import dgram from 'dgram';
 
-const PORT = parseInt(process.env.UDP_IN || '41234');
+const PORT = parseInt(process.env.UDP_IN || '27001');
 const HOST = process.env.HOST_IN || "localhost";
 
 // server handles incoming messages

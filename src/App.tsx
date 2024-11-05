@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import Sidebar from './Sidebar';
 
 function DataDisplay() {
 	const positionMsg = useRef<any>(undefined);
@@ -17,7 +18,8 @@ function DataDisplay() {
 	};
 
   useEffect(() => {
-		window.ipcRenderer.on('udp-message', (_event: any, message: any) => {
+		window.ipcRenderer.on('udp-position', (_event: any, message: any) => {
+			console.log("MSG receivedL:",message);
 			positionMsg.current = message;
 		});
 	}, []);
@@ -26,11 +28,24 @@ function DataDisplay() {
 
 	return (message === undefined) 
 		? <div>Waiting for UDP message...</div> 
-		: <div>{message.x}<br />{message.y}<br/>{message.z}</div>;
+		: <div>{message.data.x}<br />{message.data.y}<br/>{message.data.z}</div>;
 }
 
 export default function App() {
 	const [messages, setMessages] = useState<string[]>([]);
+
+	return (
+		<div className="grid grid-cols-[auto,1fr] ">
+			<Sidebar />
+			<div className='flex flex-row gap-4 items-center justify-between p-3'>
+				<h1 className='font-bold text-2xl text-center'>
+					UDP Messages
+				</h1>
+				<button onClick={() => setMessages([])} className='p-2 bg-custom-main-bg hover:bg-custom-main-bg-hover rounded-md'>Clear</button>
+			</div>
+			{messages}
+		</div>
+	)
 
 	return (
 		<div className='flex-grow w-full bg-custom-main-bg text-gray-200 flex flex-col'>
@@ -40,8 +55,9 @@ export default function App() {
 				</h1>
 				<button onClick={() => setMessages([])} className='p-2 bg-custom-main-bg hover:bg-custom-main-bg-hover rounded-md'>Clear</button>
 			</div>
+			{messages}
 			<DataDisplay />
-			<div className="flex-grow overflow-auto ml-4 grid grid-cols-[7rem,auto]">
+			{/* <div className="flex-grow overflow-auto ml-4 grid grid-cols-[7rem,auto]">
 				<div className='font-bold'>Message</div>
 				<ul className='font-bold'>
 					<li>Region</li>
@@ -55,7 +71,7 @@ export default function App() {
 						<li className='text-nowrap'>{message.length > 0 ? message : "-"}</li>
 					))}
 				</ul>
-			</div>
+			</div> */}
 		</div>
 	);
 }

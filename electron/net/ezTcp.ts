@@ -1,89 +1,78 @@
-import { TCPClient, ClientInterface, TCPServer} from "pocket-sockets";
+import net from 'net';
 
 const HOST = process.env.HOST_IN || 'localhost';
-
-// server handles incoming messages
-const PORT_IN = parseInt(process.env.TCP_IN || '42069');
-export class EzTcpServer {
-	private server: TCPServer;
-	public hasConnection: boolean = false;
+const PORT_OUT = parseInt(process.env.TCP_OUT || '58008');
+export default class EzTcpClient {
+	public client: net.Socket | undefined;
+	public drained: boolean = true;
+	public isReconnecting: boolean = false;
 
 	constructor(handle: (msg: Buffer) => void) {
-		this.server = new TCPServer({
-			host: HOST,
-			port: PORT_IN,
-			textMode: false
-		});
-	
-		this.server.onConnection( (client: ClientInterface) => {
-			console.log(`TCP connection received from ${HOST}:${PORT_IN}`);
-			this.hasConnection = true;
+		this.connect(handle);
+	}
 
-			async () => {
-				client.onData( (data: Buffer | string) => {
-						console.log('TCP Server received data ' + data);
-						handle(data as Buffer);
-				});
-				client.onClose( () => {
-					console.log('TCP Server closing');
-					this.hasConnection = false;
-				});
+	private connect(handle: (msg: Buffer) => void) {
+		console.log(`Attempting to connect to ${HOST}:${PORT_OUT}`);
+		this.client = net.createConnection(PORT_OUT, HOST, () => {
+				console.log('TCP client connected to ' + HOST + ':' + PORT_OUT);
+				this.isReconnecting = false;
+		});
+		
+		this.client.on("data", (data: Buffer) => {
+			this.drained = false;
+			handle(data);
+		});
+
+		this.client.on("close", () => {
+			console.log('TCP client closed');
+			this.scheduleReconnect(handle);
+		});
+
+		this.client.on("drain", () => {
+			this.drained = true;
+		});
+
+		this.client.on("error", (err) => {
+			if (err.message === 'ECONNREFUSED') {
+					console.log('Connection refused - server might be down, retrying...');
+					if (!this.isReconnecting) {
+							this.scheduleReconnect(handle);
+					}
+			} else {
+					console.log('TCP client error:', err.name);
 			}
 		});
+	}	
 
-		this.server.listen();
-		console.log(`TCP Server listening on ${HOST}:${PORT_IN} ? ${this.server.isClosed()}`);
+	private scheduleReconnect(handle: (msg: Buffer) => void) {
+		this.isReconnecting = true;
+		setTimeout(() => {
+			this.connect(handle);
+			this.isReconnecting = false;
+		}, 1000);
+	}
+
+	public async sendMessage(data: Buffer): Promise<void> {
+		return new Promise((resolve, reject) => {
+			let interval = setInterval(() => {
+				if(this.drained) {
+					clearInterval(interval);
+					this.client?.write(data, (err) => {
+						if(err) {
+							console.log('TCP client write error: ' + err);
+							reject(err);
+						} else {
+							resolve();
+						}
+					});
+				}
+			}, 10);
+		});
 	}
 
 	public close() {
-		this.server.close();
+		this.client?.end(() => {
+			console.log('TCP client ended');
+		});
 	}
 }
-
-const PORT_OUT = parseInt(process.env.TCP_OUT || '42070');
-export class EzTcpClient {
-	private client: TCPClient;
-	public isConnected: boolean = false;
-
-	constructor() {
-		this.client = new TCPClient({
-			host: HOST,
-			port: 58808,//PORT_OUT,
-			textMode: false
-		});
-
-		this.client.onConnect(() => {
-			console.log(`TCP client connected to ${HOST}:${PORT_OUT}`);
-			this.isConnected = true;
-		});
-
-		this.client.onClose(() => {
-			console.log('TCP client disconnected');
-			this.isConnected = false;
-			// this.scheduleReconnect();
-		});
-
-		this.client.connect();
-	}
-
-	private scheduleReconnect() {
-		if(this.client.isClosed()) {
-			this.client.close();
-			setTimeout(() => {
-				console.log("attempting to connect to " + HOST + ":" + PORT_OUT);
-				this.client.connect();
-			}, 1000);
-		} else {
-			console.log("TCP client already connected");
-		}
-	}
-	
-	public async send(data: Buffer) {
-		this.client.send(data);
-	}
-
-	public close() {
-		this.client.close();
-	}
-}
-

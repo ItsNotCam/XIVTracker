@@ -1,3 +1,5 @@
-export default function ezRoute(msg: any) {
+import { BrowserWindow } from "electron";
 
+export default function ezRoute(win: BrowserWindow, msg: any) {
+	win.webContents.send("udp-position", msg);
 }

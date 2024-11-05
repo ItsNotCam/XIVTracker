@@ -1,3 +1,7 @@
+export enum DataTypes {
+	position, rotation
+}
+
 export interface Position {
 	x: number;
 	y: number;

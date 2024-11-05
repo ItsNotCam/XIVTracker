@@ -6,7 +6,7 @@
 	-webkit-user-select: none;
 	-webkit-app-region: drag;
 
-	& > li {
+	& > ul {
 		-webkit-app-region: no-drag;
 	}
 }
@@ -37,3 +37,16 @@
 /* ::-webkit-scrollbar-thumb:hover {
   background-color: ;
 } */
+
+.header-menu-button {
+	cursor: pointer;
+	width: 0.9rem;
+	height: 0.9rem;
+	position: relative;
+	transition: scale 200ms;
+	border-radius: 50%;
+
+	&:hover {
+		scale: 1.2;
+	}
+}
