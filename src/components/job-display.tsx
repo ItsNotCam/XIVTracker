@@ -20,10 +20,17 @@ const JobDisplay: React.FC<JobDisplayType> = ({ type }) => {
 		maxXP: 0
 	});
 
-	useEffect(() => {
+	const handleGetMainJobInfo = () => {
 		window.ipcRenderer.invoke("get-main-job-info").then((data) => {
-			const { level, jobName, currentXP, maxXP } = data;
+		const { level, jobName, currentXP, maxXP } = data;
 			setState({ level, jobName, currentXP, maxXP });
+		});
+	}
+
+	useEffect(() => {
+		handleGetMainJobInfo();
+		window.ipcRenderer.on('refresh-all', (_event: any) => {
+			handleGetMainJobInfo();
 		});
 	},[]);
 

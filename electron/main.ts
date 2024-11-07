@@ -73,6 +73,10 @@ const initNetworking = (win: BrowserWindow) => {
 		(connected: boolean) => {
 			console.log('TCP connected:', connected);
 			win.webContents.send('tcp-connected', connected);
+
+			if(connected) {
+				win.webContents.send("refresh-all");
+			}
 		}
 	);
 }
