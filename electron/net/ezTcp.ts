@@ -7,15 +7,23 @@ export default class EzTcpClient {
 	public drained: boolean = true;
 	public isReconnecting: boolean = false;
 
-	constructor(handle: (msg: Buffer) => void) {
+	private setConnected = (connected: boolean): void => { console.log(connected); };
+
+	constructor(handle: (msg: Buffer) => void, setConnected: (connected: boolean) => void) {
 		this.connect(handle);
+		this.setConnected = setConnected;
 	}
+
+	public isConnected(): boolean { 
+		return !this.client?.closed 
+	};
 
 	private connect(handle: (msg: Buffer) => void) {
 		console.log(`Attempting to connect to ${HOST}:${PORT_OUT}`);
 		this.client = net.createConnection(PORT_OUT, HOST, () => {
 				console.log('TCP client connected to ' + HOST + ':' + PORT_OUT);
 				this.isReconnecting = false;
+				this.setConnected(true);
 		});
 		
 		this.client.on("data", (data: Buffer) => {
@@ -25,6 +33,7 @@ export default class EzTcpClient {
 
 		this.client.on("close", () => {
 			console.log('TCP client closed');
+			this.setConnected(false);
 			this.scheduleReconnect(handle);
 		});
 
@@ -41,6 +50,8 @@ export default class EzTcpClient {
 			} else {
 					console.log('TCP client error:', err.name);
 			}
+
+			this.setConnected(!this.client?.closed);
 		});
 	}	
 
@@ -70,9 +81,29 @@ export default class EzTcpClient {
 		});
 	}
 
+	public async sendAndAwaitResponse(data: Buffer): Promise<Buffer> {
+		return new Promise((resolve, reject) => {
+			const sent = this.client?.write(data, (err) => {
+				if(err) {
+					console.log('TCP client write error: ' + err);
+					reject(err);
+				}
+			})
+
+			if(!sent) {
+				reject('TCP client write failed');
+			} else {
+				this.client?.once('data', (data: Buffer) => {
+					resolve(data);
+				});
+			}
+		})
+	}
+
 	public close() {
 		this.client?.end(() => {
 			console.log('TCP client ended');
+			this.setConnected(false);
 		});
 	}
 }

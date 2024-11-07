@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import Sidebar from './components/sidebar';
+import Sidebar from './Sidebar';
 import Header from './Header';
 
 function DataDisplay() {
@@ -34,6 +34,12 @@ function DataDisplay() {
 
 export default function App() {
 	const [messages, setMessages] = useState<string[]>([]);
+
+	const getJobData = () => {
+		window.ipcRenderer.invoke("get-job-data").then((data: any) => {
+			console.log(data);
+		})
+	}
 
 	return (
 		<div className="bg-custom-gray-300 h-screen">

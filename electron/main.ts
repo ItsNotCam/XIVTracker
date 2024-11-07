@@ -9,6 +9,7 @@ import EzUdpServer from './net/ezUdp'
 import EzTcpClient from './net/ezTcp'
 import { ezDeserialize, ezSerialize } from './net/ez-proto/ezproto';
 import ezRoute from './net/ezMsgRouter';
+import initHandlers from './events/handle';
 
 // const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -41,7 +42,7 @@ function createWindow() {
     webPreferences: {
       preload: path.join(__dirname, 'preload.mjs'),
     },
-		alwaysOnTop: true,
+		// alwaysOnTop: true,
 		autoHideMenuBar: true,
 		frame: false,
 		// transparent: true,
@@ -54,38 +55,26 @@ function createWindow() {
     win.loadFile(path.join(RENDERER_DIST, 'index.html'))
   }
 
-	initHandlers(win);
+	initNetworking(win);
+	initHandlers(win, ipcMain, TcpClient!);
 }
 
-const initHandlers = (win: BrowserWindow) => {
+const initNetworking = (win: BrowserWindow) => {
 	UdpServer = new EzUdpServer((msg: Buffer) => {
 		const data: any = ezDeserialize(msg, msg.length);
 		ezRoute(win, data);
 	});
-	TcpClient = new EzTcpClient((msg: Buffer) => {
-		const data: any = ezDeserialize(msg, msg.length);
-		ezRoute(win, data);
-	});
 
-	ipcMain.on('send-tcp-message', async (data: any) => {
-		try {
-			TcpClient?.sendMessage(ezSerialize(data));
-		} catch(e:any) {
-			console.log(e);
+	TcpClient = new EzTcpClient(
+		(msg: Buffer) => {
+			const data: any = ezDeserialize(msg, msg.length);
+			ezRoute(win, data);
+		}, 
+		(connected: boolean) => {
+			console.log('TCP connected:', connected);
+			win.webContents.send('tcp-connected', connected);
 		}
-	});
-
-	ipcMain.on('exit', () => {
-		win.close();
-	});
-
-	ipcMain.on('minimize', () => {
-		win.isMinimized() ? win.restore() : win.minimize()
-	});
-
-	ipcMain.on('maximize', () => {
-		win.isMaximized() ? win.unmaximize() : win.maximize();
-	});
+	);
 }
 
 // Quit when all windows are closed, except on macOS. There, it's common

@@ -1,4 +1,5 @@
-import GilDisplay from "./components/gil-display";
+import ConnectionStatus from "../components/connection-display";
+import GilDisplay from "../components/gil-display";
 
 export default function Frame() {
 	const close = () => {
@@ -45,8 +46,9 @@ export default function Frame() {
 				</li>
 			</ul>
 			{/* <h1 className="text-white text-xl">XIV TRACKER</h1> */}
-			<div>
+			<div className="flex flex-row items-center gap-2">
 				<GilDisplay />
+				<ConnectionStatus />
 			</div>
 		</div>
 	)

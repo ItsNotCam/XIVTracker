@@ -37,6 +37,11 @@ body {
 	@apply text-custom-text-primary-100 rounded-lg overflow-hidden;
 }
 
+img {
+	max-height: 100%;
+}
+
+
 .font-forum {
 	font-family: 'Forum';
 }
@@ -57,11 +62,6 @@ body {
 .bloom {
 	text-shadow: 0 0 2px #FFD446;
 }
-
-img {
-	max-height: 100%;
-}
-
 
 /* custom scrollbar */
 ::-webkit-scrollbar {
