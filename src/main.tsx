@@ -2,18 +2,16 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './globals.css'
-import Navbar from './Navbar.tsx'
+import Frame from './components/frame.tsx'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-		<div className='flex flex-col h-screen border-[1.65px] border-gray-500 rounded-lg overflow-hidden bg-white'>
-			<Navbar />
+		<div className={`
+			flex flex-col h-screen rounded-lg overflow-hidden 
+			bg-primary-100
+		`}>
+			<Frame />
 			<App />
 		</div>
   </React.StrictMode>,
 )
-
-// Use contextBridge
-window.ipcRenderer.on('main-process-message', (_event, message) => {
-  console.log(message)
-})

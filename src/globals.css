@@ -2,6 +2,38 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+	font-family: 'Eurostile';
+	src: url('/fonts/eurostile.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Eurostile-Normal';
+	src: url('/fonts/eurostile-normal.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Forum';
+	src: url('/fonts/forum.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+body {
+	font-family: 'Eurostile';
+	letter-spacing: 0.05rem;
+	/* font-size: 18px; */
+	@apply text-custom-text-primary-100 rounded-lg overflow-hidden;
+}
+
+.font-forum {
+	font-family: 'Forum';
+}
+
 .header {
 	-webkit-user-select: none;
 	-webkit-app-region: drag;
@@ -9,6 +41,14 @@
 	& > ul {
 		-webkit-app-region: no-drag;
 	}
+}
+
+.bloom {
+	text-shadow: 0 0 2px #FFD446;
+}
+
+img {
+	max-height: 100%;
 }
 
 

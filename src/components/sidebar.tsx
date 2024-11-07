@@ -2,8 +2,8 @@ import React from 'react';
 
 const Sidebar: React.FC = () => {
 	return (
-		<div>
-			Hello World
+		<div className="h-screen">
+			{/* Hello World */}
 		</div>
 	);
 };

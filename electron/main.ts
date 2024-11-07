@@ -44,7 +44,7 @@ function createWindow() {
 		alwaysOnTop: true,
 		autoHideMenuBar: true,
 		frame: false,
-		transparent: true,
+		// transparent: true,
   })
 
   if (VITE_DEV_SERVER_URL) {

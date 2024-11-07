@@ -1,0 +1,22 @@
+import React from 'react';
+
+interface XPBarProps {
+	currentXP: number;
+	maxXP: number;
+}
+
+const XPBar: React.FC<XPBarProps> = ({ currentXP, maxXP }) => {
+	const percentage = (currentXP / maxXP) * 100;
+
+	return (
+	<div className="flex flex-col gap-[0.4rem] ml-[0.4rem]">
+		<div className="bg-custom-gray-200 rounded-full">
+			<div style={{
+				width: `${percentage}%`
+			}} className="h-[0.25rem] bg-gradient-xp-horizontal rounded-l-full w-full" />
+		</div>
+		<h1 className='text-custom-text-secondary-100 bloom'>EXP 33,000 / 55,000</h1>
+	</div>);
+};
+
+export default XPBar;

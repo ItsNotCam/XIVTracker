@@ -1,4 +1,4 @@
-export default function Navbar() {
+export default function Frame() {
 	const close = () => {
 		window.ipcRenderer.send("exit");
 	}
@@ -12,8 +12,8 @@ export default function Navbar() {
 	}
 
 	return (
-		<div className={`bg-[#1e1f22] w-full shadow-lg flex flex-row justify-start items-center header h-8`}>
-			<ul className="absolute left-0 flex flex-row p-3 gap-2 flex-grow-0 items-center">
+		<div className={`bg-custom-gray-700 w-full shadow-lg flex flex-row justify-between items-center header py-2 h-10 px-3 `}>
+			<ul className="grid grid-cols-3 gap-2 flex-grow-0 items-center">
 				<li className="header-menu-button bg-custom-frame-red">
 					<svg className="fill-custom-frame-red hover:fill-black transition-[fill]" onClick={close}
 						xmlns="http://www.w3.org/2000/svg" 
@@ -42,7 +42,8 @@ export default function Navbar() {
 					</svg>
 				</li>
 			</ul>
-			<h1 className="mx-auto text-white">XIV Tracker</h1>
+			<h1 className="text-white text-xl">XIV TRACKER</h1>
+			<div></div>
 		</div>
 	)
 }

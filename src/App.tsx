@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import Sidebar from './Sidebar';
+import Sidebar from './components/sidebar';
+import Header from './Header';
 
 function DataDisplay() {
 	const positionMsg = useRef<any>(undefined);
@@ -35,43 +36,9 @@ export default function App() {
 	const [messages, setMessages] = useState<string[]>([]);
 
 	return (
-		<div className="grid grid-cols-[auto,1fr] ">
-			<Sidebar />
-			<div className='flex flex-row gap-4 items-center justify-between p-3'>
-				<h1 className='font-bold text-2xl text-center'>
-					UDP Messages
-				</h1>
-				<button onClick={() => setMessages([])} className='p-2 bg-custom-main-bg hover:bg-custom-main-bg-hover rounded-md'>Clear</button>
-			</div>
-			{messages}
+		<div className="bg-custom-gray-300 h-screen">
+			{/* <Sidebar /> */}
+			<Header />
 		</div>
 	)
-
-	return (
-		<div className='flex-grow w-full bg-custom-main-bg text-gray-200 flex flex-col'>
-			<div className='flex flex-row gap-4 items-center justify-between p-3'>
-				<h1 className='font-bold text-2xl text-center'>
-					UDP Messages
-				</h1>
-				<button onClick={() => setMessages([])} className='p-2 bg-custom-main-bg hover:bg-custom-main-bg-hover rounded-md'>Clear</button>
-			</div>
-			{messages}
-			<DataDisplay />
-			{/* <div className="flex-grow overflow-auto ml-4 grid grid-cols-[7rem,auto]">
-				<div className='font-bold'>Message</div>
-				<ul className='font-bold'>
-					<li>Region</li>
-					<li>Territory</li>
-					<li>Area</li>
-					<li>Sub Area</li>
-					<li>Position</li>
-				</ul>
-				<ul>
-					{messages.map((message, index) => (
-						<li className='text-nowrap'>{message.length > 0 ? message : "-"}</li>
-					))}
-				</ul>
-			</div> */}
-		</div>
-	);
 }
