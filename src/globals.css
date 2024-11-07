@@ -23,6 +23,13 @@
 	font-style: normal;
 }
 
+@font-face {
+	font-family: 'Fanwood';
+	src: url('/fonts/fanwood.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
 body {
 	font-family: 'Eurostile';
 	letter-spacing: 0.05rem;
@@ -32,6 +39,10 @@ body {
 
 .font-forum {
 	font-family: 'Forum';
+}
+
+.font-fanwood {
+	font-family: 'Fanwood';
 }
 
 .header {

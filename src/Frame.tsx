@@ -1,3 +1,5 @@
+import GilDisplay from "./components/gil-display";
+
 export default function Frame() {
 	const close = () => {
 		window.ipcRenderer.send("exit");
@@ -12,7 +14,7 @@ export default function Frame() {
 	}
 
 	return (
-		<div className={`bg-custom-gray-700 w-full shadow-lg flex flex-row justify-between items-center header py-2 h-10 px-3 `}>
+		<div className={`bg-custom-gray-700 w-full shadow-lg flex flex-row justify-between items-center header py-2 h-8 px-3 `}>
 			<ul className="grid grid-cols-3 gap-2 flex-grow-0 items-center">
 				<li className="header-menu-button bg-custom-frame-red">
 					<svg className="fill-custom-frame-red hover:fill-black transition-[fill]" onClick={close}
@@ -42,8 +44,10 @@ export default function Frame() {
 					</svg>
 				</li>
 			</ul>
-			<h1 className="text-white text-xl">XIV TRACKER</h1>
-			<div></div>
+			{/* <h1 className="text-white text-xl">XIV TRACKER</h1> */}
+			<div>
+				<GilDisplay />
+			</div>
 		</div>
 	)
 }

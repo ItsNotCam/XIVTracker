@@ -1,23 +1,8 @@
 import React from 'react';
 import JobDisplay from './components/job-display';
 import Clock from './components/clock';
-
-const NameDisplay: React.FC = () => {
-	return (<h1 className="text-3xl text-custom-text-secondary-300 uppercase">Cam Quat</h1>)
-}
-
-const LocationDisplay: React.FC = () => {
-	return (
-		<ul className={`h-[80%] text-right mr-6 border-r-2 
-			border-custom-gray-200 pr-6 flex flex-col 
-			justify-center my-auto text-lg
-		`}>
-			<li>La Noscea</li>
-			<li>Limsa Lominsa Lower Docks</li>
-			<li>East Hakwers' Alley</li>
-		</ul>
-	)
-}
+import LocationDisplay from './components/location-display';
+import NameDisplay from './components/name-display';
 
 const Header: React.FC = () => {
 	return (

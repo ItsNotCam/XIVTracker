@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Clock() {
-	const [currentTime, setCurrentTime] = useState<string>("");
+	const [currentTime, setCurrentTime] = useState<string>("00:00 PM");
+	const [worldTime, setCurrentWorldTime] = useState<string>("00:00 AM");
 
 	useEffect(() => {
 		const timer = setInterval(() => {
@@ -22,9 +23,8 @@ export default function Clock() {
 	return (
 		<div className="bg-custom-gray-500 grid grid-cols-[1fr,auto] h-fit mb-2">
 			<div className='flex flex-col justify-center items-end'>
-				{/* <h1 className="text-2xl">08:56 AM</h1> */}
 				<h1 className="text-2xl">{currentTime}</h1>
-				<h2 className="text-lg">12:35 PM</h2>
+				<h2 className="text-lg">{worldTime}</h2>
 			</div>
 			<img className="h-[65px]" src="/images/etc-clock.png" />
 		</div>
