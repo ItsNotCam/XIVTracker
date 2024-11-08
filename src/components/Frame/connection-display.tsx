@@ -1,17 +1,32 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export default function ConnectionStatus(): JSX.Element {
 	const [isConnected, setIsConnected] = useState(false);
+	const [connectionTimedOut, setConnectionTimedOut] = useState(false);
+	const connectionTimeout = useRef<NodeJS.Timeout | null>(null);
 
 	useEffect(() => {
 		window.ipcRenderer.on('tcp-connected', (_event: any, connected: boolean) => {
 			setIsConnected(connected);
 		});
 
-		window.ipcRenderer.invoke("tcp-connected").then((connected: boolean) => { 
+		window.ipcRenderer.invoke("ask-tcp-connected").then((connected: boolean) => { 
 			setIsConnected(connected);
 		});
 	}, []);
+
+	useEffect(() => {
+		if(connectionTimeout.current) {
+			clearTimeout(connectionTimeout.current);
+		}
+
+		if(!isConnected) {
+			connectionTimeout.current = setTimeout(() => {
+				setConnectionTimedOut(true);
+			}, 5000);
+		}
+
+	}, [isConnected]);
 
 	return (
 		<div>

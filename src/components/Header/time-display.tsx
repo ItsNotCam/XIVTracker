@@ -23,11 +23,7 @@ export default function Clock() {
 
 	useEffect(() => {
 		setTime();
-		
-		const timer = setInterval(() => {
-			setTime();
-		}, 1000);
-
+		const timer = setInterval(setTime, 1000);
 		return () => clearInterval(timer);
 	}, []);
 

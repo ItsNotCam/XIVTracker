@@ -10,37 +10,21 @@ interface JobState {
 }
 
 export default function initHandlers(win: BrowserWindow, ipcMain: any, TcpClient: EzTcpClient) {
-	// ipcMain.handle("get-main-job-info", async () => {
-	// 	const response = await TcpClient.sendAndAwaitResponse(Buffer.from("get-main-job-info"));
-	// 	try {
-	// 		const data: string[] = response.toString().split("\n");			
-	// 		const result: JobState = JSON.parse(data[1]);
-	// 		return result;
-	// 	} catch(e:any) {
-	// 		console.log(e);
-	// 		return {
-	// 			level: -1,
-	// 			jobName: '',
-	// 			currentXP: -1,
-	// 			maxXP: -1
-	// 		}
-	// 	}
-	// });
-
-	ipcMain.handle("get-main-job-info", async () => {
-		const response = await TcpClient.sendAndAwaitResponse(Buffer.from("get-main-job-info"));
+	ipcMain.handle("get-main-job-info", async (): Promise<JobState | undefined> => {
 		try {
-			const data: string[] = response.toString().split("\n");			
-			const result: JobState = JSON.parse(data[1]);
-			return result;
-		} catch(e:any) {
-			console.log(e);
-			return {
-				level: -1,
-				jobName: '',
-				currentXP: -1,
-				maxXP: -1
-			}
+			const response = await TcpClient.sendAndAwaitResponse(Buffer.from("get-main-job-info"));
+			return JSON.parse(response.toString());
+		} catch(e) {
+			return undefined;
+		}
+	});
+
+	ipcMain.handle("get-location", async (): Promise<JobState | undefined> => {
+		try {
+			const response = await TcpClient.sendAndAwaitResponse(Buffer.from("get-location"));
+			return JSON.parse(response.toString());
+		} catch(e) {
+			return undefined;
 		}
 	});
 
@@ -61,7 +45,7 @@ export default function initHandlers(win: BrowserWindow, ipcMain: any, TcpClient
 	// 	}
 	// });
 
-	ipcMain.handle('tcp-connected', () => {
+	ipcMain.handle('ask-tcp-connected', () => {
 		return TcpClient?.isConnected() || false;
 	});
 

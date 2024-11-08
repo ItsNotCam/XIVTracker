@@ -16,7 +16,9 @@ const XPBar: React.FC<XPBarProps> = ({ currentXP, maxXP }) => {
 				width: `${percentage}%`
 			}} className="h-[0.25rem] bg-gradient-xp-horizontal rounded-l-full w-full" />
 		</div>
-		<h1 className='text-custom-text-secondary-100 bloom'>EXP {withCommas(currentXP)} / {withCommas(maxXP)}</h1>
+		<h1 className='text-custom-text-secondary-100 bloom'>
+			EXP {withCommas(currentXP)} / {withCommas(maxXP)}
+		</h1>
 	</div>);
 };
 
