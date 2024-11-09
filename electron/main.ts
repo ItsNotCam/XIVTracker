@@ -58,6 +58,10 @@ function createWindow() {
 	initNetworking(win!);
 	initHandlers(win, ipcMain, TcpClient!);
 
+	ipcMain.on("renderer-ready", (event) => {
+		event.sender.send("initial-data", "ok");
+	});
+
 	win.webContents.send("setup-completed");
 }
 
@@ -105,4 +109,6 @@ app.on('activate', () => {
   }
 })
 
-app.whenReady().then(createWindow)
+app.whenReady().then(() => {
+	createWindow()
+});

@@ -24,17 +24,16 @@ const JobDisplay: React.FC<JobDisplayType> = ({ type }) => {
 				}, 100);
 
 			} else {
-				const { level, jobName, currentXP, maxXP } = data;
-				setJob({ level, jobName, currentXP, maxXP });
+				setJob(data);
 			}
 		}).catch(e => console.log(e));
 	}
 
 	useEffect(() => {
 		getMainJobInfo();
-		// window.ipcRenderer.on('refresh-all', (_event: any) => {
-		// 	getMainJobInfo();
-		// });
+		window.ipcRenderer.on('refresh-all', (_event: any) => {
+			getMainJobInfo();
+		});
 	},[]);
 
 	return (

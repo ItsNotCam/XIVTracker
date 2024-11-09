@@ -41,7 +41,7 @@ export default function initHandlers(win: BrowserWindow, ipcMain: any, TcpClient
 			if(response) {
 				console.log(response!.toString());
 			}
-			console.log("Error getting location data:", e)
+			console.log("Error getting job data:", (e as any).message)
 			return undefined;
 		}
 	});
