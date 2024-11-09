@@ -11,19 +11,37 @@ interface JobState {
 
 export default function initHandlers(win: BrowserWindow, ipcMain: any, TcpClient: EzTcpClient) {
 	ipcMain.handle("get-main-job-info", async (): Promise<JobState | undefined> => {
+		if(!TcpClient.isConnected()) {
+			throw new Error("No connection available");
+		}
+
+		let response;
 		try {
-			const response = await TcpClient.sendAndAwaitResponse(Buffer.from("get-main-job-info"));
-			return JSON.parse(response.toString());
+			response = await TcpClient.sendAndAwaitResponse(Buffer.from("get-main-job-info"));
+			return response && JSON.parse(response.toString());
 		} catch(e) {
+			if(response) {
+				console.log(response!.toString());
+			}
+			console.log("Error getting job data:", (e as any).message)
 			return undefined;
 		}
 	});
 
 	ipcMain.handle("get-location", async (): Promise<JobState | undefined> => {
+		if(!TcpClient.isConnected()) {
+			throw new Error("No connection available");
+		}
+
+		let response;
 		try {
-			const response = await TcpClient.sendAndAwaitResponse(Buffer.from("get-location"));
-			return JSON.parse(response.toString());
+			response = await TcpClient.sendAndAwaitResponse(Buffer.from("get-location"));
+			return response && JSON.parse(response.toString());
 		} catch(e) {
+			if(response) {
+				console.log(response!.toString());
+			}
+			console.log("Error getting location data:", e)
 			return undefined;
 		}
 	});

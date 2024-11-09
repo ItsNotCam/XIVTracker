@@ -55,19 +55,21 @@ function createWindow() {
     win.loadFile(path.join(RENDERER_DIST, 'index.html'))
   }
 
-	initNetworking(win);
+	initNetworking(win!);
 	initHandlers(win, ipcMain, TcpClient!);
+
+	win.webContents.send("setup-completed");
 }
 
 const initNetworking = (win: BrowserWindow) => {
 	UdpServer = new EzUdpServer((msg: Buffer) => {
-		const data: any = ezDeserialize(msg, msg.length);
+		const data: any = ezDeserialize(msg);
 		ezRoute(win, data);
 	});
 
 	TcpClient = new EzTcpClient(
 		(msg: Buffer) => {
-			const data: any = ezDeserialize(msg, msg.length);
+			const data: any = ezDeserialize(msg);
 			ezRoute(win, data);
 		}, 
 		(connected: boolean) => {
@@ -79,6 +81,7 @@ const initNetworking = (win: BrowserWindow) => {
 			}
 		}
 	);
+
 }
 
 // Quit when all windows are closed, except on macOS. There, it's common

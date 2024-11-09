@@ -19,13 +19,16 @@ export default function LocationDisplay(): JSX.Element {
 			if(data) {
 				setLocation(data);
 			} else {
-				setTimeout(getLocation, 1000);
+				setTimeout(getLocation, 100);
 			}
 		});
 	}
 	
 	useEffect(() => {
 		getLocation();
+		window.ipcRenderer.on('refresh-all', (_event: any) => {
+			getLocation();
+		});
 	},[])
 
 	return (

@@ -25,6 +25,7 @@ def is_uuid(s):
 	return re.match(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$', s)
 
 def handle_packet(client_socket, packet):
+	print(packet.decode('utf-8'))
 	idx = 0
 	while len(packet) > 0:
 		ez = packet[0]
@@ -46,27 +47,26 @@ def handle_packet(client_socket, packet):
 		packet = packet[1:]
 		idx += 1
 
-	# print(packet)
-
-	return None
-
 def recv_data(client_socket, uuid, message):
 	out_data = bytearray([0x1D])
 
-	message = ""
+	msg = ""
 	message_length = 0x00
 
 	if(message == 'get-main-job-info'):
-		message = json.dumps(get_random_job_data())
+		msg = json.dumps(get_random_job_data())
 	elif(message == 'get-location'):
-		message = json.dumps(get_random_location())
+		msg = json.dumps(get_random_location())
 
-	message_length = len(message).to_bytes(2, byteorder='big')
+	message_length = len(msg).to_bytes(2, byteorder='big')
 	out_data.extend(message_length)
 	out_data.extend(uuid.encode("utf-8"))
-	out_data.extend(message.encode('utf-8'))
-	out_data.append(0x1D)
+	out_data.extend(msg.encode('utf-8'))
 
+	# msg_encoded = message.encode("utf-8")
+	# out_data.extend(message.encode('utf-8'))
+
+	print(out_data.decode('utf-8'))
 	client_socket.send(out_data)
 
 def setup_tcp_server():
@@ -78,7 +78,7 @@ def setup_tcp_server():
 	while True:
 		client_socket, addr = server_socket.accept()
 		print(f"Connection from {addr}")
-		client_socket.send(b"Hello from server!")
+		# client_socket.send(b"Hello from server!")
 		
 		while True:
 			try:

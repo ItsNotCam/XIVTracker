@@ -21,20 +21,20 @@ const JobDisplay: React.FC<JobDisplayType> = ({ type }) => {
 				
 				setTimeout(() => {
 					getMainJobInfo();
-				}, 5000);
+				}, 100);
 
 			} else {
 				const { level, jobName, currentXP, maxXP } = data;
 				setJob({ level, jobName, currentXP, maxXP });
 			}
-		});
+		}).catch(e => console.log(e));
 	}
 
 	useEffect(() => {
 		getMainJobInfo();
-		window.ipcRenderer.on('refresh-all', (_event: any) => {
-			getMainJobInfo();
-		});
+		// window.ipcRenderer.on('refresh-all', (_event: any) => {
+		// 	getMainJobInfo();
+		// });
 	},[]);
 
 	return (

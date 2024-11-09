@@ -1,5 +1,6 @@
 import net from 'net';
-import { uuid } from 'uuidv4';
+import {v4} from 'uuid';
+import { ezDeserialize, ezSerialize } from './ez-proto/ezproto';
 
 interface TcpResponse {
 	resolve: (value: Buffer) => void;
@@ -41,13 +42,22 @@ export default class EzTcpClient {
 		});
 		
 		this.client.on("data", (data: Buffer) => {
-			const dataStr: string = data.toString();
-			const route: string = dataStr.split("\n")[0]
-			if(this.requestsAwaitingResponse.has(route)) {
-				const request: TcpResponse = this.requestsAwaitingResponse.get(route)!;
-				const finalData: Buffer = Buffer.from(dataStr.split("\n").slice(1).join("\n"));
-				request.resolve(finalData);
-				this.requestsAwaitingResponse.delete(route);
+			let id: string = "";
+			let message: Buffer;
+
+			try {
+				const result = ezDeserialize(data);
+				id = result.id;
+				message = Buffer.from(result.data);
+			} catch(e) {
+				console.log(e);
+				return;
+			}
+
+			if(this.requestsAwaitingResponse.has(id)) {
+				const request = this.requestsAwaitingResponse.get(id)!;
+				request.resolve(message);
+				this.requestsAwaitingResponse.delete(id);
 				return;
 			}
 
@@ -60,7 +70,8 @@ export default class EzTcpClient {
 
 		this.client.on("close", () => {
 			console.log('TCP client closed');
-			this.setConnected(false);
+			try { this.setConnected(false); }
+			catch { console.log("failed to set connected to false lol") }
 			this.scheduleReconnect(handle);
 		});
 
@@ -111,12 +122,12 @@ export default class EzTcpClient {
 		})
 	}
 
-	public async sendAndAwaitResponse(data: Buffer, timeoutMs = 5000): Promise<Buffer> {
+	public async sendAndAwaitResponse(data: Buffer, timeoutMs = 1000): Promise<Buffer> {
 		if(!this.isConnected()) {
 			throw(new Error("not connected"))
 		}
 
-		const id = uuid();
+		const id = v4().substring(0,8);
 
 		return new Promise((resolve, reject) => {
 			const timeout = setTimeout(() => {
@@ -135,40 +146,15 @@ export default class EzTcpClient {
 				}
 			})
 
-			// ez      -> 29 	  | 1  bytes | 8 bits
-			// length  -> ...   | 2  bytes | 16 bits
-			// id			 -> ...   | 8  bytes | 64 bits  | uuid.v4().substring(0,8)
-			// payload -> ...   | 64 bytes | 512 bits | payload
-			// ez			 -> 29		| 1  byte  | 8 bits
-
-			let uu = Buffer.alloc(2)
-			uu.writeUint16BE(Math.min(data.length, 64))
-
-			// console.log("ID", id.substring(0,8));
-			const outData: Buffer = Buffer.from([
-				0x1D,
-				...uu,
-				...Buffer.from(id.substring(0,8)),
-				...data,
-				0x1D
-			])
-
-			// const outData = Buffer.concat([
-			// 	0x1D, 
-			// 	Buffer.from("ez\n"),
-			// 	Buffer.from(data.length.toString()),
-			// 	Buffer.from(`\n${id}\n`),
-			// 	Buffer.from(`${data}\n`),
-			// 	Buffer.from(`pz\n`),
-			// ]);
-
+			const outData = ezSerialize(data, id);
 			this.sendMessage(outData).catch(reject);
 		});
 	}
 
 	public close(): void {
 		this.client?.end(() => {
-			this.setConnected(false);
+			try { this.setConnected(false); }
+			catch { console.log("failed to set connected to false lol") }
 		});
 	}
 }
