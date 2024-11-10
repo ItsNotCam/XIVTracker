@@ -21,17 +21,19 @@ const JobDisplay: React.FC<JobDisplayType> = ({ type }) => {
 				
 				setTimeout(() => {
 					getMainJobInfo();
-				}, 100);
+				}, 5000);
 
 			} else {
+				console.log("job data:", data);
 				setJob(data);
 			}
-		}).catch(e => console.log(e));
+		}).catch(e => {});
 	}
 
 	useEffect(() => {
-		getMainJobInfo();
-		window.ipcRenderer.on('refresh-all', (_event: any) => {
+		// getMainJobInfo();
+		window.ipcRenderer.send("renderer-ready");
+		window.ipcRenderer.on('setup-completed', (_event: any) => {
 			getMainJobInfo();
 		});
 	},[]);
