@@ -14,21 +14,21 @@ export default function LocationDisplay(): JSX.Element {
 		subarea: "East Hakwers' Alley"
 	})
 
-	const getLocation = () => {
-		window.ipcRenderer.invoke("get-location").then((data: Location | undefined) => {
-			if(data) {
-				setLocation(data);
-			} else {
-				setTimeout(getLocation, 100);
-			}
-		});
-	}
+	// const getLocation = () => {
+	// 	window.ipcRenderer.invoke("get-location").then((data: Location | undefined) => {
+	// 		if(data) {
+	// 			setLocation(data);
+	// 		} else {
+	// 			setTimeout(getLocation, 100);
+	// 		}
+	// 	});
+	// }
 	
 	useEffect(() => {
-		getLocation();
-		window.ipcRenderer.on('refresh-all', (_event: any) => {
-			getLocation();
-		});
+		// getLocation();
+		// window.ipcRenderer.on('refresh-all', (_event: any) => {
+		// 	getLocation();
+		// });
 	},[])
 
 	return (

@@ -25,23 +25,23 @@ export default function initHandlers(win: BrowserWindow, ipcMain: any, TcpClient
 		}
 	});
 
-	ipcMain.handle("get-location", async (): Promise<JobState | undefined> => {
-		if(!TcpClient.isConnected) {
-			throw new Error("No connection available");
-		}
+	// ipcMain.handle("get-location", async (): Promise<JobState | undefined> => {
+	// 	if(!TcpClient.isConnected) {
+	// 		throw new Error("No connection available");
+	// 	}
 
-		let response;
-		try {
-			response = await TcpClient.getData(EzFlags.LOCATION.ALL);
-			return response && JSON.parse(response.toString());
-		} catch(e) {
-			if(response) {
-				console.log(response!.toString());
-			}
-			console.log("Error getting job data:", (e as any).message)
-			return undefined;
-		}
-	});
+	// 	let response;
+	// 	try {
+	// 		response = await TcpClient.getData(EzFlags.LOCATION.ALL);
+	// 		return response && JSON.parse(response.toString());
+	// 	} catch(e) {
+	// 		if(response) {
+	// 			console.log(response!.toString());
+	// 		}
+	// 		console.log("Error getting location data:", (e as any).message)
+	// 		return undefined;
+	// 	}
+	// });
 
 	ipcMain.on('send-tcp-message', async (messageFlag: uint6, data: any) => {
 		try {

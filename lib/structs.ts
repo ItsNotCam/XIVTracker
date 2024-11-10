@@ -13,7 +13,7 @@ export interface Rotation {
 
 export interface JobState {
 	level: number;
-	jobName: string;
-	currentXP: number;
-	maxXP: number;
+	job_name: string;
+	current_xp: number;
+	max_xp: number;
 }

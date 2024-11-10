@@ -9,9 +9,9 @@ from ez_serde_v2 import deserialize, serialize
 def get_random_job_data():
 	return {
 		"level": random.randint(1, 90),
-		"jobName": "Conjurer",
-		"currentXP": random.randint(1, 52350),
-		"maxXP": random.randint(52350, 82350),
+		"job_name": "conjurer",
+		"current_xp": random.randint(1, 52350),
+		"max_xp": random.randint(52350, 82350),
 	}
 
 def get_random_location():
@@ -97,14 +97,16 @@ def setup_tcp_server():
 				# print(json.dumps(packet, indent=2))
 			
 				flag = packet["flag"]
+				payload = packet["payload"]
 				if flag == 2:
-					encoded_msg = packet["payload"].encode("utf-8")
-					msg = serialize(0x02, encoded_msg, packet["id"])
+					utf8_msg = payload.encode("utf-8")
+					print("encoded message:", utf8_msg)
+					msg = serialize(0x02, utf8_msg, packet["id"])
 					client_socket.send(msg)
 				elif flag == 0x21:
-					encoded_msg = json.dumps(get_random_job_data()).encode("utf-8")
-					print("encoded message:", encoded_msg)
-					msg = serialize(0x21, encoded_msg, packet["id"])
+					utf8_msg = json.dumps(get_random_job_data()).encode("utf-8")
+					print("encoded message:", utf8_msg)
+					msg = serialize(0x21, utf8_msg, packet["id"])
 					client_socket.send(msg)
 
 

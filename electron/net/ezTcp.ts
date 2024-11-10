@@ -1,6 +1,6 @@
 import net from 'net';
 import EzProto from './ez/EzSerDe';
-import { DeserializedPacket, EzFlags, uint6 } from './ez/EzTypes';
+import { DeserializedPacket as EzDeserializedPacket, EzFlags, uint6 } from './ez/EzTypes';
 
 interface TcpHandler {
 	resolve: (value: Buffer) => void;
@@ -47,7 +47,7 @@ export default class EzTcpClient {
 			const response: Buffer = await this.sendAndAwaitResponse(EzFlags.HEARTBEAT, message);
 
 			try {
-				const deserialized: DeserializedPacket = EzProto.deserialize(response);
+				const deserialized: EzDeserializedPacket = EzProto.deserialize(response);
 				if(deserialized.payload === message) {
 					console.log("still connected");
 					this.connectionIsIntact = true;
@@ -55,7 +55,7 @@ export default class EzTcpClient {
 					throw new Error("Heartbeat response malformed. Expected 'you sleep?' but got " + deserialized.payload.toString());
 				}
 			} catch(e) {
-				// console.log("Heartbeat failed:", (e as any).message);
+				console.log("Heartbeat failed:", (e as any).message);
 				this.connectionIsIntact = false;
 			}
 		}, 5000);
@@ -71,7 +71,7 @@ export default class EzTcpClient {
 		});
 		
 		this.client.on("data", (data: Buffer) => {
-			let result: DeserializedPacket;
+			let result: EzDeserializedPacket;
 			try {
 				result = EzProto.deserialize(data);
 			} catch(e) {
@@ -153,10 +153,6 @@ export default class EzTcpClient {
 		data: Buffer = Buffer.from([EzFlags.NULL]), 
 		timeoutMs: number = 1000
 	): Promise<Buffer> {
-		// if(!this.connectionIsIntact) {
-		// 	throw(new Error("Not connected"))
-		// }
-
 		// get a new 10 bit ID - continuously generate until it's unique
 		let id: number = 0;
 		do { id = Math.floor(Math.random() * 0x3FF); } 

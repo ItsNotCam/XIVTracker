@@ -1,10 +1,7 @@
+import { EzDecode, EzEncode } from "./EzEncoder";
 import { DeserializedPacket, EzFlags, uint10, uint6 } from "./EzTypes";
 
 export const deserialize = (msg: Buffer): DeserializedPacket => {
-	// if(msg.length < 17) {
-	// 	throw new Error("Malformed packet")
-	// }
-
 	// these primitive types are just sugar.
 	let packetLength: uint10;
 	let id: uint10;
@@ -13,32 +10,32 @@ export const deserialize = (msg: Buffer): DeserializedPacket => {
 
 	{
 		// get the first 16 bits
-		const short1 = (msg[0] << 8) | msg[1];
+		const short = (msg[0] << 8) | msg[1];
 
 		// if the first 6 bits are not equal to our fixed length packet header, error
-		if(((short1 >> 10) & 0x3F) !== EzFlags.EZ) {
+		if(((short >> 10) & 0x3F) !== EzFlags.EZ) {
 			throw new Error("Malformed packet");
 		}
 
 		// packet length is the last 10 bits = 0011 1111 1111 = 0x3FF
-		packetLength 	= (short1 & 0x3FF); 
+		packetLength 	= (short & 0x3FF); 
 	}
 
 	{
-		const short2 = (msg[2] << 8) | msg[3];
-		id = (short2 >> 6) & 0x3FF;
-		flag = short2 & 0x3F;
+		const short = (msg[2] << 8) | msg[3];
+		id = (short >> 6) & 0x3FF;
+		flag = short & 0x3F;
 	}
 
 	payload = msg.subarray(4,packetLength-2);
 
-	console.log("received:", id, flag, payload.toString())
+	const decodedPayload = EzDecode(payload);
+	console.log("received:", id, flag, decodedPayload)
 
-	// console.log(`packet:\nLength: ${length}\nID:'${id}'\nMessage: '${message}'\n`);//, ez2);
 	return {
 		id: id,
 		flag: flag,
-		payload: payload
+		payload: Buffer.from(decodedPayload)
 	};
 }
 
@@ -65,7 +62,9 @@ export const serialize = (routeFlag: uint6, data: Buffer, id: uint10 = 0): Buffe
 		controlHeader[3] = short & 0xFF;
 	}
 
-	return Buffer.from([...controlHeader, ...bPayload]);
+	const encodedPayload = EzEncode(asUtf8(data));
+	console.log(encodedPayload);
+	return Buffer.from([...controlHeader, ...encodedPayload]);
 };
 
 export const asUtf8 = (data: Buffer): string => {
