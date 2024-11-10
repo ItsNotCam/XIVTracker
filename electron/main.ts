@@ -5,11 +5,12 @@ import { app, BrowserWindow, ipcMain } from 'electron'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
-import EzUdpServer from './net/ezUdp'
-import EzTcpClient from './net/ezTcp'
-import { ezDeserialize, ezSerialize } from './net/ez-proto/ezproto';
-import ezRoute from './net/ezMsgRouter';
+import { deserialize } from './net/ez/EzSerDe';
 import initHandlers from './events/handle';
+import EzTcpClient from './net/EzTcp';
+import EzUdpServer from './net/EzUdp';
+import ezRoute from './net/EzRouter';
+import { EzFlags } from './net/ez/EzTypes';
 
 // const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -60,20 +61,24 @@ function createWindow() {
 
 	ipcMain.on("renderer-ready", (event) => {
 		event.sender.send("initial-data", "ok");
+		if (win) {
+			win.webContents.send("setup-completed");
+			console.log("window sent setup completed")
+		} else {
+			console.log("failed to send setup-completed - no window can be found")
+		}
 	});
-
-	win.webContents.send("setup-completed");
 }
 
 const initNetworking = (win: BrowserWindow) => {
 	UdpServer = new EzUdpServer((msg: Buffer) => {
-		const data: any = ezDeserialize(msg);
+		const data: any = deserialize(msg);
 		ezRoute(win, data);
 	});
 
 	TcpClient = new EzTcpClient(
 		(msg: Buffer) => {
-			const data: any = ezDeserialize(msg);
+			const data: any = deserialize(msg);
 			ezRoute(win, data);
 		}, 
 		(connected: boolean) => {
@@ -86,6 +91,10 @@ const initNetworking = (win: BrowserWindow) => {
 		}
 	);
 
+	console.log("sending response");
+	TcpClient.sendAndAwaitResponse(EzFlags.LOCATION.ALL).then((response: Buffer) => {
+		console.log(response.toString());
+	});
 }
 
 // Quit when all windows are closed, except on macOS. There, it's common
