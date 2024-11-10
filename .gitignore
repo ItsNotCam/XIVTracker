@@ -1,3 +1,4 @@
+
 # Logs
 logs
 *.log
@@ -26,3 +27,4 @@ dist-ssr
 *.sw?
 
 scripts/lumina_data
+scripts/__pycache__
