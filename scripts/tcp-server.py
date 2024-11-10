@@ -4,6 +4,7 @@ import random
 import threading
 import json
 import re
+from ez_serde_v2 import deserialize, serialize
 
 def get_random_job_data():
 	return {
@@ -91,7 +92,27 @@ def setup_tcp_server():
 
 			# print(f"Received from client:\n{decoded}")
 
-			handle_packet(client_socket, data)
+			try:
+				packet = deserialize(data)
+				# print(json.dumps(packet, indent=2))
+			
+				flag = packet["flag"]
+				if flag == 2:
+					encoded_msg = packet["payload"].encode("utf-8")
+					msg = serialize(0x02, encoded_msg, packet["id"])
+					client_socket.send(msg)
+				elif flag == 0x21:
+					encoded_msg = json.dumps(get_random_job_data()).encode("utf-8")
+					print("encoded message:", encoded_msg)
+					msg = serialize(0x21, encoded_msg, packet["id"])
+					client_socket.send(msg)
+
+
+				# handle_packet(client_socket, packet)
+			except Exception as e:
+				print(f"Failed to deserialize packet: {e}")
+
+			# handle_packet(client_socket, data)
 
 			# id = decoded.split("\n")[0]
 			# command = decoded.split("\n")[1]
