@@ -1,6 +1,7 @@
 import { BrowserWindow } from "electron";
-import EzTcpClient from "../net/ezTcp";
-import { ezSerialize } from "../net/ez-proto/ezproto";
+import { EzFlags, uint6 } from "../net/ez/EzTypes";
+import EzProto from "../net/ez/EzSerDe";
+import EzTcpClient from "../net/EzTcp";
 
 interface JobState {
 	level: number;
@@ -11,13 +12,9 @@ interface JobState {
 
 export default function initHandlers(win: BrowserWindow, ipcMain: any, TcpClient: EzTcpClient) {
 	ipcMain.handle("get-main-job-info", async (): Promise<JobState | undefined> => {
-		if(!TcpClient.isConnected()) {
-			throw new Error("No connection available");
-		}
-
 		let response;
 		try {
-			response = await TcpClient.sendAndAwaitResponse(Buffer.from("get-main-job-info"));
+			response = await TcpClient.getData(EzFlags.JOB.MAIN);
 			return response && JSON.parse(response.toString());
 		} catch(e) {
 			if(response) {
@@ -29,13 +26,13 @@ export default function initHandlers(win: BrowserWindow, ipcMain: any, TcpClient
 	});
 
 	ipcMain.handle("get-location", async (): Promise<JobState | undefined> => {
-		if(!TcpClient.isConnected()) {
+		if(!TcpClient.isConnected) {
 			throw new Error("No connection available");
 		}
 
 		let response;
 		try {
-			response = await TcpClient.sendAndAwaitResponse(Buffer.from("get-location"));
+			response = await TcpClient.getData(EzFlags.LOCATION.ALL);
 			return response && JSON.parse(response.toString());
 		} catch(e) {
 			if(response) {
@@ -46,22 +43,13 @@ export default function initHandlers(win: BrowserWindow, ipcMain: any, TcpClient
 		}
 	});
 
-	ipcMain.on('send-tcp-message', async (data: any) => {
+	ipcMain.on('send-tcp-message', async (messageFlag: uint6, data: any) => {
 		try {
-			TcpClient?.sendMessage(ezSerialize(data));
+			TcpClient?.fireAndForget(EzProto.serialize(messageFlag, data));
 		} catch(e:any) {
 			console.log(e);
 		}
 	});
-
-	// ipcMain.handle('get-main-job-info', () => {
-	// 	return {
-	// 		level: Math.floor(Math.random() * (90 - 10 + 1)) + 10,
-	// 		jobName: 'CONJURER',
-	// 		currentXP: Math.floor(Math.random() * (55000 - 10000 + 1)) + 10000,
-	// 		maxXP: 55000
-	// 	}
-	// });
 
 	ipcMain.handle('ask-tcp-connected', () => {
 		return TcpClient?.isConnected() || false;

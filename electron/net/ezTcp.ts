@@ -1,63 +1,88 @@
 import net from 'net';
-import {v4} from 'uuid';
-import { ezDeserialize, ezSerialize } from './ez-proto/ezproto';
+import EzProto from './ez/EzSerDe';
+import { DeserializedPacket, EzFlags, uint6 } from './ez/EzTypes';
 
-interface TcpResponse {
+interface TcpHandler {
 	resolve: (value: Buffer) => void;
 	reject: (reason?: any) => void;
 }
 
-// Request structure:
-// UUID (or nothing)
-// route
-// payload ...
-
 const HOST = process.env.HOST_IN || 'localhost';
 const PORT_OUT = parseInt(process.env.TCP_OUT || '58008');
-export default class EzTcpClient {
-	public client!: net.Socket | undefined;
-	public isReconnecting: boolean = false;
 
+export default class EzTcpClient {
 	private drained: boolean = true;
-	private requestsAwaitingResponse!: Map<string,TcpResponse>;
+	private isReconnecting: boolean = false;
+	private client!: net.Socket | undefined;
+	private connectionIsIntact: boolean = false; 
+	private heartbeat: NodeJS.Timeout | undefined;
+	private requestsAwaitingResponse!: Map<uint6,TcpHandler>;
 	private setConnected = (connected: boolean): void => { console.log(connected); };
 
 	constructor(handle: (msg: Buffer) => void, setConnected: (connected: boolean) => void) {
 		this.connect(handle);
 		this.setConnected = setConnected;
 
-		this.requestsAwaitingResponse = new Map<string, TcpResponse>();
+		this.requestsAwaitingResponse = new Map<uint6, TcpHandler>();
+		// this.startHeartbeat();
 	}
 
-	public isConnected(): boolean { 
-		return !this.client?.closed;
-	};
+	public isConnected(): boolean {
+		return !this.client!.closed;
+		// return this.connectionIsIntact;
+	}
+
+	public stopHeartbeat = () => {
+		clearInterval(this.heartbeat);
+		this.heartbeat = undefined;
+	}
+
+	public startHeartbeat = async () => {
+		if(this.heartbeat !== undefined) {
+			return;
+		}
+
+		this.heartbeat = setInterval(async() => {
+			const message: Buffer = Buffer.from("you sleep?");
+			const response: Buffer = await this.sendAndAwaitResponse(EzFlags.HEARTBEAT, message);
+
+			try {
+				const deserialized: DeserializedPacket = EzProto.deserialize(response);
+				if(deserialized.payload === message) {
+					console.log("still connected");
+					this.connectionIsIntact = true;
+				} else {
+					throw new Error("Heartbeat response malformed. Expected 'you sleep?' but got " + deserialized.payload.toString());
+				}
+			} catch(e) {
+				// console.log("Heartbeat failed:", (e as any).message);
+				this.connectionIsIntact = false;
+			}
+		}, 5000);
+	}
 
 	private connect(handle: (msg: Buffer) => void) {
 		console.log(`Attempting to connect to ${HOST}:${PORT_OUT}`);
 		this.client = net.createConnection(PORT_OUT, HOST, () => {
 				console.log('TCP client connected to ' + HOST + ':' + PORT_OUT);
 				this.isReconnecting = false;
+				this.connectionIsIntact = true;
 				this.setConnected(true);
 		});
 		
 		this.client.on("data", (data: Buffer) => {
-			let id: string = "";
-			let message: Buffer;
-
+			let result: DeserializedPacket;
 			try {
-				const result = ezDeserialize(data);
-				id = result.id;
-				message = Buffer.from(result.data);
+				result = EzProto.deserialize(data);
 			} catch(e) {
 				console.log(e);
 				return;
 			}
 
-			if(this.requestsAwaitingResponse.has(id)) {
-				const request = this.requestsAwaitingResponse.get(id)!;
-				request.resolve(message);
-				this.requestsAwaitingResponse.delete(id);
+			if(this.requestsAwaitingResponse.has(result.id)) {
+				const request = this.requestsAwaitingResponse.get(result.id)!;
+				request.resolve(result.payload);
+				this.requestsAwaitingResponse.delete(result.id);
 				return;
 			}
 
@@ -95,21 +120,18 @@ export default class EzTcpClient {
 		}, 1000);
 	}	
 
-	public async sendMessage(data: Buffer): Promise<void> {
-		if(!this.drained) {
-			console.log("data sending in progress")
-			return;
-		}
-
-		this.drained = false;
-		try {
-			await this.write(data);
-		} finally {
-			this.drained = true;
-		}
+	public async fireAndForget(data: Buffer): Promise<void> {
+		return new Promise((resolve, reject) => {
+			try {
+				this.write(data);
+				resolve()
+			} catch {
+				reject()
+			}
+		})
 	}
 
-	public async write(data: Buffer): Promise<void> {
+	private async write(data: Buffer): Promise<void> {
 		return new Promise((resolve, reject) => {
 			this.client?.write(data, (err: Error | undefined) => {
 				if(err) {
@@ -122,19 +144,33 @@ export default class EzTcpClient {
 		})
 	}
 
-	public async sendAndAwaitResponse(data: Buffer, timeoutMs = 1000): Promise<Buffer> {
-		if(!this.isConnected()) {
-			throw(new Error("not connected"))
-		}
+	public async getData(routeFlag: uint6, timeoutMs: number = 1000) {
+		return await this.sendAndAwaitResponse(routeFlag, Buffer.from([EzFlags.NULL]), timeoutMs);
+	}
 
-		const id = v4().substring(0,8);
+	public async sendAndAwaitResponse(
+		routeFlag: uint6, 
+		data: Buffer = Buffer.from([EzFlags.NULL]), 
+		timeoutMs: number = 1000
+	): Promise<Buffer> {
+		// if(!this.connectionIsIntact) {
+		// 	throw(new Error("Not connected"))
+		// }
 
+		// get a new 10 bit ID - continuously generate until it's unique
+		let id: number = 0;
+		do { id = Math.floor(Math.random() * 0x3FF); } 
+		while(this.requestsAwaitingResponse.has(id));
+
+		// this is wierd lol
 		return new Promise((resolve, reject) => {
+			// create a request timeout
 			const timeout = setTimeout(() => {
 				this.requestsAwaitingResponse.delete(id);
 				reject(new Error("Request timed out"));
 			}, timeoutMs)
 
+			// setup the promise that handles this message
 			this.requestsAwaitingResponse.set(id, { 
 				resolve: (response: Buffer) => {
 					clearTimeout(timeout);
@@ -146,15 +182,19 @@ export default class EzTcpClient {
 				}
 			})
 
-			const outData = ezSerialize(data, id);
-			this.sendMessage(outData).catch(reject);
+			const outData = EzProto.serialize(routeFlag, data, id);
+			this.fireAndForget(outData).catch(reject);
 		});
 	}
 
 	public close(): void {
 		this.client?.end(() => {
-			try { this.setConnected(false); }
-			catch { console.log("failed to set connected to false lol") }
+			try { 
+				this.stopHeartbeat();
+				this.setConnected(false); 
+			} catch { 
+				console.log("failed to set connected to false lol") 
+			}
 		});
 	}
 }
