@@ -11,9 +11,9 @@ const GilDisplay: React.FC = () => {
 	return (
 		<div className="flex flex-row gap-1 items-center font-fanwood text-2xl text-custom-text-secondary-500">
 			<span className="mb-1">{withCommas(amount)}</span>
-			<span><img className="h-7" src="/public/images/currency-gil.png" /></span>
+			<span><img className="h-7" src="/public/images/etc-gil.png" /></span>
 		</div>
 	);
 };
 
-export default GilDisplay;
+export default GilDisplay;	
