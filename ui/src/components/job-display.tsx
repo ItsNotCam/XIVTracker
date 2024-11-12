@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import XPBar from './xp-bar';
-import { JobState } from '../../lib/structs';
+import XPBar from '@components/xp-bar';
+import { JobState } from '@lib/structs';
 
 interface JobDisplayType {
 	type: "job" | "main"

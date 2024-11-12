@@ -1,5 +1,3 @@
-import './env';
-
 import { app, BrowserWindow, ipcMain } from 'electron'
 // import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
@@ -10,7 +8,7 @@ import initHandlers from './events/handle';
 import EzTcpClient from '../lib/net/EzTcp';
 import EzUdpServer from '../lib/net/EzUdp';
 import ezRoute from '../lib/net/EzRouter';
-import { EzFlags } from '../lib/net/ez/EzTypes';
+import { EzFlag } from '../lib/net/ez/EzTypes';
 
 // const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -93,7 +91,7 @@ const initNetworking = (win: BrowserWindow) => {
 	);
 
 	console.log("sending response");
-	TcpClient.sendAndAwaitResponse(EzFlags.LOCATION_ALL).then((response: Buffer) => {
+	TcpClient.sendAndAwaitResponse(EzFlag.LOCATION_ALL).then((response: Buffer) => {
 		console.log(response.toString());
 	});
 }

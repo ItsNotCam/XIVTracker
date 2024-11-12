@@ -3,10 +3,14 @@ import path from 'node:path'
 import electron from 'vite-plugin-electron/simple'
 import react from '@vitejs/plugin-react'
 
+const root = (p: string) => path.resolve(__dirname, p);
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    react(),
+    react({
+			include: root("ui/*"),
+		}),
     electron({
       main: {
         // Shortcut of `build.lib.entry`.
@@ -26,4 +30,12 @@ export default defineConfig({
         : {},
     }),
   ],
-})
+	resolve: {
+		alias: {
+			"@lib": root("lib"),
+			"@ui/*": root("ui/src/*"),
+			"@electron/*": root("electron/*"),
+			"@components/*": root("ui/src/components/*")
+		}
+	},
+});

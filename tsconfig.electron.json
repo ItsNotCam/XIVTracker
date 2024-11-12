@@ -18,8 +18,18 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+
+		/* Custom @app directory */
+		"baseUrl": "./",
+		"paths": {
+			"@lib/*": ["lib/*"],
+			"@ui/*": ["ui/src/*"],
+			"@electron/*": ["electron/*"],
+			"@components/*": ["ui/src/components/*"],
+		},
+		"rootDir": "./"
   },
-  "include": ["electron", "react/src", "lib/net"],
+  "include": ["electron", "ui/src", "lib"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

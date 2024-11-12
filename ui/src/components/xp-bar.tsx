@@ -1,5 +1,5 @@
 import React from 'react';
-import { withCommas } from '../util/util';
+import { withCommas } from '@ui/util/util';
 
 interface XPBarProps {
 	currentXP: number;

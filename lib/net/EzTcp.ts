@@ -1,6 +1,10 @@
 import net from 'net';
 import EzSerDe from './ez/EzSerDe';
-import { DeserializedPacket as EzDeserializedPacket, EzFlags, uint6 } from './ez/EzTypes';
+import { 
+	DeserializedPacket, 
+	EzFlag, 
+	uint6 
+} from './ez/EzTypes';
 
 interface TcpHandler {
 	resolve: (value: Buffer) => void;
@@ -42,10 +46,10 @@ export default class EzTcpClient {
 
 		this.heartbeat = setInterval(async() => {
 			const message: Buffer = Buffer.from("you sleep?");
-			const response: Buffer = await this.sendAndAwaitResponse(EzFlags.HEARTBEAT, message);
+			const response: Buffer = await this.sendAndAwaitResponse(EzFlag.HEARTBEAT, message);
 
 			try {
-				const deserialized: EzDeserializedPacket = EzSerDe.deserialize(response);
+				const deserialized: DeserializedPacket = EzSerDe.deserialize(response);
 				if(deserialized.payload === message) {
 					console.log("still connected");
 				} else {
@@ -68,7 +72,7 @@ export default class EzTcpClient {
 		});
 		
 		this.client.on("data", (data: Buffer) => {
-			let result: EzDeserializedPacket;
+			let result: DeserializedPacket;
 			try {
 				result = EzSerDe.deserialize(data);
 			} catch(e) {
@@ -142,12 +146,12 @@ export default class EzTcpClient {
 	}
 
 	public async getData(routeFlag: uint6, timeoutMs: number = 1000) {
-		return await this.sendAndAwaitResponse(routeFlag, Buffer.from([EzFlags.NULL]), timeoutMs);
+		return await this.sendAndAwaitResponse(routeFlag, Buffer.from([EzFlag.NULL]), timeoutMs);
 	}
 
 	public async sendAndAwaitResponse(
 		routeFlag: uint6, 
-		data: Buffer = Buffer.from([EzFlags.NULL]), 
+		data: Buffer = Buffer.from([EzFlag.NULL]), 
 		timeoutMs: number = 1000
 	): Promise<Buffer> {
 		// get a new 10 bit ID - continuously generate until it's unique

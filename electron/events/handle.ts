@@ -1,5 +1,5 @@
 import { BrowserWindow } from "electron";
-import { EzFlags, uint6 } from "../../lib/net/ez/EzTypes";
+import { EzFlag, uint6 } from "../../lib/net/ez/EzTypes";
 import EzSerDe from "../../lib/net/ez/EzSerDe";
 import EzTcpClient from "../../lib/net/EzTcp";
 
@@ -14,7 +14,7 @@ export default function initHandlers(win: BrowserWindow, ipcMain: any, TcpClient
 	ipcMain.handle("get-main-job-info", async (): Promise<JobState | undefined> => {
 		let response;
 		try {
-			response = await TcpClient.getData(EzFlags.JOB_MAIN);
+			response = await TcpClient.getData(EzFlag.JOB_MAIN);
 			return response && JSON.parse(response.toString());
 		} catch(e) {
 			if(response) {

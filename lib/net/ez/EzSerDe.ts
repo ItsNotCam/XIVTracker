@@ -1,5 +1,9 @@
 import { EzDecode, EzEncode } from "./EzEncoder";
-import { DeserializedPacket, EzFlags as EzFlag, uint10, uint6 } from "./EzTypes";
+import { 
+	DeserializedPacket, 
+	EzFlag, 
+	uint10, 
+} from "./EzTypes";
 
 export const deserialize = (msg: Buffer): DeserializedPacket => {
 	// these primitive types are just sugar.

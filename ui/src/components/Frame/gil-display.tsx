@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { withCommas } from '../../util/util';
+import { withCommas } from '@ui/util/util';
 
 const GilDisplay: React.FC = () => {
 	const [amount, setAmount] = React.useState(3250);

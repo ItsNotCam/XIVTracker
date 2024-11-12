@@ -16,7 +16,7 @@ export interface DeserializedPacket {
 	payload: Buffer;
 }
 
-export enum EzFlags {
+export enum EzFlag {
 	NULL = 0x01,
 	HEARTBEAT = 0x02,
 	EZ = 0x1E,
@@ -46,15 +46,15 @@ export enum EzFlags {
 	JOB_MAIN = 0x21
 }
 export const isLocation = (flag: number): boolean => {
-	return flag >= EzFlags.LOCATION_ALL && flag <= EzFlags.LOCATION_LAST;
+	return flag >= EzFlag.LOCATION_ALL && flag <= EzFlag.LOCATION_LAST;
 };
 
 export const malformed = (): PacketResponse => ({
-	status: EzFlags.MALFORMED,
+	status: EzFlag.MALFORMED,
 	data: null
 });
 
 export const notImplemented = (): PacketResponse => ({
-	status: EzFlags.NOT_IMPLEMENTED,
+	status: EzFlag.NOT_IMPLEMENTED,
 	data: null
 });

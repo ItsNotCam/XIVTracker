@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import Sidebar from './Sidebar';
-import PageContentBody from './components/page-content-body';
-import RecipeSearch from './components/Recipe Search/recipe-search';
+import Sidebar from '@ui/Sidebar';
+import PageContentBody from '@components/page-content-body';
+import RecipeSearch from '@components/Recipe Search/recipe-search';
 
 const pages: JSX.Element[] = [
 	<RecipeSearch />,
