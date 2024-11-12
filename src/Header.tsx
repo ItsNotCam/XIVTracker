@@ -6,14 +6,14 @@ import JobDisplay from './components/job-display';
 
 const Header: React.FC = () => {
 	return (
-		<header className="bg-custom-gray-500 grid grid-cols-[auto,1fr,auto] shadow-md">
-			<JobDisplay type="combat"/>
+		<div className="grid grid-cols-[auto,1fr,auto]">
+			<JobDisplay type="main"/>
 			<LocationDisplay />
 			<div className="flex flex-col justify-center items-center ml-auto">
 				<Clock />
 				<NameDisplay />
 			</div>
-		</header>
+		</div>
 	);
 };
 

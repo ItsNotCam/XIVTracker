@@ -52,6 +52,7 @@ img {
 
 .header {
 	-webkit-user-select: none;
+					user-select: none;
 	-webkit-app-region: drag;
 
 	& > ul {
@@ -61,6 +62,10 @@ img {
 
 .bloom {
 	text-shadow: 0 0 2px #FFD446;
+}
+
+.bloom-2 {
+	text-shadow: 0 0 4px #FFD446;
 }
 
 /* custom scrollbar */
@@ -99,5 +104,12 @@ img {
 
 	&:hover {
 		scale: 1.2;
+	}
+}
+
+@layer components {
+	.text-content-header {
+		text-transform: uppercase;
+		@apply text-4xl bloom-2 text-custom-text-secondary-300;
 	}
 }

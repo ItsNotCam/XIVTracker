@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import Sidebar from './Sidebar';
 import Header from './Header';
+import PageContent from './PageContent';
 
 function DataDisplay() {
 	const positionMsg = useRef<any>(undefined);
@@ -33,18 +33,10 @@ function DataDisplay() {
 }
 
 export default function App() {
-	const [messages, setMessages] = useState<string[]>([]);
-
-	const getJobData = () => {
-		window.ipcRenderer.invoke("get-job-data").then((data: any) => {
-			console.log(data);
-		})
-	}
-
 	return (
-		<div className="bg-custom-gray-300 h-screen">
-			{/* <Sidebar /> */}
+		<main className="bg-custom-gray-300 h-screen flex flex-col">
 			<Header />
-		</div>
+			<PageContent />
+		</main>
 	)
 }
