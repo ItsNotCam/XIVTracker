@@ -7,11 +7,54 @@ import re
 from ez_serde_v2 import deserialize, serialize
 
 def get_random_job_data():
+	ffxiv_jobs = [
+    # Combat Jobs
+    "paladin",
+    "warrior",
+    "dark knight",
+    "gunbreaker",
+    "white mage",
+    "scholar",
+    "astrologian",
+    "sage",
+    "monk",
+    "dragoon",
+    "ninja",
+    "samurai",
+    "reaper",
+    "bard",
+    "machinist",
+    "dancer",
+    "black mage",
+    "summoner",
+    "red mage",
+    "blue mage",
+    
+    # Gathering Jobs
+    "miner",
+    "botanist",
+    "fisher",
+    
+    # Crafting Jobs
+    "carpenter",
+    "blacksmith",
+    "armorer",
+    "goldsmith",
+    "leatherworker",
+    "weaver",
+    "alchemist",
+    "culinarian"
+	]
+
+	
+	max_xp = random.randint(52350, 82350)
+	current_xp = random.randint(0, max_xp)
+
 	return {
 		"level": random.randint(1, 90),
-		"job_name": "conjurer",
-		"current_xp": random.randint(1, 52350),
-		"max_xp": random.randint(52350, 82350),
+		"job_name": random.choice(ffxiv_jobs),
+		"current_xp": current_xp,
+		"max_xp": max_xp,
 	}
 
 def get_random_location():
@@ -100,12 +143,12 @@ def setup_tcp_server():
 				payload = packet["payload"]
 				if flag == 2:
 					utf8_msg = payload.encode("utf-8")
-					print("encoded message:", utf8_msg)
+					print("sending:", utf8_msg)
 					msg = serialize(0x02, utf8_msg, packet["id"])
 					client_socket.send(msg)
 				elif flag == 0x21:
 					utf8_msg = json.dumps(get_random_job_data()).encode("utf-8")
-					print("encoded message:", utf8_msg)
+					print("sending:", utf8_msg)
 					msg = serialize(0x21, utf8_msg, packet["id"])
 					client_socket.send(msg)
 

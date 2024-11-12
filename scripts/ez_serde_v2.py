@@ -37,7 +37,7 @@ def deserialize(msg: bytes):
 	# 	decoded_payload = payload.decode("utf-8")
 	# except:
 	# 	decoded_payload = ""
-
+      
 	return {
 		'id': id,
 		'flag': flag,
