@@ -5,12 +5,12 @@ import { app, BrowserWindow, ipcMain } from 'electron'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
-import { deserialize } from './net/ez/EzSerDe';
+import { deserialize } from '../lib/net/ez/EzSerDe';
 import initHandlers from './events/handle';
-import EzTcpClient from './net/EzTcp';
-import EzUdpServer from './net/EzUdp';
-import ezRoute from './net/EzRouter';
-import { EzFlags } from './net/ez/EzTypes';
+import EzTcpClient from '../lib/net/EzTcp';
+import EzUdpServer from '../lib/net/EzUdp';
+import ezRoute from '../lib/net/EzRouter';
+import { EzFlags } from '../lib/net/ez/EzTypes';
 
 // const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -46,6 +46,7 @@ function createWindow() {
 		// alwaysOnTop: true,
 		autoHideMenuBar: true,
 		frame: false,
+		minWidth: 800
 		// transparent: true,
   })
 
@@ -92,7 +93,7 @@ const initNetworking = (win: BrowserWindow) => {
 	);
 
 	console.log("sending response");
-	TcpClient.sendAndAwaitResponse(EzFlags.LOCATION.ALL).then((response: Buffer) => {
+	TcpClient.sendAndAwaitResponse(EzFlags.LOCATION_ALL).then((response: Buffer) => {
 		console.log(response.toString());
 	});
 }

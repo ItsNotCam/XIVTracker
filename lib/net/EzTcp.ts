@@ -1,5 +1,5 @@
 import net from 'net';
-import EzProto from './ez/EzSerDe';
+import EzSerDe from './ez/EzSerDe';
 import { DeserializedPacket as EzDeserializedPacket, EzFlags, uint6 } from './ez/EzTypes';
 
 interface TcpHandler {
@@ -11,10 +11,8 @@ const HOST = process.env.HOST_IN || 'localhost';
 const PORT_OUT = parseInt(process.env.TCP_OUT || '58008');
 
 export default class EzTcpClient {
-	private drained: boolean = true;
 	private isReconnecting: boolean = false;
 	private client!: net.Socket | undefined;
-	private connectionIsIntact: boolean = false; 
 	private heartbeat: NodeJS.Timeout | undefined;
 	private requestsAwaitingResponse!: Map<uint6,TcpHandler>;
 	private setConnected = (connected: boolean): void => { console.log(connected); };
@@ -47,33 +45,32 @@ export default class EzTcpClient {
 			const response: Buffer = await this.sendAndAwaitResponse(EzFlags.HEARTBEAT, message);
 
 			try {
-				const deserialized: EzDeserializedPacket = EzProto.deserialize(response);
+				const deserialized: EzDeserializedPacket = EzSerDe.deserialize(response);
 				if(deserialized.payload === message) {
 					console.log("still connected");
-					this.connectionIsIntact = true;
 				} else {
 					throw new Error("Heartbeat response malformed. Expected 'you sleep?' but got " + deserialized.payload.toString());
 				}
 			} catch(e) {
 				console.log("Heartbeat failed:", (e as any).message);
-				this.connectionIsIntact = false;
 			}
 		}, 5000);
 	}
 
+	// TODO: handle malformed and invalid packets gracefully, only fully processing data when
+	// the packet is completely received
 	private connect(handle: (msg: Buffer) => void) {
 		console.log(`Attempting to connect to ${HOST}:${PORT_OUT}`);
 		this.client = net.createConnection(PORT_OUT, HOST, () => {
 				console.log('TCP client connected to ' + HOST + ':' + PORT_OUT);
 				this.isReconnecting = false;
-				this.connectionIsIntact = true;
 				this.setConnected(true);
 		});
 		
 		this.client.on("data", (data: Buffer) => {
 			let result: EzDeserializedPacket;
 			try {
-				result = EzProto.deserialize(data);
+				result = EzSerDe.deserialize(data);
 			} catch(e) {
 				console.log(e);
 				return;
@@ -178,7 +175,7 @@ export default class EzTcpClient {
 				}
 			})
 
-			const outData = EzProto.serialize(routeFlag, data, id);
+			const outData = EzSerDe.serialize(routeFlag, data, id);
 			this.fireAndForget(outData).catch(reject);
 		});
 	}

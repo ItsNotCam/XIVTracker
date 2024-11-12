@@ -11,7 +11,7 @@ class EzEncoder {
 	private buffer: Buffer;
 	private bufferIndex: number = 0;
 
-	constructor(private bitSize: number, private bufferSize: number) {
+	constructor(private bitSize: number, bufferSize: number) {
 			this.buffer = Buffer.alloc(bufferSize);
 	}
 
