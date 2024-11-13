@@ -1,0 +1,20 @@
+{
+  "files.associations": {
+    "*.json5": "json"
+  }
+	,
+	"files.exclude": {
+		"**/__pycache__": true,
+		"**/dist-electron": true,
+		"**/dist": true,
+		"**/node_modules": true,
+	},
+	"material-icon-theme.folders.associations": {
+		"electron": "React-components",
+	},
+  "material-icon-theme.files.associations": {
+    "tsconfig.electron.json": "typescript-def",
+    "tsconfig.react.json": "typescript-def",
+    "tsconfig.node.json": "typescript-def"
+  }
+}
