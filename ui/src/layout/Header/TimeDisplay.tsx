@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 import ClockImage from '@assets/images/etc-clock.png'
 import { IpcRendererEvent } from 'electron';
-import { onReceive, emitOnLoad, unregister } from '@lib/eventHelpers';
+import { onReceive, unregister } from '@lib/eventHelpers';
 
 export default function Clock() {
 	const [currentTime, setCurrentTime] = useState<string>("00:00 PM");
