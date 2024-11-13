@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import Header from '@ui/Header';
-import PageContent from '@ui/PageContent';
+import Header from '@ui/layout/Header';
+import PageContent from '@ui/layout/PageContent';
 
 function DataDisplay() {
 	const positionMsg = useRef<any>(undefined);

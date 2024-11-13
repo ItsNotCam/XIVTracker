@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 
+import ClockImage from "@assets/images/etc-clock.png";
+
 export default function Clock() {
 	const [currentTime, setCurrentTime] = useState<string>("00:00 PM");
 	const [worldTime, setCurrentWorldTime] = useState<string>("00:00 AM");
@@ -33,7 +35,7 @@ export default function Clock() {
 				<h1 className="text-2xl">{currentTime}</h1>
 				<h2 className="text-lg">{worldTime}</h2>
 			</div>
-			<img className="h-[65px]" src="/images/etc-clock.png" />
+			<img className="h-[65px]" src={ClockImage} />
 		</div>
 	);
 };
