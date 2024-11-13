@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import Sidebar from '@ui/layout/Sidebar';
-import PageContentBody from '@layout/page-content/PageContentBody';
+import Sidebar from '@ui/layout/page-content/Sidebar';
 import RecipeSearch from '@layout/page-content/recipe-search/RecipeSearch';
 
 const pages: JSX.Element[] = [
@@ -9,17 +8,17 @@ const pages: JSX.Element[] = [
 	<h1 className="text-content-header">Jobs</h1>
 ];
 
-const PageContent: React.FC = () => {
+const Body: React.FC = () => {
 	const [currentTab, setCurrentTab] = useState<number>(0);
 
 	return (
-		<div className="w-full flex flex-row flex-grow">
+		<main className="w-full flex flex-row flex-grow">
 			<Sidebar currentTab={currentTab} setCurrentTab={setCurrentTab}/>
-			<PageContentBody>
+			<div className="flex-grow bg-custom-gray-500 h-full p-4">
 				{pages[currentTab]}
-			</PageContentBody>
-		</div>
+			</div>
+		</main>
 	);
 };
 
-export default PageContent;
+export default Body;

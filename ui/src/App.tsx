@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import Header from '@ui/layout/Header';
-import PageContent from '@ui/layout/PageContent';
+import Body from '@ui/layout/Body';
 
 function DataDisplay() {
 	const positionMsg = useRef<any>(undefined);
@@ -36,7 +36,7 @@ export default function App() {
 	return (
 		<main className="bg-custom-gray-300 h-screen flex flex-col">
 			<Header />
-			<PageContent />
+			<Body />
 		</main>
 	)
 }
