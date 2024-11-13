@@ -5,6 +5,7 @@ import {
 	uint10, 
 } from "./EzTypes";
 
+// Visual: https://lucid.app/lucidchart/b06bf1e5-8ae7-4e1b-8f32-f256003140d0/edit?invitationId=inv_2a212140-1bee-41d0-913d-4ef4706ba6b1&page=m2MpGyAuT.V7#
 export const deserialize = (msg: Buffer): DeserializedPacket => {
 	// these primitive types are just sugar.
 	let packetLength: uint10;
@@ -36,6 +37,7 @@ export const deserialize = (msg: Buffer): DeserializedPacket => {
 	let decodedPayload = EzDecode(payload);
 	console.log("received:", id, flag, decodedPayload)
 
+	// bandaid for now - need to handle partial packets
 	if(decodedPayload[decodedPayload.length-1] !== "}") {
 		decodedPayload = decodedPayload.substring(0,decodedPayload.length) + "}";
 	}
@@ -48,7 +50,6 @@ export const deserialize = (msg: Buffer): DeserializedPacket => {
 }
 
 // Build an EzPacket.
-// Visual: https://lucid.app/lucidchart/b06bf1e5-8ae7-4e1b-8f32-f256003140d0/edit?invitationId=inv_2a212140-1bee-41d0-913d-4ef4706ba6b1&page=m2MpGyAuT.V7#
 export const serialize = (routeFlag: EzFlag, data: Buffer, id: uint10 = 0): Buffer => {
 	const bHeader 			= EzFlag.EZ;												// 6b 		- Fixed header "ez" where: bHeader === alphabet.indexOf("e") + alphabet.indexOf("z")
 	const bId 					= id & 0x3FF; 											// 10b 		- ID
