@@ -9,6 +9,7 @@ import EzTcpClient from '../lib/net/EzTcp';
 import EzUdpServer from '../lib/net/EzUdp';
 import ezRoute from '../lib/net/EzRouter';
 import { EzFlag } from '../lib/net/ez/EzTypes';
+import { sendToClient } from '../lib/eventHelpers';
 
 // const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -82,11 +83,7 @@ const initNetworking = (win: BrowserWindow) => {
 		}, 
 		(connected: boolean) => {
 			console.log('TCP connected:', connected);
-			win.webContents.send('tcp-connected', connected);
-
-			if(connected) {
-				win.webContents.send("refresh-all");
-			}
+			sendToClient('broadcast:tcp-connected', win, connected);
 		}
 	);
 

@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom/client'
-import App from '@ui/App.tsx'
+import App from '@ui/layout/layout'
 import Frame from '@ui/layout/Frame/_page'
 import '@styles/globals.css'
 

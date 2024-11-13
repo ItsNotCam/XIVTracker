@@ -3,7 +3,7 @@ import * as __WebpackModuleApi from 'webpack-module-api';
 
 import React, { useEffect } from 'react';
 import XPBar from '@ui/components/XPBar';
-import { JobState } from '@lib/common/commonTypes';
+import { Job } from '@lib/types';
 
 /* Image imports */
 import AlchemistImg from "@assets/images/jobs/job-alchemist.png";
@@ -42,6 +42,7 @@ import ViperImg from '@assets/images/jobs/job-viper.png';
 import WarriorImg from '@assets/images/jobs/job-warrior.png';
 import WeaverImg from "@assets/images/jobs/job-weaver.png";
 import WhiteMageImg from '@assets/images/jobs/job-white-mage.png';
+import { invoke, onReceive, send, unregister } from '@lib/eventHelpers';
 
 
 const Images: { [key: string]: string } = {
@@ -84,38 +85,68 @@ const Images: { [key: string]: string } = {
 };
 
 interface JobDisplayType {
-	type: "job" | "main"
+	type: "current" | "main"
 }
 
 const JobDisplay: React.FC<JobDisplayType> = ({ type = "main" }) => {
-	const [job, setJob] = React.useState<JobState>({
+	const [job, setJob] = React.useState<Job>({
 		level: 0,
 		job_name: 'conjurer',
 		current_xp: 0,
 		max_xp: 0
 	});
 
-	const getJobInfo = () => {
-		window.ipcRenderer.invoke(`get-${type}-job-info`).then((data: JobState | undefined) => {
-			if (data === undefined) {
-				setJob({ level: -1, job_name: "???", current_xp: -1, max_xp: -1 });
-
-				setTimeout(() => {
-					getJobInfo();
-				}, 100);
-
-			} else {
-				console.log("job data:", data);
-				setJob(data);
-			}
-		}).catch(e => { console.log(e) });
+	const getJobInfo = async() => {
+		const result: Job = await invoke(`ask:job-${type}`);
+		if(result === undefined) {
+			setJob({ level: -1, job_name: "???", current_xp: -1, max_xp: -1 });
+			setTimeout(getJobInfo, 200);
+		} else {
+			setJob(result);
+		}
 	}
-//`/images/jobs/job-job-${job.job_name.toLowerCase().replace(" ", "-")}.png`}
+
+	const handleSetupComplete = (_event: Electron.Event) => {
+		getJobInfo();
+	}
+
+	const handleJobChange = (_event: Electron.Event, newJob: Job) => {
+		setJob((current: Job) => ({
+			...current,
+			...newJob
+		}));
+	}
+
+	const handleLevelChange = (_event: Electron.Event, newLevel: Job) => {
+		setJob((current: Job) => ({
+			...current,
+			level: newLevel.level,
+			current_xp: newLevel.current_xp,
+			max_xp: newLevel.max_xp
+		}));
+	}
+
+	const handleXpChange = (_event: Electron.Event, newXp: number) => {
+		setJob((current: Job) => ({
+			...current,
+			current_xp: newXp
+		}));
+	}
+
 	useEffect(() => {
-		window.ipcRenderer.send("renderer-ready");
-		window.ipcRenderer.on('setup-completed', (_event: any) => {
-			getJobInfo();
-		});
+		getJobInfo();
+
+		onReceive("update:job-main", handleJobChange);
+		onReceive("update:level", handleLevelChange);
+		onReceive("update:xp", handleXpChange);
+
+		return () => {
+			const { ipcRenderer } = window;
+			unregister("update:job-main", ipcRenderer, handleJobChange)
+			unregister("update:job-main", ipcRenderer, handleJobChange);
+			unregister("update:level", ipcRenderer, handleLevelChange);
+			unregister("update:xp", ipcRenderer, handleXpChange);
+		};
 	}, []);
 
 	return (

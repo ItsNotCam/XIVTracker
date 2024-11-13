@@ -1,17 +1,24 @@
+import { invoke, onReceive, unregister } from '@lib/eventHelpers';
 import { useState, useEffect, useRef } from 'react';
 
 export default function ConnectionStatus(): JSX.Element {
 	const [isConnected, setIsConnected] = useState(false);
 	const connectionTimeout = useRef<NodeJS.Timeout | null>(null);
 
+	const handleTcpConnected = (_event: Electron.Event, connected: boolean) => {
+		setIsConnected(connected);
+	}
+
 	useEffect(() => {
-		window.ipcRenderer.on('tcp-connected', (_event: any, connected: boolean) => {
+		onReceive("broadcast:tcp-connected", handleTcpConnected);
+		invoke("ask:tcp-connected").then((connected: boolean) => {
 			setIsConnected(connected);
 		});
 
-		window.ipcRenderer.invoke("ask-tcp-connected").then((connected: boolean) => { 
-			setIsConnected(connected);
-		});
+		return () => {
+			const { ipcRenderer } = window;
+			unregister("broadcast:tcp-connected", ipcRenderer, handleTcpConnected);
+		}
 	}, []);
 
 	useEffect(() => {

@@ -1,7 +1,7 @@
 import { BrowserWindow } from "electron";
 import { EzFlag, uint6 } from "../../lib/net/ez/EzTypes";
-import EzSerDe from "../../lib/net/ez/EzSerDe";
 import EzTcpClient from "../../lib/net/EzTcp";
+import { handle } from "../../lib/eventHelpers";
 
 interface JobState {
 	level: number;
@@ -11,7 +11,7 @@ interface JobState {
 }
 
 export default function initHandlers(win: BrowserWindow, ipcMain: any, TcpClient: EzTcpClient) {
-	ipcMain.handle("get-main-job-info", async (): Promise<JobState | undefined> => {
+	handle("ask:job-main", ipcMain, async (): Promise<JobState | undefined> => {
 		let response;
 		try {
 			response = await TcpClient.getData(EzFlag.JOB_MAIN);
@@ -43,15 +43,7 @@ export default function initHandlers(win: BrowserWindow, ipcMain: any, TcpClient
 	// 	}
 	// });
 
-	ipcMain.on('send-tcp-message', async (messageFlag: uint6, data: any) => {
-		try {
-			TcpClient?.fireAndForget(EzSerDe.serialize(messageFlag, data));
-		} catch(e:any) {
-			console.log(e);
-		}
-	});
-
-	ipcMain.handle('ask-tcp-connected', () => {
+	handle("ask:tcp-connected", ipcMain, () => {
 		return TcpClient?.isConnected() || false;
 	});
 

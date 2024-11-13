@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { withCommas } from '@ui/util/util';
+import { Experience } from '@lib/types';
+import { onReceive, unregister } from '@lib/eventHelpers';
 
 interface XPBarProps {
 	currentXP: number;
@@ -7,13 +9,11 @@ interface XPBarProps {
 }
 
 const XPBar: React.FC<XPBarProps> = ({ currentXP, maxXP }) => {
-	const percentage = (currentXP / maxXP) * 100;
-
 	return (
 	<div className="flex flex-col gap-[0.4rem] ml-[0.4rem]">
 		<div className="bg-custom-gray-200 rounded-full">
 			<div style={{
-				width: `${percentage}%`
+				width: `${(currentXP / maxXP) * 100}%`
 			}} className="h-[0.25rem] bg-gradient-xp-horizontal rounded-l-full w-full" />
 		</div>
 		<h1 className='text-custom-text-secondary-100 bloom'>

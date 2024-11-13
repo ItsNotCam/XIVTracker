@@ -1,4 +1,4 @@
-export const EzEncodingArray = [
+export const EzEncoding = [
 	"NUL", " ", "!", "\"", "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", "-", ".", 
 	"/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", "<", "=", ">", "?", "@", 
 	"[", "]", "{", "}", "_", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", 
@@ -62,10 +62,10 @@ export const EzDecode = (buffer: Buffer): string => {
 	// Decode each 6-bit chunk from the buffer
 	while (bitUnpacker.bufferIndex < buffer.length) {
 			const encodedValue = bitUnpacker.unpack();
-			if(encodedValue >= EzEncodingArray.length || encodedValue < 0) {
+			if(encodedValue >= EzEncoding.length || encodedValue < 0) {
 				decodedString += "~"
 			} else {
-				decodedString += EzEncodingArray[encodedValue]
+				decodedString += EzEncoding[encodedValue]
 			}
 	}
 
@@ -79,7 +79,7 @@ export const EzEncode = (data: string): Buffer => {
 	const bitPacker = new EzEncoder(6, bufferSize);
 
 	for (let i = 0; i < length; i++) {
-			let char = Math.max(0x00, EzEncodingArray.indexOf(data[i]))
+			let char = Math.max(0x00, EzEncoding.indexOf(data[i]))
 			bitPacker.pack(char & 0x3F);
 	}
 

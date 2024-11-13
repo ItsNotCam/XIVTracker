@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 
 import ClockImage from '@assets/images/etc-clock.png'
 import { IpcRendererEvent } from 'electron';
+import { onReceive, emitOnLoad, unregister } from '@lib/eventHelpers';
 
 export default function Clock() {
 	const [currentTime, setCurrentTime] = useState<string>("00:00 PM");
@@ -33,13 +34,13 @@ export default function Clock() {
 
 	useEffect(() => {
 		const timer = setTime();
-
-		window.ipcRenderer.on("update-world-time", updateWorldTime);
-
+		onReceive("ask:time", updateWorldTime);
 
 		return () => {
+			const { ipcRenderer } = window;
+
 			clearInterval(timer);
-			window.ipcRenderer.removeListener("update-world-time", updateWorldTime);
+			unregister("ask:time", ipcRenderer, updateWorldTime);
 		};
 	}, []);
 
