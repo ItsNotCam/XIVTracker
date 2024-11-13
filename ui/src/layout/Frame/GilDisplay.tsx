@@ -2,12 +2,20 @@ import React, { useEffect } from 'react';
 import { withCommas } from '@ui/util/util';
 
 import GilImage from "@assets/images/etc-gil.png"
+import { IpcRendererEvent } from 'electron';
 
 const GilDisplay: React.FC = () => {
 	const [amount, setAmount] = React.useState(3250);
 
+	const updateGilAmount = (_event: IpcRendererEvent, amount: number) => {
+		setAmount(amount);
+	}
+
   useEffect(() => {
-		// window.ipcRenderer.on('')
+		window.ipcRenderer.on('update-gil', updateGilAmount);
+		return () => {
+			window.ipcRenderer.removeListener("update-gil", updateGilAmount);
+		}
 	}, []);
 	
 	return (
