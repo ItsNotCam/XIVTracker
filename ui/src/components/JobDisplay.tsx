@@ -42,7 +42,7 @@ import ViperImg from '@assets/images/jobs/job-viper.png';
 import WarriorImg from '@assets/images/jobs/job-warrior.png';
 import WeaverImg from "@assets/images/jobs/job-weaver.png";
 import WhiteMageImg from '@assets/images/jobs/job-white-mage.png';
-import { invoke, onReceive, unregister } from '@lib/eventHelpers';
+import { invoke, onReceive } from '@lib/eventHelpers';
 
 
 const Images: { [key: string]: string } = {

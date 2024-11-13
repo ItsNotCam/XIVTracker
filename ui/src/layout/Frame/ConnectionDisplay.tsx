@@ -1,4 +1,4 @@
-import { invoke, onReceive, unregister } from '@lib/eventHelpers';
+import { invoke, onReceive } from '@lib/eventHelpers';
 import { useState, useEffect, useRef } from 'react';
 
 const ConnectionStatus: React.FC = () => {

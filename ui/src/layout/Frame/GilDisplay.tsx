@@ -3,7 +3,7 @@ import { IpcRendererEvent } from 'electron';
 import { withCommas } from '@ui/util/util';
 
 import GilImage from "@assets/images/etc-gil.png";
-import { onReceive, unregister } from '@lib/eventHelpers';
+import { onReceive } from '@lib/eventHelpers';
 
 const GilDisplay: React.FC = () => {
 	const [amount, setAmount] = React.useState(3250);

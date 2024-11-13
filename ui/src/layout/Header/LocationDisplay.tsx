@@ -1,4 +1,4 @@
-import { onReceive, unregister } from "@lib/eventHelpers";
+import { onReceive } from "@lib/eventHelpers";
 import { Location } from "@lib/types";
 import { useEffect, useState } from "react";
 import { FC } from "react";
