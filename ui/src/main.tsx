@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom/client'
 import App from '@ui/App.tsx'
-import Frame from '@ui/layout/Frame'
+import Frame from '@ui/layout/Frame/_page'
 import '@styles/globals.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
