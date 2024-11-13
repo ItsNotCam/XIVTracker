@@ -2,15 +2,15 @@ import { defineConfig } from 'vite'
 import path from 'node:path'
 import electron from 'vite-plugin-electron/simple'
 import react from '@vitejs/plugin-react'
+import TsconfigPaths from 'vite-plugin-tsconfig-paths';
 
 const root = (p: string) => path.resolve(__dirname, p);
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    react({
-			include: root("ui/*"),
-		}),
+    react(),
+		TsconfigPaths(),
     electron({
       main: {
         // Shortcut of `build.lib.entry`.
@@ -30,12 +30,13 @@ export default defineConfig({
         : {},
     }),
   ],
-	resolve: {
-		alias: {
-			"@lib": root("lib"),
-			"@ui/*": root("ui/src/*"),
-			"@electron/*": root("electron/*"),
-			"@components/*": root("ui/src/components/*")
-		}
-	},
+	publicDir: "ui/public"
+	// resolve: {
+	// 	alias: {
+	// 		"@lib": root("lib"),
+	// 		"@ui/*": root("ui/src/*"),
+	// 		"@electron/*": root("electron/*"),
+	// 		"@components/*": root("ui/src/components/*")
+	// 	}
+	// },
 });

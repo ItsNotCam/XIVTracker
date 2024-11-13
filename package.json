@@ -8,8 +8,8 @@
     "build": "npm run build-electron && npm run build-ui && vite build && electron-builder -w",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-		"build-electron": "tsc --project tsconfig.electron.json",
-		"build-ui": "tsc --project tsconfig.react.json"
+    "build-electron": "tsc --project tsconfig.electron.json",
+    "build-ui": "tsc --project tsconfig.react.json"
   },
   "dependencies": {
     "bufferutil": "^4.0.8",
@@ -42,7 +42,8 @@
     "typescript": "^5.2.2",
     "vite": "^5.1.6",
     "vite-plugin-electron": "^0.28.8",
-    "vite-plugin-electron-renderer": "^0.14.5"
+    "vite-plugin-electron-renderer": "^0.14.5",
+    "vite-plugin-tsconfig-paths": "^1.4.1"
   },
   "main": "dist-electron/main.js"
 }
