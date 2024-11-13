@@ -27,6 +27,10 @@
 			"@ui/*": ["ui/src/*"],
 			"@electron/*": ["electron/*"],
 			"@components/*": ["ui/src/components/*"],
+			"@assets/*": ["ui/src/assets/*"],
+			"@layout/*": ["ui/src/layout/*"],
+			"@styles/*": ["ui/src/styles/*"],
+			"@util/*": ["ui/src/util/*"],
 		},
 		"rootDir": "./",
 		"outDir": "./dist"
