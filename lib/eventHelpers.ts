@@ -35,17 +35,6 @@ export function emit(eventName: EventType, listener: (event: Electron.IpcRendere
 	window.ipcRenderer.emit(eventName, listener);
 }
 
-export function unregister(events: EventType[] | EventType, renderer: Electron.IpcRenderer, listener: (event: Electron.IpcRendererEvent, args: any[] | any) => void) {
-	console.log(window);
-	if(Array.isArray(events)) {
-		for(let event in events) {
-			// renderer.removeListener(event, listener);
-		}
-	} else {
-		// renderer.removeListener(events, listener);
-	}
-}
-
 export async function invoke(eventName: EventType): Promise<any> {
 	return new Promise(async(resolve, reject) => {
 		window.ipcRenderer.invoke(eventName).then(resolve).catch(reject);
