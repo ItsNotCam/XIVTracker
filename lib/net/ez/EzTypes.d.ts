@@ -45,16 +45,3 @@ export enum EzFlag {
 	JOB_ALL = 0x20,
 	JOB_MAIN = 0x21
 }
-export const isLocation = (flag: number): boolean => {
-	return flag >= EzFlag.LOCATION_ALL && flag <= EzFlag.LOCATION_LAST;
-};
-
-export const malformed = (): PacketResponse => ({
-	status: EzFlag.MALFORMED,
-	data: null
-});
-
-export const notImplemented = (): PacketResponse => ({
-	status: EzFlag.NOT_IMPLEMENTED,
-	data: null
-});
