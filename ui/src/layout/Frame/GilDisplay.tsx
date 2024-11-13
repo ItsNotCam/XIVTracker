@@ -1,17 +1,27 @@
 import React, { useEffect } from 'react';
 import { withCommas } from '@ui/util/util';
 
+import GilImage from "@assets/images/etc-gil.png"
+import { IpcRendererEvent } from 'electron';
+
 const GilDisplay: React.FC = () => {
 	const [amount, setAmount] = React.useState(3250);
 
+	const updateGilAmount = (_event: IpcRendererEvent, amount: number) => {
+		setAmount(amount);
+	}
+
   useEffect(() => {
-		// window.ipcRenderer.on('')
+		window.ipcRenderer.on('update-gil', updateGilAmount);
+		return () => {
+			window.ipcRenderer.removeListener("update-gil", updateGilAmount);
+		}
 	}, []);
 	
 	return (
 		<div className="flex flex-row gap-1 items-center font-fanwood text-2xl text-custom-text-secondary-500">
 			<span className="mb-1">{withCommas(amount)}</span>
-			<span><img className="h-7" src="/images/etc-gil.png" /></span>
+			<span><img className="h-7" src={GilImage} /></span>
 		</div>
 	);
 };

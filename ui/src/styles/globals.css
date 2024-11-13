@@ -4,28 +4,28 @@
 
 @font-face {
 	font-family: 'Eurostile';
-	src: url('/fonts/eurostile.ttf') format('truetype');
+	src: url('../assets/fonts/eurostile.ttf') format('truetype');
 	font-weight: normal;
 	font-style: normal;
 }
 
 @font-face {
 	font-family: 'Eurostile-Normal';
-	src: url('/fonts/eurostile-normal.ttf') format('truetype');
+	src: url('../assets/fonts/eurostile-normal.ttf') format('truetype');
 	font-weight: normal;
 	font-style: normal;
 }
 
 @font-face {
 	font-family: 'Forum';
-	src: url('/fonts/forum.ttf') format('truetype');
+	src: url('../assets/fonts/forum.ttf') format('truetype');
 	font-weight: normal;
 	font-style: normal;
 }
 
 @font-face {
 	font-family: 'Fanwood';
-	src: url('/fonts/fanwood.ttf') format('truetype');
+	src: url('../assets/fonts/fanwood.ttf') format('truetype');
 	font-weight: normal;
 	font-style: normal;
 }

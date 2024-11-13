@@ -1,9 +1,13 @@
 import React from 'react';
 
+import CraftingImage from '@assets/images/tabs/tabs-search.png';
+import GoalsImage from '@assets/images/tabs/tabs-goals.png';
+import JobsImage from '@assets/images/tabs/tabs-jobs.png';
+
 const tabs = [
-	{ name: "Crafting", src: "/images/tabs/tabs-search.png" },
-	{ name: "Goals", src: "/images/tabs/tabs-goals.png" },
-	{ name: "Jobs", src: "/images/tabs/tabs-jobs.png" },
+	{ name: "Crafting", src: CraftingImage },
+	{ name: "Goals", src: GoalsImage },
+	{ name: "Jobs", src: JobsImage },
 ]
 
 interface SidebarProps {

@@ -1,5 +1,5 @@
-import ConnectionStatus from "@components/Frame/connection-display";
-import GilDisplay from "@components/Frame/gil-display";
+import ConnectionStatus from "@ui/layout/Frame/ConnectionDisplay";
+import GilDisplay from "@ui/layout/Frame/GilDisplay";
 
 export default function Frame() {
 	const close = () => {

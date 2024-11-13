@@ -1,8 +1,8 @@
 import React from 'react';
-import Clock from '@components/Header/time-display';
-import LocationDisplay from '@components/Header/location-display';
-import NameDisplay from '@components/Header/name-display';
-import JobDisplay from '@components/job-display';
+import Clock from '@ui/layout/Header/TimeDisplay';
+import LocationDisplay from '@ui/layout/Header/LocationDisplay';
+import NameDisplay from '@ui/layout/Header/NameDisplay';
+import JobDisplay from '@ui/components/JobDisplay';
 
 const Header: React.FC = () => {
 	return (
