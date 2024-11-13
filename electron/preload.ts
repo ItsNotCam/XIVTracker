@@ -18,9 +18,6 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
     const [channel, ...omit] = args
     return ipcRenderer.invoke(channel, ...omit)
   },
-	// onUdpMessage: (callback: (msg: string) => void) => {
-  //   ipcRenderer.on('udp-message', (_, msg) => callback(msg));
-  // },
   // You can expose other APTs you need here.
   // ...
 })
