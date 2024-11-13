@@ -12,7 +12,7 @@ export default class EzUdpServer {
 		this.server = dgram.createSocket('udp4');
 
 		// Handle incoming messages
-		this.server.on('message', (msg, rinfo) => {
+		this.server.on('message', (msg) => {
 			handle(msg);
 		});
 

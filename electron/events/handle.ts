@@ -1,5 +1,5 @@
 import { BrowserWindow } from "electron";
-import { EzFlag } from "../../lib/net/ez/EzTypes";
+import { EzFlag } from "../../lib/net/ez/EzTypes.d";
 import EzTcpClient from "../../lib/net/EzTcp";
 import { handle } from "../../lib/eventHelpers";
 

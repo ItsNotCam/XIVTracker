@@ -8,13 +8,19 @@ const root = (p: string) => path.resolve(__dirname, p);
 
 // https://vitejs.dev/config/
 export default defineConfig({
+	build: {
+		outDir: "dist-electron",
+		rollupOptions: {
+			input: "./electron/main.ts"
+		}
+	},
   plugins: [
     react(),
 		TsconfigPaths(),
     electron({
       main: {
         // Shortcut of `build.lib.entry`.
-        entry: 'electron/main.ts',
+        entry: path.join(__dirname, 'electron/main.ts'),
       },
       preload: {
         // Shortcut of `build.rollupOptions.input`.
@@ -30,13 +36,13 @@ export default defineConfig({
         : {},
     }),
   ],
-	publicDir: "ui/public"
-	// resolve: {
-	// 	alias: {
-	// 		"@lib": root("lib"),
-	// 		"@ui/*": root("ui/src/*"),
-	// 		"@electron/*": root("electron/*"),
-	// 		"@components/*": root("ui/src/components/*")
-	// 	}
-	// },
+	publicDir: "ui/public",
+	resolve: {
+		alias: {
+			"@lib": root("lib"),
+			"@ui/*": root("ui/src/*"),
+			"@electron/*": root("electron/*"),
+			"@components/*": root("ui/src/components/*")
+		}
+	},
 });

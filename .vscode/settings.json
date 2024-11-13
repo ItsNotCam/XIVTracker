@@ -5,7 +5,7 @@
 	,
 	"files.exclude": {
 		"**/__pycache__": true,
-		"**/dist-electron": true,
+		// "**/dist-electron": true,
 		"**/dist": true,
 		"**/node_modules": true,
 		"**/.vscode": true,

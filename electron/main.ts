@@ -8,7 +8,7 @@ import initHandlers from './events/handle';
 import EzTcpClient from '../lib/net/EzTcp';
 import EzUdpServer from '../lib/net/EzUdp';
 import ezRoute from '../lib/net/EzRouter';
-import { EzFlag } from '../lib/net/ez/EzTypes';
+import { EzFlag } from '../lib/net/ez/EzTypes.d';
 import { sendToClient } from '../lib/eventHelpers';
 
 // const require = createRequire(import.meta.url)

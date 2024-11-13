@@ -1,8 +1,8 @@
 import "@lib/"
-import { Experience, Job, Location } from "@lib/types";
+// import { Experience, Job, Location } from "@lib/types";
 
 const Events: { [key: string]: any } = {
-	/* SOCKET COMMUNICATION */
+	/* SOCKET COMMUNICATION 
 	// base
 	"tcp-connected": (connected: boolean) => {},
 	"heartbeat": (message: boolean) => {},
@@ -42,7 +42,7 @@ const Events: { [key: string]: any } = {
 		"ask:job-main"		: (job: Job) => {},
 		"ask:job-current"	: (job: Job) => {},
 	"ask:xp"		: (experience: Experience) => {},
-	"ask:level"	: (experience: Experience) => {}
+	"ask:level"	: (experience: Experience) => {}*/
 };
 
 export default Events;

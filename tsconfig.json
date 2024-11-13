@@ -34,7 +34,7 @@
 			"@styles/*": ["ui/src/styles/*"],
 		},
 		"rootDir": "./",
-		"outDir": "./dist"
+		"outDir": "./dist-electron",
   },
   "include": ["electron", "ui/src", "lib"],
   "references": [{ "path": "./tsconfig.node.json" }]

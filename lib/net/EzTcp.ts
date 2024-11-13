@@ -4,7 +4,7 @@ import {
 	DeserializedPacket, 
 	EzFlag, 
 	uint6 
-} from './ez/EzTypes';
+} from './ez/EzTypes.d';
 
 interface TcpHandler {
 	resolve: (value: Buffer) => void;
