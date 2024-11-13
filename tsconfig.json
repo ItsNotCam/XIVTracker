@@ -30,7 +30,7 @@
 			"@assets/*": ["ui/src/assets/*"],
 			"@layout/*": ["ui/src/layout/*"],
 			"@styles/*": ["ui/src/styles/*"],
-			"@util/*": ["ui/src/util/*"],
+			// "@util/*": ["ui/src/util/*"],
 		},
 		"rootDir": "./",
 		"outDir": "./dist"

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import ClockImage from "@assets/images/etc-clock.png";
+import ClockImage from '@assets/images/etc-clock.png'
 import { IpcRendererEvent } from 'electron';
 
 export default function Clock() {

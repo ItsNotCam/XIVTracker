@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
+import { IpcRendererEvent } from 'electron';
 import { withCommas } from '@ui/util/util';
 
-import GilImage from "@assets/images/etc-gil.png"
-import { IpcRendererEvent } from 'electron';
+import GilImage from "@assets/images/etc-gil.png";
 
 const GilDisplay: React.FC = () => {
 	const [amount, setAmount] = React.useState(3250);
