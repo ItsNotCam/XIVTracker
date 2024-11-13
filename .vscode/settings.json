@@ -8,6 +8,7 @@
 		"**/dist-electron": true,
 		"**/dist": true,
 		"**/node_modules": true,
+		"**/.vscode": true,
 	},
 	"material-icon-theme.folders.associations": {
 		"electron": "React-components",
