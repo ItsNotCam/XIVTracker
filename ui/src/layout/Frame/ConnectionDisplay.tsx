@@ -1,7 +1,7 @@
 import { invoke, onReceive, unregister } from '@lib/eventHelpers';
 import { useState, useEffect, useRef } from 'react';
 
-export default function ConnectionStatus(): JSX.Element {
+const ConnectionStatus: React.FC = () => {
 	const [isConnected, setIsConnected] = useState(false);
 	const connectionTimeout = useRef<NodeJS.Timeout | null>(null);
 
@@ -16,8 +16,7 @@ export default function ConnectionStatus(): JSX.Element {
 		});
 
 		return () => {
-			const { ipcRenderer } = window;
-			unregister("broadcast:tcp-connected", ipcRenderer, handleTcpConnected);
+			window.ipcRenderer.removeListener("broadcast:tcp-connected", handleTcpConnected);
 		}
 	}, []);
 
@@ -40,4 +39,6 @@ export default function ConnectionStatus(): JSX.Element {
 				</svg>
 		</span>
 	);
-}
+};
+
+export default ConnectionStatus;

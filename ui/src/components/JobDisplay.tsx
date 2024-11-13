@@ -84,17 +84,13 @@ const Images: { [key: string]: string } = {
 	"white-mage":   WhiteMageImg,
 };
 
-interface JobDisplayType {
-	type: "current" | "main"
+interface JobDisplayProps {
+	type: "current" | "main",
+	initialJob: Job
 }
 
-const JobDisplay: React.FC<JobDisplayType> = ({ type = "main" }) => {
-	const [job, setJob] = React.useState<Job>({
-		level: 0,
-		job_name: 'conjurer',
-		current_xp: 0,
-		max_xp: 0
-	});
+const JobDisplay: React.FC<JobDisplayProps> = ({ type = "main", initialJob }) => {
+	const [job, setJob] = React.useState<Job>(initialJob);
 
 	const getJobInfo = async() => {
 		const result: Job = await invoke(`ask:job-${type}`);
@@ -137,10 +133,9 @@ const JobDisplay: React.FC<JobDisplayType> = ({ type = "main" }) => {
 		onReceive("update:xp", handleXpChange);
 
 		return () => {
-			const { ipcRenderer } = window;
-			unregister(`update:job-${type}`, ipcRenderer, handleJobChange)
-			unregister("update:level", ipcRenderer, handleLevelChange);
-			unregister("update:xp", ipcRenderer, handleXpChange);
+			window.ipcRenderer.removeListener(`update:job-${type}`, handleJobChange)
+			window.ipcRenderer.removeListener("update:level", handleLevelChange);
+			window.ipcRenderer.removeListener("update:xp", handleXpChange);
 		};
 	}, []);
 

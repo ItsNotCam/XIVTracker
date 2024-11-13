@@ -36,12 +36,12 @@ export interface SheetObject {
 }
 
 export interface Location {
-	region: SheetObject;
-	territory: SheetObject;
-	area: SheetObject;
-	sub_area: SheetObject;
-	housing_ward: SheetObject;
-	position: Position;
+	region?: SheetObject;
+	territory?: SheetObject;
+	area?: SheetObject;
+	sub_area?: SheetObject;
+	housing_ward?: SheetObject;
+	position?: Position;
 	radius?: number;
 }
 

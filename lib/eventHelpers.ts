@@ -39,10 +39,10 @@ export function unregister(events: EventType[] | EventType, renderer: Electron.I
 	console.log(window);
 	if(Array.isArray(events)) {
 		for(let event in events) {
-			renderer.removeListener(event, listener);
+			// renderer.removeListener(event, listener);
 		}
 	} else {
-		renderer.removeListener(events, listener);
+		// renderer.removeListener(events, listener);
 	}
 }
 

@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, FC } from 'react';
 
 import ClockImage from '@assets/images/etc-clock.png'
 import { IpcRendererEvent } from 'electron';
-import { onReceive, unregister } from '@lib/eventHelpers';
+import { onReceive } from '@lib/eventHelpers';
 
-export default function Clock() {
+const Clock: FC<{ initialTime: string }> = ({ initialTime }) => {
 	const [currentTime, setCurrentTime] = useState<string>("00:00 PM");
-	const [worldTime, setCurrentWorldTime] = useState<string>("00:00 AM");
+	const [worldTime, setCurrentWorldTime] = useState<string>(initialTime);
 
 	const setTime = () => {
 		const date = new Date();
@@ -37,10 +37,8 @@ export default function Clock() {
 		onReceive("ask:time", updateWorldTime);
 
 		return () => {
-			const { ipcRenderer } = window;
-
 			clearInterval(timer);
-			unregister("ask:time", ipcRenderer, updateWorldTime);
+			window.ipcRenderer.removeListener("ask:time", updateWorldTime);
 		};
 	}, []);
 
@@ -54,3 +52,5 @@ export default function Clock() {
 		</div>
 	);
 };
+
+export default Clock;

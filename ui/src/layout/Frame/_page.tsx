@@ -1,7 +1,7 @@
 import ConnectionStatus from "@ui/layout/Frame/ConnectionDisplay";
 import GilDisplay from "@ui/layout/Frame/GilDisplay";
 
-export default function Frame() {
+const Frame: React.FC = () => {
 	const close = () => {
 		window.ipcRenderer.send("exit");
 	}
@@ -52,4 +52,6 @@ export default function Frame() {
 			</div>
 		</div>
 	)
-}
+};
+
+export default Frame;
