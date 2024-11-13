@@ -42,7 +42,7 @@ import ViperImg from '@assets/images/jobs/job-viper.png';
 import WarriorImg from '@assets/images/jobs/job-warrior.png';
 import WeaverImg from "@assets/images/jobs/job-weaver.png";
 import WhiteMageImg from '@assets/images/jobs/job-white-mage.png';
-import { invoke, onReceive, send, unregister } from '@lib/eventHelpers';
+import { invoke, onReceive, unregister } from '@lib/eventHelpers';
 
 
 const Images: { [key: string]: string } = {
@@ -106,10 +106,6 @@ const JobDisplay: React.FC<JobDisplayType> = ({ type = "main" }) => {
 		}
 	}
 
-	const handleSetupComplete = (_event: Electron.Event) => {
-		getJobInfo();
-	}
-
 	const handleJobChange = (_event: Electron.Event, newJob: Job) => {
 		setJob((current: Job) => ({
 			...current,
@@ -136,14 +132,13 @@ const JobDisplay: React.FC<JobDisplayType> = ({ type = "main" }) => {
 	useEffect(() => {
 		getJobInfo();
 
-		onReceive("update:job-main", handleJobChange);
+		onReceive(`update:job-${type}`, handleJobChange);
 		onReceive("update:level", handleLevelChange);
 		onReceive("update:xp", handleXpChange);
 
 		return () => {
 			const { ipcRenderer } = window;
-			unregister("update:job-main", ipcRenderer, handleJobChange)
-			unregister("update:job-main", ipcRenderer, handleJobChange);
+			unregister(`update:job-${type}`, ipcRenderer, handleJobChange)
 			unregister("update:level", ipcRenderer, handleLevelChange);
 			unregister("update:xp", ipcRenderer, handleXpChange);
 		};

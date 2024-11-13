@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { withCommas } from '@ui/util/util';
-import { Experience } from '@lib/types';
-import { onReceive, unregister } from '@lib/eventHelpers';
 
 interface XPBarProps {
 	currentXP: number;

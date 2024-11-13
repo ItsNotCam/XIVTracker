@@ -1,3 +1,4 @@
+import { onReceive, unregister } from "@lib/eventHelpers";
 import { useEffect, useState } from "react";
 
 interface Location {
@@ -23,12 +24,19 @@ export default function LocationDisplay(): JSX.Element {
 	// 		}
 	// 	});
 	// }
+
+	const handleLocationChange = (_event: Electron.Event, newLocation: Location) => {
+		setLocation((currentLocation: Location) => ({
+			...currentLocation,
+			...newLocation
+		}))
+	}
 	
 	useEffect(() => {
-		// getLocation();
-		// window.ipcRenderer.on('refresh-all', (_event: any) => {
-		// 	getLocation();
-		// });
+		onReceive("update:location-*", handleLocationChange);
+		return () => {
+			unregister("update:location-*", window.ipcRenderer, handleLocationChange);
+		}
 	},[])
 
 	return (

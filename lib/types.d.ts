@@ -60,14 +60,16 @@ export type EventType =
 	
 	// recv
 	"update:gil" 									|
-	"update:location-all" 				|
+	"update:location-*" 					|
+		"update:location-all" 			|
 		"update:location-position" 	|
 		"update:location-area"		 	|
 		"update:location-subarea"	 	|
 		"update:location-territory" |
 	"update:time" 								|
 	"update:inventory" 						|
-	"update:job-all"		 					|
+	"update:job-*"		 						|
+		"update:job-all"		 				|
 		"update:job-main"	 					|
 		"update:job-current" 				|
 	"update:xp"	 									|
@@ -79,14 +81,16 @@ export type EventType =
 	
 	// ask specific
 	"ask:gil"		 									|
-	"ask:location-all" 						|
+	"ask:location-*" 							| // wildcard - called every time any location update event is thrown - reduces the amount of listeners required
+		"ask:location-all" 					|
 		"ask:location-position" 		|
 		"ask:location-area"		 			|
 		"ask:location-subarea" 			|
 		"ask:location-territory" 		|
 	"ask:time"	 									|
 	"ask:inventory" 							|
-	"ask:job-all"	  							|
+	"ask:job-*"		  							| // wildcard - called every time any job update event is thrown - reduces the amount of listeners required
+		"ask:job-all"  							|
 		"ask:job-main"	 						|
 		"ask:job-current" 					|
 	"ask:xp"	 										|
