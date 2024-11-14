@@ -19,7 +19,7 @@ export interface DeserializedPacket {
 export enum EzFlag {
 	NULL = 0x01,
 	HEARTBEAT = 0x02,
-	EZ = 0x1E,
+	EZ = 0x1D,
 	OK = 0x03,
 	MALFORMED = 0x04,
 	NOT_IMPLEMENTED = 0x05,

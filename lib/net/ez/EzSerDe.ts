@@ -20,7 +20,7 @@ export const deserialize = (msg: Buffer): DeserializedPacket => {
 
 		// if the first 6 bits are not equal to our fixed length packet header, error
 		if(((short >> 10) & 0x3F) !== EzFlag.EZ) {
-			console.log(short >> 10 & 0x3F)
+			console.log(short >> 10 & 0x3F,"is not equal to",EzFlag.EZ);
 			throw new Error("Malformed packet");
 		}
 

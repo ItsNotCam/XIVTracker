@@ -62,6 +62,8 @@ async def echo(websocket):
 		
 		# async for message in websocket:
 		print(f"Received message: {message}")
+		message_hex = message.hex()
+		print(f"Received message (hex): {message_hex}")
 		packet = deserialize(message)
 		
 		flag = packet["flag"]
@@ -77,8 +79,6 @@ async def echo(websocket):
 			print("sending:", utf8_msg)
 			msg = serialize(0x21, utf8_msg, packet["id"])
 			await websocket.send(msg)  # Send back to the same websocket connection
-		
-		await websocket.send("response")  # You can also send a response after handling the message
 
 
 async def main():
