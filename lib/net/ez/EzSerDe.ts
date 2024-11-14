@@ -1,9 +1,9 @@
 import EzEncoder from "./EzEncoder";
 
-import { 
-	DeserializedPacket, 
-	EzFlag, 
-	uint10, 
+import {
+	DeserializedPacket,
+	EzFlag,
+	uint10,
 } from "./EzTypes.d";
 
 // Visual: https://lucid.app/lucidchart/b06bf1e5-8ae7-4e1b-8f32-f256003140d0/edit?invitationId=inv_2a212140-1bee-41d0-913d-4ef4706ba6b1&page=m2MpGyAuT.V7#
@@ -19,13 +19,13 @@ export const deserialize = (msg: Buffer): DeserializedPacket => {
 		const short = (msg[0] << 8) | msg[1];
 
 		// if the first 6 bits are not equal to our fixed length packet header, error
-		if(((short >> 10) & 0x3F) !== EzFlag.EZ) {
-			console.log(short >> 10 & 0x3F,"is not equal to",EzFlag.EZ);
+		if (((short >> 10) & 0x3F) !== EzFlag.EZ) {
+			console.log(short >> 10 & 0x3F, "is not equal to", EzFlag.EZ);
 			throw new Error("Malformed packet");
 		}
 
 		// packet length is the last 10 bits = 0011 1111 1111 = 0x3FF
-		packetLength 	= (short & 0x3FF); 
+		packetLength = (short & 0x3FF);
 	}
 
 	{
@@ -34,13 +34,13 @@ export const deserialize = (msg: Buffer): DeserializedPacket => {
 		flag = short & 0x3F;
 	}
 
-	payload = msg.subarray(4,packetLength-2);
+	payload = msg.subarray(4, packetLength - 2);
 
 	let decodedPayload = EzEncoder.decode(payload);
 	console.log("received:", id, flag, decodedPayload)
 
-	// bandaid for now - need to handle partial packets
-	if(decodedPayload[decodedPayload.length-1] !== "}") {
+	// bandaid for now - I'm really not sure why some messages are truncated.
+	if (decodedPayload[decodedPayload.length - 1] !== "}") {
 		decodedPayload = decodedPayload.substring(0,decodedPayload.length) + "}";
 	}
 
@@ -53,10 +53,10 @@ export const deserialize = (msg: Buffer): DeserializedPacket => {
 
 // Build an EzPacket.
 export const serialize = (routeFlag: EzFlag, data: Buffer, id: uint10 = 0): Buffer => {
-	const bHeader 			= EzFlag.EZ;												// 6b 		- Fixed header "ez" where: bHeader === alphabet.indexOf("e") + alphabet.indexOf("z")
-	const bId 					= id & 0x3FF; 											// 10b 		- ID
-	const bPayload 			= truncate1024B(asUtf8(data));			// 1024B 	- Payload truncated to 1024 bytes
-	const bPacketLength	= (0x24 + bPayload.length) & 0x3FF; // 10b 		- Packet length
+	const bHeader = EzFlag.EZ;												// 6b 		- Fixed header "ez" where: bHeader === alphabet.indexOf("e") + alphabet.indexOf("z")
+	const bId = id & 0x3FF; 											// 10b 		- ID
+	const bPayload = truncate1024B(asUtf8(data));			// 1024B 	- Payload truncated to 1024 bytes
+	const bPacketLength = (0x24 + bPayload.length) & 0x3FF; // 10b 		- Packet length
 
 	let controlHeader: Uint8Array = new Uint8Array(4);
 	{
@@ -77,9 +77,7 @@ export const serialize = (routeFlag: EzFlag, data: Buffer, id: uint10 = 0): Buff
 	return Buffer.from([...controlHeader, ...encodedPayload]);
 };
 
-export const asUtf8 = (data: Buffer): string => {
-	return data.toString("utf-8");
-}
+export const asUtf8 = (data: Buffer): string => data.toString("utf-8");
 
 export const truncate1024B = (data: string): Buffer => {
 	data = data.substring(0, 1024);

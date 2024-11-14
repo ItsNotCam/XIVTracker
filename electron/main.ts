@@ -37,27 +37,27 @@ let win: BrowserWindow | null;
 let WebSocketClient: EzWs | null;
 
 function createWindow() {
-  win = new BrowserWindow({
-    icon: path.join(process.env.VITE_PUBLIC || "", 'electron-vite.svg'),
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.mjs'),
-    },
+	win = new BrowserWindow({
+		icon: path.join(process.env.VITE_PUBLIC || "", 'electron-vite.svg'),
+		webPreferences: {
+			preload: path.join(__dirname, 'preload.mjs'),
+		},
 		// alwaysOnTop: true,
 		autoHideMenuBar: true,
 		frame: false,
 		minWidth: 800
 		// transparent: true,
-  })
+	})
 
-  if (VITE_DEV_SERVER_URL) {
-    win.loadURL(VITE_DEV_SERVER_URL)
-  } else {
-    // win.loadFile('dist/index.html')
-    win.loadFile(path.join(RENDERER_DIST, 'index.html'))
-  }
+	if (VITE_DEV_SERVER_URL) {
+		win.loadURL(VITE_DEV_SERVER_URL)
+	} else {
+		// win.loadFile('dist/index.html')
+		win.loadFile(path.join(RENDERER_DIST, 'index.html'))
+	}
 
-	initNetworking(win!);
-	initHandlers(win, ipcMain, WebSocketClient!);
+	// initNetworking(win!);
+	// initHandlers(win, ipcMain, WebSocketClient!);
 
 	ipcMain.on("renderer-ready", (event) => {
 		event.sender.send("initial-data", "ok");
@@ -86,7 +86,7 @@ const initNetworking = (win: BrowserWindow) => {
 	} catch (e) {
 		console.error("error creating websocket client:\n", e);
 	}
-	
+
 
 	// TcpClient = new EzTcpClient(
 	// 	(msg: Buffer) => {
@@ -109,21 +109,21 @@ const initNetworking = (win: BrowserWindow) => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
+	if (process.platform !== 'darwin') {
 		// UdpServer?.close();
 		// TcpClient?.close();
 
-    app.quit()
-    win = null
-  }
+		app.quit()
+		win = null
+	}
 })
 
 app.on('activate', () => {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow()
-  }
+	// On OS X it's common to re-create a window in the app when the
+	// dock icon is clicked and there are no other windows open.
+	if (BrowserWindow.getAllWindows().length === 0) {
+		createWindow()
+	}
 })
 
 app.whenReady().then(() => {

@@ -2,13 +2,13 @@ import { BrowserWindow } from "electron";
 import { EventType } from "./types";
 
 export function emitOnLoad(eventName: EventType, listener: (event: Electron.IpcRendererEvent, args: any[] | any) => void) {
-	onReceive("broadcast:renderer-ready", () => {
-		window.ipcRenderer.on(eventName, listener);
-	});
+	// onReceive("broadcast:renderer-ready", () => {
+	// 	window.ipcRenderer.on(eventName, listener);
+	// });
 }
 
-export function onReceive(events: EventType[] | EventType , listener: (event: Electron.IpcRendererEvent, args: any[] | any) => void) {
-	if(Array.isArray(events)) {
+export function onReceive(events: EventType[] | EventType, listener: (event: Electron.IpcRendererEvent, args: any[] | any) => void) {
+	if (Array.isArray(events)) {
 		events.forEach((eventName: EventType) => {
 			window.ipcRenderer.on(eventName, listener);
 		});
@@ -17,8 +17,8 @@ export function onReceive(events: EventType[] | EventType , listener: (event: El
 	}
 }
 
-export function handle(events: EventType[] | EventType , ipcMain: any, listener: (event: Electron.IpcRendererEvent, args: any[] | any) => void) {
-	if(Array.isArray(events)) {
+export function handle(events: EventType[] | EventType, ipcMain: any, listener: (event: Electron.IpcRendererEvent, args: any[] | any) => void) {
+	if (Array.isArray(events)) {
 		events.forEach((eventName: EventType) => {
 			ipcMain.handle(eventName, listener);
 		});
@@ -36,7 +36,7 @@ export function emit(eventName: EventType, listener: (event: Electron.IpcRendere
 }
 
 export async function invoke(eventName: EventType): Promise<any> {
-	return new Promise(async(resolve, reject) => {
+	return new Promise(async (resolve, reject) => {
 		window.ipcRenderer.invoke(eventName).then(resolve).catch(reject);
 	})
 }

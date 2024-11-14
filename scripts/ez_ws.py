@@ -57,6 +57,16 @@ def get_random_job_data():
 
 
 async def echo(websocket):
+	async def send_random_job_data():
+		while True:
+			await asyncio.sleep(random.randint(2, 5))  # Random delay between 5 to 15 seconds
+			job_data = json.dumps(get_random_job_data()).encode("utf-8")
+			msg = serialize(0x21, job_data, random.randint(1, 1000))  # Random packet ID
+			print("sending:", job_data)
+			await websocket.send(msg)
+
+	asyncio.create_task(send_random_job_data())
+
 	while True:
 		message = await websocket.recv()
 		
@@ -79,7 +89,6 @@ async def echo(websocket):
 			print("sending:", utf8_msg)
 			msg = serialize(0x21, utf8_msg, packet["id"])
 			await websocket.send(msg)  # Send back to the same websocket connection
-
 
 async def main():
     # Create and start the WebSocket server

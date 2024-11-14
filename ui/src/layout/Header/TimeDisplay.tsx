@@ -34,11 +34,11 @@ const Clock: FC<{ initialTime: string }> = ({ initialTime }) => {
 
 	useEffect(() => {
 		const timer = setTime();
-		onReceive("ask:time", updateWorldTime);
+		// onReceive("ask:time", updateWorldTime);
 
 		return () => {
 			clearInterval(timer);
-			window.ipcRenderer.removeListener("ask:time", updateWorldTime);
+			// window.ipcRenderer.removeListener("ask:time", updateWorldTime);
 		};
 	}, []);
 

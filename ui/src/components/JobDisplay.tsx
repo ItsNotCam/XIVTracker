@@ -71,14 +71,14 @@ const Images: { [key: string]: string } = {
 	monk:           MonkImg,
 	ninja:          NinjaImg,
 	paladin:        PaladinImg,
-	pictomancer:        PictomancerImg,
+	pictomancer:    PictomancerImg,
 	reaper:         ReaperImg,
 	"red-mage":     RedMageImg,
 	sage:           SageImg,
 	samurai:        SamuraiImg,
 	scholar:        ScholarImg,
 	summoner:       SummonerImg,
-	viper:        ViperImg,
+	viper:        	ViperImg,
 	warrior:        WarriorImg,
 	weaver:         WeaverImg,
 	"white-mage":   WhiteMageImg,
@@ -127,16 +127,16 @@ const JobDisplay: React.FC<JobDisplayProps> = ({ type = "main", initialJob }) =>
 	}
 
 	useEffect(() => {
-		getJobInfo();
+		// getJobInfo();
 
-		onReceive(`update:job-${type}`, handleJobChange);
-		onReceive("update:level", handleLevelChange);
-		onReceive("update:xp", handleXpChange);
+		// onReceive(`update:job-${type}`, handleJobChange);
+		// onReceive("update:level", handleLevelChange);
+		// onReceive("update:xp", handleXpChange);
 
 		return () => {
-			window.ipcRenderer.removeListener(`update:job-${type}`, handleJobChange)
-			window.ipcRenderer.removeListener("update:level", handleLevelChange);
-			window.ipcRenderer.removeListener("update:xp", handleXpChange);
+			// window.ipcRenderer.removeListener(`update:job-${type}`, handleJobChange)
+			// window.ipcRenderer.removeListener("update:level", handleLevelChange);
+			// window.ipcRenderer.removeListener("update:xp", handleXpChange);
 		};
 	}, []);
 

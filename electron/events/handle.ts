@@ -2,6 +2,7 @@ import { BrowserWindow } from "electron";
 import { handle } from "../../lib/eventHelpers";
 import EzWs from "../../lib/net/EzWs";
 import { EzFlag } from "../../lib/net/ez/EzTypes.d";
+import { Location } from "@lib/types";
 
 
 class JobState {
@@ -30,14 +31,29 @@ class JobState {
 export default function initHandlers(win: BrowserWindow, ipcMain: any, WebSocketClient: EzWs) {
 	handle("ask:job-main", ipcMain, async (): Promise<JobState | undefined> => {
 		const response = await WebSocketClient.sendAndAwaitResponse(EzFlag.JOB_MAIN);
-		if(response === undefined) {
+		if (response === undefined) {
 			return undefined;
 		}
-		
+
 		try {
 			return JobState.fromJson(response);
-		} catch(e) {
+		} catch (e) {
 			console.log("Error parsing job data:", (e as any).message);
+		}
+
+		return undefined;
+	});
+
+	handle("ask:location-all", ipcMain, async (): Promise<Location | undefined> => {
+		const response = await WebSocketClient.sendAndAwaitResponse(EzFlag.LOCATION_ALL);
+		if (response === undefined) {
+			return undefined;
+		}	
+
+		try {
+			return JSON.parse(response);
+		} catch(e) {
+			console.log("Error parsing location data:", (e as any).message);
 		}
 
 		return undefined;

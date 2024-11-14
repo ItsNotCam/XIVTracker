@@ -2,7 +2,6 @@ import EzSerDe from "./ez/EzSerDe";
 import { DeserializedPacket, EzFlag, uint6 } from "./ez/EzTypes";
 
 import WebSocket from 'ws';
-import { BrowserWindow } from 'electron';
 
 type WsHandler = {
 	resolve: (result: any) => void;
@@ -11,7 +10,7 @@ type WsHandler = {
 
 export default class EzWs {
 	private socket: WebSocket | null = null;
-	private requests: Map<uint6,WsHandler>;
+	private requests: Map<uint6, WsHandler>;
 	private handle: (packet: DeserializedPacket) => void;
 	private setConnected: (connected: boolean) => void;
 	private reconnectTimeout: NodeJS.Timeout | null = null;
@@ -26,77 +25,73 @@ export default class EzWs {
 	private initSocket = () => {
 		try {
 			this.socket = new WebSocket('ws://localhost:50085');
-		} catch(e) {
+		} catch (e) {
 			console.error("Error creating websocket connection:", e);
 			this.scheduleReconnect();
 			return;
 		}
 
-		if(!this.socket) {
+		if (!this.socket) {
 			throw new Error("Error creating websocket connection - failed to create WebSocket");
 		}
 
 		this.socket.on("message", this.handleMessage);
-		this.socket.on("open"		, this.handleOpen);
-		this.socket.on("error"	, this.handleError);
-		this.socket.on("close"	, this.handleClose);
+		this.socket.on("open", this.handleOpen);
+		this.socket.on("error", this.handleError);
+		this.socket.on("close", this.handleClose);
 	}
 
 	private scheduleReconnect() {
-		if(this.reconnectTimeout) {
+		if (this.reconnectTimeout) {
 			clearTimeout(this.reconnectTimeout);
 		}
 
-		this.reconnectTimeout = setTimeout(this.initSocket,1000);
-	}	
+		this.reconnectTimeout = setTimeout(this.initSocket, 1000);
+	}
 
 	private handleMessage = (data: Buffer) => {
-		console.log("received:", data);
-		let decodedMessage: DeserializedPacket;
+		let deserializedMsg: DeserializedPacket;
 		try {
-			decodedMessage = EzSerDe.deserialize(data);
-		} catch(e) {
+			deserializedMsg = EzSerDe.deserialize(data);
+		} catch (e) {
 			console.error("Error deserializing message:", e);
 			return;
 		}
-		console.log("decoded:", decodedMessage.id, decodedMessage.flag, decodedMessage.payload);
 
-		if(this.requests.has(decodedMessage.id)) {
-			console.log("resolving:", decodedMessage.id);
-			const handler: WsHandler = this.requests.get(decodedMessage.id)!;
-			handler.resolve(decodedMessage.payload.toString());
-			this.requests.delete(decodedMessage.id);
+		if (this.requests.has(deserializedMsg.id)) {
+			const handler: WsHandler = this.requests.get(deserializedMsg.id)!;
+			handler.resolve(deserializedMsg.payload.toString());
+			this.requests.delete(deserializedMsg.id);
 		} else {
-			this.handle(decodedMessage);
+			this.handle(deserializedMsg);
 		}
 	}
 
 	public send(routeFlag: EzFlag, data: string | Buffer, id?: number): void {
-		if(!this.isConnected()) {
+		if (!this.isConnected()) {
 			console.error("Error sending message - not connected");
 			return;
 		}
 
 		const payload = (typeof data === "string") ? Buffer.from(data) : data;
-		const encodedMessage = EzSerDe.serialize(routeFlag, payload, id);
-		this.socket!.send(encodedMessage);
+		const serializedMsg = EzSerDe.serialize(routeFlag, payload, id);
+		this.socket!.send(serializedMsg);
 	}
 
 	public async sendAndAwaitResponse(routeFlag: EzFlag, data?: string | Buffer): Promise<string | undefined> {
-		if(!this.isConnected()) {
+		if (!this.isConnected()) {
 			console.error("Error sending message - not connected");
 			return undefined;
 		}
 
 		let id: number = 0;
-		do { 
-			id = Math.floor(Math.random() * 0x3FF); 
-		} while(this.requests.has(id));
+		do {
+			id = Math.floor(Math.random() * 0x3FF);
+		} while (this.requests.has(id));
 
-		console.log("sending:", id, routeFlag, data);
 		return new Promise<string>((resolve, reject) => {
 			const timeout = setTimeout(() => {
-				if(!this.requests.has(id))
+				if (!this.requests.has(id))
 					return;
 
 				this.requests.delete(id);
@@ -107,7 +102,8 @@ export default class EzWs {
 				resolve: (result: any) => {
 					clearTimeout(timeout);
 					resolve(result);
-				}, reject: (reason?: any) => {
+				},
+				reject: (reason?: any) => {
 					clearTimeout(timeout);
 					reject(reason);
 				}
@@ -121,7 +117,7 @@ export default class EzWs {
 	public isConnected = (): boolean => this.socket !== null && this.socket.readyState === WebSocket.OPEN;
 
 	public close = (): void => {
-		if(this.isConnected()) {
+		if (this.isConnected()) {
 			this.socket!.close()
 		}
 		this.setConnected(false);
@@ -129,7 +125,7 @@ export default class EzWs {
 
 	private handleError = (ev: any) => {
 		console.error("WebSocket error:", ev.code);
-		if(!this.isConnected()) {
+		if (!this.isConnected()) {
 			this.scheduleReconnect();
 		}
 	}
