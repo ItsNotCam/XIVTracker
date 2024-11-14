@@ -1,32 +1,8 @@
 import { BrowserWindow } from "electron";
-import { handle } from "../../lib/eventHelpers";
-import EzWs from "../../lib/net/EzWs";
-import { EzFlag } from "../../lib/net/ez/EzTypes.d";
-import { Location } from "@lib/types";
-
-
-class JobState {
-	public level: number;
-	public job_name: string;
-	public current_xp: number;
-	public max_xp: number;
-
-	constructor(level: number, jobName: string, currentXP: number, maxXP: number) {
-		this.level = level;
-		this.job_name = jobName;
-		this.current_xp = currentXP;
-		this.max_xp = maxXP;
-	}
-
-	static fromJson(json: string): JobState {
-		const state = JSON.parse(json);
-		return new JobState(state.level, state.job_name, state.current_xp, state.max_xp);
-	}
-
-	static createInstance(): JobState {
-		return new JobState(0, "", 0, 0);
-	}
-}
+import { handle } from "../eventHelpers";
+import EzWs from "../net/EzWs";
+import { EzFlag } from "../net/ez/EzTypes.d";
+import { JobState, Location } from "../types.d";
 
 export default function initHandlers(win: BrowserWindow, ipcMain: any, WebSocketClient: EzWs) {
 	handle("ask:job-main", ipcMain, async (): Promise<JobState | undefined> => {

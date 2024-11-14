@@ -3,7 +3,7 @@ import Clock from '@ui/layout/Header/TimeDisplay';
 import LocationDisplay from '@ui/layout/Header/LocationDisplay';
 import NameDisplay from '@ui/layout/Header/NameDisplay';
 import JobDisplay from '@ui/components/JobDisplay';
-import { Job, Location } from '@lib/types';
+import { Job, Location } from '@electron-lib/types';
 
 const Header: React.FC = () => {
 	const initialLocation: Location = {

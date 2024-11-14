@@ -12,16 +12,16 @@
   "dependencies": {
     "bufferutil": "^4.0.8",
     "dotenv": "^16.4.5",
+    "glob": "^11.0.0",
     "net": "^1.0.2",
-    "pocket-sockets": "^4.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "socket.io-client": "^4.8.1",
-    "utf-8-validate": "^6.0.5",
-    "uuidv4": "^6.2.13",
+    "rimraf": "^6.0.1",
+    "uuid": "^11.0.3",
     "ws": "^8.18.0"
   },
   "devDependencies": {
+    "@eslint/object-schema": "^2.1.4",
     "@types/node": "^22.8.6",
     "@types/react": "^18.2.64",
     "@types/react-dom": "^18.2.21",
@@ -33,7 +33,6 @@
     "autoprefixer": "^10.4.20",
     "electron": "^30.0.1",
     "electron-builder": "^24.13.3",
-    "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "postcss": "^8.4.47",

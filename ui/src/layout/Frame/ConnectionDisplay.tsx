@@ -1,4 +1,4 @@
-import { invoke, onReceive } from '@lib/eventHelpers';
+import { invoke, onReceive } from '@electron-lib/eventHelpers';
 import { useState, useEffect, useRef } from 'react';
 
 const ConnectionStatus: React.FC = () => {
@@ -10,13 +10,13 @@ const ConnectionStatus: React.FC = () => {
 	}
 
 	useEffect(() => {
-		// onReceive("broadcast:tcp-connected", handleTcpConnected);
-		// invoke("ask:tcp-connected").then((connected: boolean) => {
-		// 	setIsConnected(connected);
-		// });
+		onReceive("broadcast:tcp-connected", handleTcpConnected);
+		invoke("ask:tcp-connected").then((connected: boolean) => {
+			setIsConnected(connected);
+		});
 
 		return () => {
-			// window.ipcRenderer.removeListener("broadcast:tcp-connected", handleTcpConnected);
+			window.ipcRenderer.removeListener("broadcast:tcp-connected", handleTcpConnected);
 		}
 	}, []);
 

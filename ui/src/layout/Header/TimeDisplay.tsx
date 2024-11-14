@@ -1,8 +1,7 @@
-import { useState, useEffect, FC } from 'react';
+import { useState, useEffect, FC, useRef } from 'react';
 
 import ClockImage from '@assets/images/etc-clock.png'
 import { IpcRendererEvent } from 'electron';
-import { onReceive } from '@lib/eventHelpers';
 
 const Clock: FC<{ initialTime: string }> = ({ initialTime }) => {
 	const [currentTime, setCurrentTime] = useState<string>("00:00 PM");
@@ -23,22 +22,19 @@ const Clock: FC<{ initialTime: string }> = ({ initialTime }) => {
 		const hoursStr = hours.toString().padStart(2, '0');
 
 		setCurrentTime(`${hoursStr}:${minutes} ${AMPM}`);
-		
-		const timer = setInterval(setTime, 1000);
-		return timer;
 	}
 
 	const updateWorldTime = (_event: IpcRendererEvent, newTime: string) => {
 		setCurrentWorldTime(newTime);
 	}
 
+	// dont need to set an interval because the entire component refreshes on change
 	useEffect(() => {
-		const timer = setTime();
-		// onReceive("ask:time", updateWorldTime);
-
+		const timer = setTimeout(setTime, 1000);
 		return () => {
-			clearInterval(timer);
-			// window.ipcRenderer.removeListener("ask:time", updateWorldTime);
+			if(timer) {
+				clearTimeout(timer);
+			}
 		};
 	}, []);
 

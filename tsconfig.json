@@ -21,9 +21,9 @@
     "noFallthroughCasesInSwitch": true,
 
 		/* Custom @app directory */
-		"baseUrl": "./",
+		"baseUrl": ".",
 		"paths": {
-			"@lib/*": ["lib/*"],
+			"@electron-lib/*": ["electron/lib/*"],
 			"@electron/*": ["electron/*"],
 
 			// ui
@@ -33,9 +33,9 @@
 			"@layout/*": ["ui/src/layout/*"],
 			"@styles/*": ["ui/src/styles/*"],
 		},
-		"rootDir": "./",
+		"rootDir": ".",
 		"outDir": "./dist"
   },
-  "include": ["electron", "ui/src", "lib"],
+  "include": ["electron", "ui/src", "electron/lib"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

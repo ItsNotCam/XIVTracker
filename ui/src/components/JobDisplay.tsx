@@ -3,7 +3,7 @@ import * as __WebpackModuleApi from 'webpack-module-api';
 
 import React, { useEffect } from 'react';
 import XPBar from '@ui/components/XPBar';
-import { Job } from '@lib/types';
+import { Job } from '@electron-lib/types';
 
 /* Image imports */
 import AlchemistImg from "@assets/images/jobs/job-alchemist.png";
@@ -42,8 +42,7 @@ import ViperImg from '@assets/images/jobs/job-viper.png';
 import WarriorImg from '@assets/images/jobs/job-warrior.png';
 import WeaverImg from "@assets/images/jobs/job-weaver.png";
 import WhiteMageImg from '@assets/images/jobs/job-white-mage.png';
-import { invoke, onReceive } from '@lib/eventHelpers';
-
+import { invoke, onReceive } from '@electron/lib/eventHelpers';
 
 const Images: { [key: string]: string } = {
 	alchemist:      AlchemistImg,
@@ -127,16 +126,16 @@ const JobDisplay: React.FC<JobDisplayProps> = ({ type = "main", initialJob }) =>
 	}
 
 	useEffect(() => {
-		// getJobInfo();
+		getJobInfo();
 
-		// onReceive(`update:job-${type}`, handleJobChange);
-		// onReceive("update:level", handleLevelChange);
-		// onReceive("update:xp", handleXpChange);
+		onReceive(`update:job-${type}`, handleJobChange);
+		onReceive("update:level", handleLevelChange);
+		onReceive("update:xp", handleXpChange);
 
 		return () => {
-			// window.ipcRenderer.removeListener(`update:job-${type}`, handleJobChange)
-			// window.ipcRenderer.removeListener("update:level", handleLevelChange);
-			// window.ipcRenderer.removeListener("update:xp", handleXpChange);
+			window.ipcRenderer.removeListener(`update:job-${type}`, handleJobChange)
+			window.ipcRenderer.removeListener("update:level", handleLevelChange);
+			window.ipcRenderer.removeListener("update:xp", handleXpChange);
 		};
 	}, []);
 

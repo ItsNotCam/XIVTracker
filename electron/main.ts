@@ -3,12 +3,12 @@ import { app, BrowserWindow, ipcMain } from 'electron'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
-import initHandlers from './events/handle';
+import initHandlers from './lib/events/handle';
 // import EzTcpClient from '../lib/net/EzTcp.ts.old';
 // import EzUdpServer from '../lib/net/EzUdp';
-import ezRoute from '../lib/net/EzRouter';
-import { DeserializedPacket } from '../lib/net/ez/EzTypes';
-import EzWs from '../lib/net/EzWs';
+import ezRoute from './lib/net/EzRouter';
+import { DeserializedPacket } from './lib/net/ez/EzTypes';
+import EzWs from './lib/net/EzWs';
 
 // const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -56,8 +56,8 @@ function createWindow() {
 		win.loadFile(path.join(RENDERER_DIST, 'index.html'))
 	}
 
-	// initNetworking(win!);
-	// initHandlers(win, ipcMain, WebSocketClient!);
+	initNetworking(win!);
+	initHandlers(win, ipcMain, WebSocketClient!);
 
 	ipcMain.on("renderer-ready", (event) => {
 		event.sender.send("initial-data", "ok");
