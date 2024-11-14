@@ -4,6 +4,7 @@ import random
 import threading
 import json
 import re
+import math
 from ez_serde_v2 import deserialize, serialize
 
 def get_random_job_data():
@@ -111,7 +112,8 @@ def recv_data(client_socket, uuid, message):
 	# out_data.extend(message.encode('utf-8'))
 
 	print(out_data.decode('utf-8'))
-	client_socket.send(out_data)
+	client_socket.send_all(out_data)
+	client_socket.flush()
 
 def setup_tcp_server():
 	server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -121,6 +123,7 @@ def setup_tcp_server():
 
 	while True:
 		client_socket, addr = server_socket.accept()
+		client_socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 		print(f"Connection from {addr}")
 		# client_socket.send(b"Hello from server!")
 		
@@ -145,13 +148,26 @@ def setup_tcp_server():
 					utf8_msg = payload.encode("utf-8")
 					print("sending:", utf8_msg)
 					msg = serialize(0x02, utf8_msg, packet["id"])
-					client_socket.send(msg)
+
+					client_socket.sendall(msg)
+
+					# end_0 = math.ceil(len(msg) / 2 + 1) // 2
+					# client_socket.sendall(msg[0:end_0])
+					# print("sent 1")
+					# client_socket.sendall(msg[end_0:])
+					# print("sent 2")
 				elif flag == 0x21:
 					utf8_msg = json.dumps(get_random_job_data()).encode("utf-8")
 					print("sending:", utf8_msg)
 					msg = serialize(0x21, utf8_msg, packet["id"])
-					client_socket.send(msg)
 
+					client_socket.sendall(msg)
+
+					# end_0 = math.ceil(len(msg) / 2 + 1) // 2
+					# client_socket.sendall(msg[0:end_0])
+					# print("sent 1")
+					# client_socket.sendall(msg[end_0:])
+					# print("sent 2")
 
 				# handle_packet(client_socket, packet)
 			except Exception as e:

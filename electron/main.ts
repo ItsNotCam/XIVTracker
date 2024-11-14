@@ -10,6 +10,7 @@ import EzUdpServer from '../lib/net/EzUdp';
 import ezRoute from '../lib/net/EzRouter';
 import { EzFlag } from '../lib/net/ez/EzTypes.d';
 import { sendToClient } from '../lib/eventHelpers';
+import { setInterval } from 'node:timers';
 
 // const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -35,6 +36,7 @@ process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 
 let win: BrowserWindow | null;
 let UdpServer: EzUdpServer | null;
 let TcpClient: EzTcpClient | null;
+
 
 function createWindow() {
   win = new BrowserWindow({

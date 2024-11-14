@@ -93,10 +93,10 @@ const JobDisplay: React.FC<JobDisplayProps> = ({ type = "main", initialJob }) =>
 	const [job, setJob] = React.useState<Job>(initialJob);
 
 	const getJobInfo = async() => {
-		const result: Job = await invoke(`ask:job-${type}`);
+		const result: Job = await invoke(`ask:job-${type}`).catch(e => console.log(e));
 		if(result === undefined) {
 			setJob({ level: -1, job_name: "???", current_xp: -1, max_xp: -1 });
-			setTimeout(getJobInfo, 200);
+			// setTimeout(getJobInfo, 200);
 		} else {
 			setJob(result);
 		}

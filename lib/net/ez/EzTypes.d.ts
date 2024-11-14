@@ -19,7 +19,7 @@ export interface DeserializedPacket {
 export enum EzFlag {
 	NULL = 0x01,
 	HEARTBEAT = 0x02,
-	EZ = 0x1E,
+	EZ = 0x1D,
 	OK = 0x03,
 	MALFORMED = 0x04,
 	NOT_IMPLEMENTED = 0x05,
@@ -44,4 +44,45 @@ export enum EzFlag {
 	LOCATION_LAST = 0x1F,
 	JOB_ALL = 0x20,
 	JOB_MAIN = 0x21
+}
+
+
+/**
+ * Represents an error that occurs when an EzPacketStream overflows.
+ * 
+ * @extends {Error}
+ */
+export class EzPacketStreamOverflowError extends Error {
+	/**
+	 * The amount of data that overflowed.
+	 * @private
+	 */
+	private readonly overflowData: number;
+	private readonly byteIndxex: number;
+
+	/**
+	 * Creates an instance of EzPacketStreamOverflowError.
+	 * 
+	 * @param {string} message - The error message.
+	 * @param {number} overflow - The amount of data that overflowed.
+	 */
+	constructor(message: string, overflow: number, byteIndex: number) {
+		super(message);
+		this.overflowData = overflow;
+		this.byteIndxex = byteIndex;
+		this.name = "EzPacketStreamOverflowError";
+	}
+
+	/**
+	 * Gets the amount of data that overflowed.
+	 * 
+	 * @returns {number} The overflowed data.
+	 */
+	public getOverflow(): number {
+		return this.overflowData;
+	}
+
+	public getByteIndex(): number {
+		return this.byteIndxex;
+	}
 }

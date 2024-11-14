@@ -1,5 +1,5 @@
 EZ_FLAGS = {
-	'EZ': 0x1E,  # Example value, replace with actual
+	'EZ': 0x1D,  # Example value, replace with actual
 	'LOCATION': {'ALL': {'flag': 0x17}},  # Example value, replace with actual
 	'JOB': {'MAIN': {'flag': 0x21}}  # Example value, replace with actual
 }

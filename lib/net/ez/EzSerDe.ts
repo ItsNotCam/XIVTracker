@@ -35,12 +35,12 @@ export const deserialize = (msg: Buffer): DeserializedPacket => {
 	payload = msg.subarray(4,packetLength-2);
 
 	let decodedPayload = EzDecode(payload);
-	console.log("received:", id, flag, decodedPayload)
+	console.log("received:", id, flag, `'${decodedPayload}'`)
 
 	// bandaid for now - need to handle partial packets
-	if(decodedPayload[decodedPayload.length-1] !== "}") {
-		decodedPayload = decodedPayload.substring(0,decodedPayload.length) + "}";
-	}
+	// if(decodedPayload[decodedPayload.length-1] !== "}") {
+	// 	decodedPayload = decodedPayload.substring(0,decodedPayload.length) + "}";
+	// }
 
 	return {
 		id: id,
