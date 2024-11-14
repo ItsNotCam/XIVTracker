@@ -3,13 +3,12 @@ import { app, BrowserWindow, ipcMain } from 'electron'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
-import { deserialize } from '../lib/net/ez/EzSerDe';
 import initHandlers from './events/handle';
-import EzTcpClient from '../lib/net/EzTcp';
-import EzUdpServer from '../lib/net/EzUdp';
+// import EzTcpClient from '../lib/net/EzTcp.ts.old';
+// import EzUdpServer from '../lib/net/EzUdp';
 import ezRoute from '../lib/net/EzRouter';
-import { EzFlag } from '../lib/net/ez/EzTypes';
-import { sendToClient } from '../lib/eventHelpers';
+import { DeserializedPacket } from '../lib/net/ez/EzTypes';
+import EzWs from '../lib/net/EzWs';
 
 // const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -33,8 +32,9 @@ export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist')
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 'public') : RENDERER_DIST
 
 let win: BrowserWindow | null;
-let UdpServer: EzUdpServer | null;
-let TcpClient: EzTcpClient | null;
+// let UdpServer: EzUdpServer | null;
+// let TcpClient: EzTcpClient | null;
+let WebSocketClient: EzWs | null;
 
 function createWindow() {
   win = new BrowserWindow({
@@ -57,7 +57,7 @@ function createWindow() {
   }
 
 	initNetworking(win!);
-	initHandlers(win, ipcMain, TcpClient!);
+	initHandlers(win, ipcMain, WebSocketClient!);
 
 	ipcMain.on("renderer-ready", (event) => {
 		event.sender.send("initial-data", "ok");
@@ -71,26 +71,38 @@ function createWindow() {
 }
 
 const initNetworking = (win: BrowserWindow) => {
-	UdpServer = new EzUdpServer((msg: Buffer) => {
-		const data: any = deserialize(msg);
-		ezRoute(win, data);
-	});
+	// UdpServer = new EzUdpServer((msg: Buffer) => {
+	// 	const data: any = deserialize(msg);
+	// 	ezRoute(win, data);
+	// });
 
-	TcpClient = new EzTcpClient(
-		(msg: Buffer) => {
-			const data: any = deserialize(msg);
-			ezRoute(win, data);
-		}, 
-		(connected: boolean) => {
-			console.log('TCP connected:', connected);
-			sendToClient('broadcast:tcp-connected', win, connected);
-		}
-	);
+	console.log("creating websocket client");
+	try {
+		WebSocketClient = new EzWs((data: DeserializedPacket) => {
+			ezRoute(win, data as DeserializedPacket);
+		}, (connected: boolean) => {
+			win.webContents.send("broadcast:tcp-connected", connected);
+		});
+	} catch (e) {
+		console.error("error creating websocket client:\n", e);
+	}
+	
 
-	console.log("sending response");
-	TcpClient.sendAndAwaitResponse(EzFlag.LOCATION_ALL).then((response: Buffer) => {
-		console.log(response.toString());
-	});
+	// TcpClient = new EzTcpClient(
+	// 	(msg: Buffer) => {
+	// 		const data: any = deserialize(msg);
+	// 		ezRoute(win, data);
+	// 	}, 
+	// 	(connected: boolean) => {
+	// 		console.log('TCP connected:', connected);
+	// 		sendToClient('broadcast:tcp-connected', win, connected);
+	// 	}
+	// );
+
+	// console.log("sending response");
+	// TcpClient.sendAndAwaitResponse(EzFlag.LOCATION_ALL).then((response: Buffer) => {
+	// 	console.log(response.toString());
+	// });
 }
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -98,8 +110,8 @@ const initNetworking = (win: BrowserWindow) => {
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
-		UdpServer?.close();
-		TcpClient?.close();
+		// UdpServer?.close();
+		// TcpClient?.close();
 
     app.quit()
     win = null

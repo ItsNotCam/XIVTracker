@@ -94,6 +94,7 @@ const JobDisplay: React.FC<JobDisplayProps> = ({ type = "main", initialJob }) =>
 
 	const getJobInfo = async() => {
 		const result: Job = await invoke(`ask:job-${type}`);
+		console.log("COMPOENT RESULT", result);
 		if(result === undefined) {
 			setJob({ level: -1, job_name: "???", current_xp: -1, max_xp: -1 });
 			setTimeout(getJobInfo, 200);

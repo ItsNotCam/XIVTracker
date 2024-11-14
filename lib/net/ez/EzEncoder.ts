@@ -55,7 +55,7 @@ class EzDecoder {
 	}
 }
 
-export const EzDecode = (buffer: Buffer): string => {
+const decode = (buffer: Buffer): string => {
 	const bitUnpacker = new EzDecoder(6, buffer);
 	let decodedString = "";
 
@@ -73,7 +73,7 @@ export const EzDecode = (buffer: Buffer): string => {
 };
 
 
-export const EzEncode = (data: string): Buffer => {
+const encode = (data: string): Buffer => {
 	const length = data.length;
 	const bufferSize = Math.ceil((length * 6) / 8);
 	const bitPacker = new EzEncoder(6, bufferSize);
@@ -85,3 +85,7 @@ export const EzEncode = (data: string): Buffer => {
 
 	return bitPacker.finalize();
 };
+
+export default {
+	encode, decode
+}

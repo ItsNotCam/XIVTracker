@@ -1,9 +1,10 @@
-import { EzDecode, EzEncode } from "./EzEncoder";
+import EzEncoder from "./EzEncoder";
+
 import { 
 	DeserializedPacket, 
 	EzFlag, 
 	uint10, 
-} from "./EzTypes";
+} from "./EzTypes.d";
 
 // Visual: https://lucid.app/lucidchart/b06bf1e5-8ae7-4e1b-8f32-f256003140d0/edit?invitationId=inv_2a212140-1bee-41d0-913d-4ef4706ba6b1&page=m2MpGyAuT.V7#
 export const deserialize = (msg: Buffer): DeserializedPacket => {
@@ -19,6 +20,7 @@ export const deserialize = (msg: Buffer): DeserializedPacket => {
 
 		// if the first 6 bits are not equal to our fixed length packet header, error
 		if(((short >> 10) & 0x3F) !== EzFlag.EZ) {
+			console.log(short >> 10 & 0x3F)
 			throw new Error("Malformed packet");
 		}
 
@@ -34,7 +36,7 @@ export const deserialize = (msg: Buffer): DeserializedPacket => {
 
 	payload = msg.subarray(4,packetLength-2);
 
-	let decodedPayload = EzDecode(payload);
+	let decodedPayload = EzEncoder.decode(payload);
 	console.log("received:", id, flag, decodedPayload)
 
 	// bandaid for now - need to handle partial packets
@@ -71,7 +73,7 @@ export const serialize = (routeFlag: EzFlag, data: Buffer, id: uint10 = 0): Buff
 		controlHeader[3] = short & 0xFF;
 	}
 
-	const encodedPayload = EzEncode(asUtf8(data));
+	const encodedPayload = EzEncoder.encode(asUtf8(data));
 	return Buffer.from([...controlHeader, ...encodedPayload]);
 };
 

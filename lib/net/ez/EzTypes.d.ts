@@ -1,10 +1,10 @@
 // Positional data 0x01 -> 0x0F
 
-export type uint36 = number;
 export type uint16 = number;
 export type uint10 = number;
 export type uint8 = number;
 export type uint6 = number;
+
 export interface PacketResponse {
 	status: uint8;
 	data: any | null;
