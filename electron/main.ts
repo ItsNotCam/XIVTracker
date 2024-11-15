@@ -3,7 +3,7 @@ import { app, BrowserWindow, ipcMain } from 'electron'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
-import initHandlers from './libs/events/handle';
+import initHandlers, { initWindowControls } from './libs/events/handle';
 // import EzTcpClient from '../lib/net/EzTcp.ts.old';
 // import EzUdpServer from '../lib/net/EzUdp';
 import ezRoute from './libs/net/EzRouter';
@@ -56,9 +56,10 @@ function createWindow() {
 		win.loadFile(path.join(RENDERER_DIST, 'index.html'))
 	}
 
-	lParser = new TeamCraftParser().initSync();
+	console.log("creating window");
+	initWindowControls(ipcMain!, win);
 	initNetworking(win);
-	initHandlers(win!, ipcMain, WebSocketClient!, lParser);
+	initHandlers(win!, ipcMain, WebSocketClient!);
 
 	ipcMain.on("renderer-ready", (event) => {
 		event.sender.send("initial-data", "ok");

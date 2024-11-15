@@ -25,11 +25,17 @@ export default class TeamCraftParser {
 	}
 
 	public async init(): Promise<TeamCraftParser> {
-		this.files! = new Map<string, any>();
+		this.files = new Map<string, any>();
+
+		console.log("Loading data...");
 
     for (const [,dt] of this.dataTypes.entries()) {
-			const data = await this.loadData(dt);
-			this.files!.set(dt, data);
+			try { 
+				const data = await this.loadData(dt);
+				this.files!.set(dt, data);
+			} catch(e) { 
+				console.error("Failed to get data for:", dt, e);
+			};
 		}
 
 		return this;
@@ -43,7 +49,7 @@ export default class TeamCraftParser {
 				const data = this.loadDataSync(this.dataTypes[dt]); 
 				this.files!.set(dt, data);
 			} catch(e) { 
-				console.log("Failed to get data for:", this.dataTypes[dt], e);
+				console.error("Failed to get data for:", this.dataTypes[dt], e);
 			}
 		}
 
@@ -80,7 +86,9 @@ export default class TeamCraftParser {
 			throw(new Error("Data already loaded: " + dataType));
 		}
 
-		const filepath = path.resolve(__dirname, `../../data/${dataType}.json`);
+		const processPath = process.cwd();
+		const filepath = path.resolve(`${processPath}/electron/data/${dataType}.json`);
+		console.log(filepath)
 		const fileExists = await fs.stat(filepath).catch(() => false);
 		if(!fileExists) {
 			throw new Error("File does not exist: " + filepath);
@@ -107,8 +115,11 @@ export default class TeamCraftParser {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
 		}
+		const items = this.files!.get("item-id-by-name");
+		if(items === undefined) {
+			throw(new Error("Items not loaded, " + this.files!.size));
+		}
 
-		const items = this.files?.get("item-id-by-name");
 		if(items.hasOwnProperty(itemName)) {
 			return items[itemName];
 		}

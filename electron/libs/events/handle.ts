@@ -1,14 +1,49 @@
-import { BrowserWindow, IpcRendererEvent } from "electron";
+import { BrowserWindow } from "electron";
 import { handle } from "./eventHelpers";
 import EzWs from "../net/EzWs";
 import { EzFlag } from "../net/ez/EzTypes.d";
 import { JobState, Location } from "../types.d";
-import TeamCraftParser from "@electron-lib/lumina/TeamCraftParser";
-import { TCRecipe } from "@electron-lib/lumina/TeamCraftTypes";
+import TeamCraftParser from "../lumina/TeamCraftParser";
+import { TCRecipe } from "../lumina/TeamCraftTypes.d";
 
-export default function initHandlers(win: BrowserWindow, ipcMain: any, WebSocketClient: EzWs, Parser: TeamCraftParser) {
-	handle("ask:recipe", ipcMain, (event: IpcRendererEvent, itemName: string): TCRecipe | null => {
-		return Parser.getRecipeByItemIdentifier(itemName);
+export function initWindowControls(ipcMain: any, win: BrowserWindow) {
+	// Ensure the window object is valid
+	if (!win) {
+		console.error("BrowserWindow instance is not valid.");
+		return;
+	}
+
+	ipcMain.on('exit', () => {
+		console.log("exit event received");
+		if (win) {
+			win.close();
+		} else {
+			console.error("BrowserWindow instance is not valid.");
+		}
+	});
+
+	ipcMain.on('minimize', () => {
+		console.log("minimize event received");
+		if (win) {
+			win.isMinimized() ? win.restore() : win.minimize();
+		} else {
+			console.error("BrowserWindow instance is not valid.");
+		}
+	});
+
+	ipcMain.on('maximize', () => {
+		console.log("maximize event received");
+		if (win) {
+			win.isMaximized() ? win.unmaximize() : win.maximize();
+		} else {
+			console.error("BrowserWindow instance is not valid.");
+		}
+	});
+}
+
+export default async function initHandlers(win: BrowserWindow, ipcMain: any, WebSocketClient: EzWs) {
+	handle("ask:tcp-connected", ipcMain, () => {
+		return WebSocketClient?.isConnected() || false;
 	});
 
 	handle("ask:job-main", ipcMain, async (): Promise<JobState | undefined> => {
@@ -30,30 +65,19 @@ export default function initHandlers(win: BrowserWindow, ipcMain: any, WebSocket
 		const response = await WebSocketClient.sendAndAwaitResponse(EzFlag.LOCATION_ALL);
 		if (response === undefined) {
 			return undefined;
-		}	
+		}
 
 		try {
 			return JSON.parse(response);
-		} catch(e) {
+		} catch (e) {
 			console.log("Error parsing location data:", (e as any).message);
 		}
 
 		return undefined;
 	});
 
-	handle("ask:tcp-connected", ipcMain, () => {
-		return WebSocketClient?.isConnected() || false;
-	});
-
-	ipcMain.on('exit', () => {
-		win.close();
-	});
-
-	ipcMain.on('minimize', () => {
-		win.isMinimized() ? win.restore() : win.minimize()
-	});
-
-	ipcMain.on('maximize', () => {
-		win.isMaximized() ? win.unmaximize() : win.maximize();
+	const Parser = await new TeamCraftParser().init();
+	handle("ask:recipe", ipcMain, async (event: any, itemName: string): Promise<TCRecipe | null> => {
+		return Parser.getRecipeByItemIdentifier(itemName);
 	});
 }

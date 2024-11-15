@@ -3,14 +3,17 @@ import GilDisplay from "@ui/layout/Frame/GilDisplay";
 
 const Frame: React.FC = () => {
 	const close = () => {
+		console.log("exit");
 		window.ipcRenderer.send("exit");
 	}
 
 	const minimize = () => {
+		console.log("minimize");
 		window.ipcRenderer.send("minimize");
 	}
 
 	const maximize = () => {
+		console.log("maximize");
 		window.ipcRenderer.send("maximize");
 	}
 
