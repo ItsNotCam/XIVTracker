@@ -1,7 +1,7 @@
 import json
 import sys
 
-allowed_types = ["items", "recipes", "icons"]
+allowed_types = ["items", "recipes", "icons", "gathering-items", "map-entries", "monsters", "nodes"]
 first = 0
 last = 45700
 
@@ -36,7 +36,63 @@ if data_type == allowed_types[1]:
 		for entry in jsonData:
 			result = entry["result"]
 			outData[result] = entry
-	
+
+if data_type == allowed_types[2]:
+	exit("Not implemented yet")
+
+if data_type == allowed_types[3]:
+	outFilename = "gathering-items-by-id.json"
+	with open(f"{data_type}.json","r") as file:
+		jsonData = json.load(file)
+		for i in range(1,10908):
+			if str(i) not in jsonData:
+				continue
+
+			result = jsonData[str(i)]
+			if result is None:
+				continue
+
+			outData[result["itemId"]] = result
+
+if data_type == allowed_types[4]:
+	outFilename = "map-entries-by-id.json"
+	with open(f"{data_type}.json","r") as file:
+		jsonData = json.load(file)
+		for entry in jsonData:
+			outData[entry["id"]] = entry
+
+if data_type == allowed_types[5]:
+	outFilename = "monsters-by-id.json"
+	with open(f"{data_type}.json","r") as file:
+		jsonData = json.load(file)
+		for key, value in jsonData.items():
+				new_item = value
+				new_item["rowid"] = key
+
+				outData[value["baseid"]] = new_item
+
+if data_type == allowed_types[6]:
+	def remove_item_list(data):
+		if "items" in data:
+			del data["items"]
+		return data
+
+	outFilename = "nodes-by-item-id.json"
+	with open(f"{data_type}.json","r") as file:
+		jsonData = json.load(file)
+		for key, value in jsonData.items():
+			current_node = value
+			items = value["items"]
+			for item in items:
+				item_str = str(item)
+				if item_str not in outData:
+					outData[item_str] = [remove_item_list(current_node)]
+				else:
+					outData[item_str].append(remove_item_list(current_node))
+
+		# Sort by integer representation of id
+		outData = dict(sorted(outData.items(), key=lambda item: int(item[0])))
+
 
 with open(outFilename,"w") as file:
 	file.write(
