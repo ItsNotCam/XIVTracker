@@ -13,7 +13,7 @@ export default function ezRoute(win: BrowserWindow, msg: DeserializedPacket) {
 				const job = JSON.parse(msg.payload.toString());
 				sendToClient("update:job-main", win, job);
 			} catch (e) {
-				console.log("Error parsing job data:", (e as any).message);
+				sendToClient("update:job-main", win, null);
 			}
 			break;
 	}

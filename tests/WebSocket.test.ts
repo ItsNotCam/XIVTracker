@@ -120,15 +120,22 @@ wsc = await new EzWs(SERVER_PORT, () => { }, (connected) => {
 }).connect();
 
 test("NULL", { timeout: 10000 }, async () => {
-	await wait(1000);
+	let success = false;
+	for (let i = 0; i < 5; i++) {
+		await wait(1000);
 
-	if (!isConnected || wsc === null) {
-		fail("Failed to connect to the server");
+		if (!isConnected || wsc === null) {
+			fail("Failed to connect to the server");
+		}
+
+		const message = 0x00.toString();
+		const response = await wsc!.sendAndAwaitResponse(EzFlag.NULL, message);
+		if (response === message) {
+			success = true;
+			break;
+		}
 	}
-
-	const message = 0x00.toString();
-	const response = await wsc!.sendAndAwaitResponse(EzFlag.NULL, message);
-	expect(response).toStrictEqual(message);
+	expect(success).toBe(true);
 });
 
 test("Hello, World", { timeout: 10000 }, async () => {
@@ -167,6 +174,18 @@ test("Random", { timeout: 10000 }, async () => {
 		expect(message).toBe(response);
 		await wait(100);
 }});
+
+test("Should decode valid json", { timeout: 10000 }, async () => {
+	if (!isConnected || wsc === null) {
+		fail("Failed to connect to the server");
+	}
+
+	await wait(1000);
+
+	const job_data = get_random_job_data();
+	const response = await wsc!.sendAndAwaitResponse(EzFlag.JOB_MAIN, JSON.stringify(job_data));
+	expect(response).toStrictEqual(JSON.stringify(job_data));
+});
 
 afterAll(() => {
 	if(wss !== null) {

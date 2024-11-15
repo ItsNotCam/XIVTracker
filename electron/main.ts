@@ -56,11 +56,9 @@ function createWindow() {
 		win.loadFile(path.join(RENDERER_DIST, 'index.html'))
 	}
 
+	lParser = new TeamCraftParser().initSync();
 	initNetworking(win);
-	async () => {
-		lParser = await new TeamCraftParser().init()
-		initHandlers(win!, ipcMain, WebSocketClient!, lParser);
-	}
+	initHandlers(win!, ipcMain, WebSocketClient!, lParser);
 
 	ipcMain.on("renderer-ready", (event) => {
 		event.sender.send("initial-data", "ok");

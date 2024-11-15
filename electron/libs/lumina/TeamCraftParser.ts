@@ -6,38 +6,94 @@ import { TCDropSource, TCGathering, TCGatheringType, TCGatheringNode, TCRecipe }
 export default class TeamCraftParser {
 	private files: Map<string, any> | null = null;
 	
+	private readonly dataTypes: string[] = [
+		"items", "item-id-by-name", "recipe-by-id", "item-level", "item-icons", "job-name",
+		"gathering-items-by-id", "gathering-search-index", "gathering-types", "map-entries-by-id",
+		"drop-sources", "mobs", "monsters-by-id", "places", "nodes-by-item-id"
+	]
+
 	constructor() {	}
+
+	public isSetup = (): boolean => this.files !== null;
+
+	public close() {
+		if(!this.isSetup()) {
+			throw(new Error("Parser not initialized"));
+		}
+		this.files!.clear();
+		this.files = null;
+	}
 
 	public async init(): Promise<TeamCraftParser> {
 		this.files! = new Map<string, any>();
 
-		const dataTypes: string[] = [
-			"items", "item-id-by-name", "recipe-by-id", "item-level", "item-icons", "job-name",
-			"gathering-items-by-id", "gathering-search-index", "gathering-types", "map-entries-by-id",
-			"drop-sources", "mobs", "monsters-by-id", "places", "nodes-by-item-id"
-		]
-
-    for (const [,dt] of dataTypes.entries()) {
+    for (const [,dt] of this.dataTypes.entries()) {
 			const data = await this.loadData(dt);
 			this.files!.set(dt, data);
 		}
 
 		return this;
 	}
+	
+	public initSync(): TeamCraftParser {
+		this.files! = new Map<string, any>();
 
-	private validate() {
-		if(this.files === null) {
-			throw("Parser not initialized");
+    for (const dt in this.dataTypes) {
+			try { 
+				const data = this.loadDataSync(this.dataTypes[dt]); 
+				this.files!.set(dt, data);
+			} catch(e) { 
+				console.log("Failed to get data for:", this.dataTypes[dt], e);
+			}
 		}
+
+		return this;
 	}
 
-	public close() {
-		this.validate();
-		this.files!.clear();
+	public loadDataSync(dataType: string): any {
+		if(!this.isSetup()) {
+			throw(new Error("Parser not initialized"));
+		}
+
+		if(this.files!.has(dataType)) {
+			throw(new Error("Data already loaded: " + dataType));
+		}
+
+		const processPath = process.cwd();
+		// const filepath = path.resolve(path.dirname(), `../../data/${dataType}.json`);
+		const filepath = path.resolve(`${processPath}/electron/data/${dataType}.json`);
+		if(!fsSync.existsSync(filepath)) {
+			throw(new Error("File does not exist: " + filepath));
+		}
+
+		const data: any = fsSync.readFileSync(filepath);
+		return JSON.parse(data.toString());
+	}
+	
+
+	public async loadData(dataType: string): Promise<any> {
+		if(!this.isSetup()) {
+			throw(new Error("Parser not initialized"));
+		}
+
+		if(this.files!.has(dataType)) {
+			throw(new Error("Data already loaded: " + dataType));
+		}
+
+		const filepath = path.resolve(__dirname, `../../data/${dataType}.json`);
+		const fileExists = await fs.stat(filepath).catch(() => false);
+		if(!fileExists) {
+			throw new Error("File does not exist: " + filepath);
+		}
+
+		const data: any = await fs.readFile(filepath);
+		return JSON.parse(data.toString());
 	}
 
 	public getItemNameFromId(itemId: number): string | null {
-		this.validate();
+		if(!this.isSetup()) {
+			throw(new Error("Parser not initialized"));
+		}
 
 		const items = this.files!.get("items");
 		if(items.hasOwnProperty(itemId)) {
@@ -48,7 +104,9 @@ export default class TeamCraftParser {
 	}
 
 	public getIdFromItemName(itemName: string): number | null {
-		this.validate();
+		if(!this.isSetup()) {
+			throw(new Error("Parser not initialized"));
+		}
 
 		const items = this.files?.get("item-id-by-name");
 		if(items.hasOwnProperty(itemName)) {
@@ -58,8 +116,10 @@ export default class TeamCraftParser {
 		return null;
 	}
 
-	private getRootRecipe(recipeId: number): any | null{
-		this.validate();
+	public getRootRecipe(recipeId: number): any | null{
+		if(!this.isSetup()) {
+			throw(new Error("Parser not initialized"));
+		}
 
 		const items = this.files!.get("recipe-by-id");
 		if(items.hasOwnProperty(recipeId)) {
@@ -69,25 +129,10 @@ export default class TeamCraftParser {
 		return null;
 	}
 
-	public async loadData(dataType: string): Promise<any> {
-		this.validate();
-
-		if(this.files!.has(dataType)) {
-			throw(new Error("Data already loaded: " + dataType));
-		}
-
-		const filepath = path.resolve(__dirname, `../../data/${dataType}.json`);
-		const fileExists = await fs.stat(filepath).catch(() => false);
-		if(!fileExists) {
-			return Promise.reject(new Error("File does not exist: " + filepath));
-		}
-
-		const data: any = await fs.readFile(filepath);
-		return JSON.parse(data.toString());
-	}
-
 	public getRecipeByItemIdentifier(itemIdentifier: string | number): TCRecipe | null {
-		this.validate();
+		if(!this.isSetup()) {
+			throw(new Error("Parser not initialized"));
+		}
 
 		let finalRecipe: TCRecipe | null = null;
 		finalRecipe = this.getRecipeRecursive(itemIdentifier);
@@ -95,14 +140,18 @@ export default class TeamCraftParser {
 	}
 
 	public isCraftable(itemId: number): boolean {
-		this.validate();
+		if(!this.isSetup()) {
+			throw(new Error("Parser not initialized"));
+		}
 
 		const recipe = this.getRootRecipe(itemId);
 		return recipe !== null;
 	}
 
 	public getIconPathOfItemId(itemId: number): string | null {
-		this.validate();
+		if(!this.isSetup()) {
+			throw(new Error("Parser not initialized"));
+		}
 		
 		const items = this.files!.get("item-icons");
 		if(items.hasOwnProperty(itemId)) {
@@ -113,7 +162,9 @@ export default class TeamCraftParser {
 	}
 
 	public getJobNameById(jobId: number): string | null {
-		this.validate();
+		if(!this.isSetup()) {
+			throw(new Error("Parser not initialized"));
+		}
 
 		const jobs = this.files!.get("job-name");
 		if(jobs.hasOwnProperty(jobId.toString())) {
@@ -124,7 +175,9 @@ export default class TeamCraftParser {
 	}
 
 	public getGatheringLevelById(itemId: number): number | null {
-		this.validate();
+		if(!this.isSetup()) {
+			throw(new Error("Parser not initialized"));
+		}
 
 		const levels = this.files!.get("gathering-items-by-id");
 		if(levels.hasOwnProperty(itemId.toString())) {
@@ -135,7 +188,9 @@ export default class TeamCraftParser {
 	}
 
 	public getGatheringNameById(itemId: number): string | null {
-		this.validate();
+		if(!this.isSetup()) {
+			throw(new Error("Parser not initialized"));
+		}
 
 		const gt = this.files!.get("gathering-types");
 		if(gt.hasOwnProperty(itemId.toString())) {
@@ -145,7 +200,9 @@ export default class TeamCraftParser {
 	}
 
 	public getGatheringTypesById(itemId: number): TCGatheringType[] | null {
-		this.validate();
+		if(!this.isSetup()) {
+			throw(new Error("Parser not initialized"));
+		}
 
 		const levels = this.files!.get("gathering-search-index");
 		const gt = this.files!.get("gathering-types");
@@ -160,7 +217,9 @@ export default class TeamCraftParser {
 	}
 
 	public getAllDropsOfMob(mobId: number): any {
-		this.validate();
+		if(!this.isSetup()) {
+			throw(new Error("Parser not initialized"));
+		}
 
 		const dropSources = this.files!.get("drop-sources");
 
@@ -181,7 +240,9 @@ export default class TeamCraftParser {
 	}
 
 	public getMobLocationsById(mobId: number): TCDropSource | null {
-		this.validate();
+		if(!this.isSetup()) {
+			throw(new Error("Parser not initialized"));
+		}
 
 		const monsters = this.files!.get("monsters-by-id");
 
@@ -210,7 +271,9 @@ export default class TeamCraftParser {
 	}
 
 	public getDropSourceById(itemId: number): TCDropSource[] | null {
-		this.validate();
+		if(!this.isSetup()) {
+			throw(new Error("Parser not initialized"));
+		}
 
 		const dropSources = this.files!.get("drop-sources");
 		if(dropSources === undefined || !dropSources.hasOwnProperty(itemId.toString()) || dropSources[itemId].length === 0) {
@@ -237,7 +300,9 @@ export default class TeamCraftParser {
 	}
 
 	public getGatheringLocationsById(itemId: number): TCGatheringNode[] | null {
-		this.validate();
+		if(!this.isSetup()) {
+			throw(new Error("Parser not initialized"));
+		}
 
 		const nodes = this.files!.get("nodes-by-item-id");
 		if(nodes === undefined || !nodes.hasOwnProperty(itemId.toString())) {
@@ -278,7 +343,9 @@ export default class TeamCraftParser {
 	}
 
 	public getRecipeRecursive(itemIdentifier: string | number): TCRecipe | null {
-		this.validate();
+		if(!this.isSetup()) {
+			throw(new Error("Parser not initialized"));
+		}
 
 		let itemId = 0;
 		if(typeof itemIdentifier === "string") {
