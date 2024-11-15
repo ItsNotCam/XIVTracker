@@ -9,26 +9,28 @@ type WsHandler = {
 }
 
 export default class EzWs {
+	private readonly port: number;
 	private socket: WebSocket | null = null;
 	private requests: Map<uint6, WsHandler>;
 	private handle: (packet: DeserializedPacket) => void;
 	private setConnected: (connected: boolean) => void;
 	private reconnectTimeout: NodeJS.Timeout | null = null;
 
-	constructor(handle: (msg: DeserializedPacket) => void, setConnected: (connected: boolean) => void) {
+	constructor(port: number, handle: (msg: DeserializedPacket) => void, setConnected: (connected: boolean) => void) {
 		this.requests = new Map();
+		this.port = port;
 		this.handle = handle;
 		this.setConnected = setConnected;
-		this.initSocket();
 	}
 
-	private initSocket = () => {
+	public connect = (): EzWs | null => {
 		try {
-			this.socket = new WebSocket('ws://localhost:50085');
+			this.socket = new WebSocket(`ws://localhost:${this.port}`);
 		} catch (e) {
 			console.error("Error creating websocket connection:", e);
+			this.setConnected(false);
 			this.scheduleReconnect();
-			return;
+			return null;
 		}
 
 		if (!this.socket) {
@@ -39,6 +41,10 @@ export default class EzWs {
 		this.socket.on("open", this.handleOpen);
 		this.socket.on("error", this.handleError);
 		this.socket.on("close", this.handleClose);
+
+		this.setConnected(true);
+
+		return this;
 	}
 
 	private scheduleReconnect() {
@@ -46,7 +52,7 @@ export default class EzWs {
 			clearTimeout(this.reconnectTimeout);
 		}
 
-		this.reconnectTimeout = setTimeout(this.initSocket, 1000);
+		this.reconnectTimeout = setTimeout(this.connect, 1000);
 	}
 
 	private handleMessage = (data: Buffer) => {
@@ -72,7 +78,6 @@ export default class EzWs {
 			console.error("Error sending message - not connected");
 			return;
 		}
-
 		const payload = (typeof data === "string") ? Buffer.from(data) : data;
 		const serializedMsg = EzSerDe.serialize(routeFlag, payload, id);
 		this.socket!.send(serializedMsg);
@@ -114,7 +119,19 @@ export default class EzWs {
 		});
 	}
 
-	public isConnected = (): boolean => this.socket !== null && this.socket.readyState === WebSocket.OPEN;
+	public isConnected = (): boolean => {
+		if(this.socket === null) {
+			console.log("socket is null")
+			return false;
+		}
+
+		if(this.socket.readyState !== WebSocket.OPEN) {
+			console.log("socket is not open, it is", this.socket.readyState);
+			return false;
+		}
+		
+		return true;
+	};
 
 	public close = (): void => {
 		if (this.isConnected()) {

@@ -1,5 +1,5 @@
 import { BrowserWindow } from "electron";
-import { DeserializedPacket, EzFlag } from "./ez/EzTypes";
+import { DeserializedPacket, EzFlag } from "./ez/EzTypes.d";
 import { sendToClient } from "../events/eventHelpers";
 
 export default function ezRoute(win: BrowserWindow, msg: DeserializedPacket) {
@@ -9,8 +9,12 @@ export default function ezRoute(win: BrowserWindow, msg: DeserializedPacket) {
 
 	switch (msg.flag) {
 		case EzFlag.JOB_MAIN:
-			const job = JSON.parse(msg.payload.toString());
-			sendToClient("update:job-main", win, job);
+			try {
+				const job = JSON.parse(msg.payload.toString());
+				sendToClient("update:job-main", win, job);
+			} catch (e) {
+				console.log("Error parsing job data:", (e as any).message);
+			}
 			break;
 	}
 }

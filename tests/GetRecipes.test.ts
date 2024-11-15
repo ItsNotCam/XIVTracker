@@ -1,6 +1,11 @@
-import { getRecipeByItemName } from "../electron/libs/events/handle";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, afterAll } from "vitest";
 import { Recipe } from "../electron/libs/types";
+import LuminaParser from "../electron/libs/lumina/LuminaParser";
+import { vi } from "vitest";
+
+vi.spyOn(console, 'log').mockImplementation(() => {});
+vi.spyOn(console, 'warn').mockImplementation(() => {});
+vi.spyOn(console, 'error').mockImplementation(() => {});
 
 const copperRecipe: Recipe = {
 	id: 5062,
@@ -22,8 +27,6 @@ const copperRecipe: Recipe = {
 		ingredients: []
 	}]
 }
-
-
 
 const mapleLongbowRecipe = {
 	name: "Maple Longbow",
@@ -59,7 +62,6 @@ const mapleLongbowRecipe = {
 	}]
 }
 
-
 const brassIngotRecipe: Recipe = {
 	id: 5063,
 	amount: 1,
@@ -86,7 +88,6 @@ const brassIngotRecipe: Recipe = {
 	}]
 }
 
-
 const oakLumberRecipe = {
 	name: "Oak Lumber",
 	ingredients: [{
@@ -97,8 +98,6 @@ const oakLumberRecipe = {
 		amount: 3
 	}]
 }
-
-
 
 const growthFormulaGammaRecipe = {
 	name: "Growth Formula Gamma",
@@ -135,7 +134,6 @@ const cottonYarnRecipe = {
 	}]
 }
 
-
 const pastoralOakCaneRecipe = {
 	name: "Pastoral Oak Cane",
 	amount: 1,
@@ -157,34 +155,33 @@ const pastoralOakCaneRecipe = {
 	}]
 }
 
+const parser = await new LuminaParser().init();
 
+describe("Invalid Recipes", async () => {
+	it("Copper Ore", async() => {
+		const result = await parser.getRecipeByItemName("Copper Ore").catch(() => undefined);
+		expect(result).toEqual(null);
+	});
+
+	it("Zinc Ore", async() => {
+		const result = await parser.getRecipeByItemName("Zinc Ore").catch(() => undefined);
+		expect(result).toEqual(null);
+	});
+});
 
 describe("Small Recipes", async () => {
 	it("Copper Ingot", async() => {
-		const result = await getRecipeByItemName("Copper Ingot").catch(e => {
-			console.log(e);
-			return undefined
-		});
-
+		const result = await parser.getRecipeByItemName("Copper Ingot").catch(() => undefined);
 		expect(result).toStrictEqual(copperRecipe);
 	});
 
 	it("Brass Ingot", async() => {
-		const result = await getRecipeByItemName("Brass Ingot").catch(e => {
-			console.log(e);
-			return undefined
-		});
-
+		const result = await parser.getRecipeByItemName("Brass Ingot").catch(() => undefined);
 		expect(result).toMatchObject(brassIngotRecipe);
 	});
 
-	
 	it("Maple Lumber", async() => {
-		const result = await getRecipeByItemName("Maple Lumber").catch(e => {
-			console.log(e);
-			return undefined
-		});
-
+		const result = await parser.getRecipeByItemName("Maple Lumber").catch(() => undefined);
 		const mapleLumberRecipe = {
 			...mapleLongbowRecipe.ingredients[0],
 			amount: 1
@@ -195,88 +192,42 @@ describe("Small Recipes", async () => {
 
 
 	it("Hempen Yarn", async() => {
-		const result = await getRecipeByItemName("Hempen Yarn").catch(e => {
-			console.log(e);
-			return undefined
-		});
-
+		const result = await parser.getRecipeByItemName("Hempen Yarn").catch(() => undefined);
 		const hempenYarnRecipe = {
 			...mapleLongbowRecipe.ingredients[2],
 			amount: 2
 		}
-
 		expect(result).toMatchObject(hempenYarnRecipe);
 	});
 
 	it("Oak Lumber", async() => {
-		const result = await getRecipeByItemName("Oak Lumber").catch(e => {
-			console.log(e);
-			return undefined
-		});
-
+		const result = await parser.getRecipeByItemName("Oak Lumber").catch(() => undefined);
 		expect(result).toMatchObject(oakLumberRecipe);
 	});
-});
-
-describe("Invalid Recipes", async () => {
-	it("Copper Ore", async() => {
-		const result = await getRecipeByItemName("Copper Ore").catch(e => {
-			console.log(e);
-			return undefined
-		});
-
-		expect(result).toStrictEqual(undefined);
-	});
-
-	it("Zinc Ore", async() => {
-		const result = await getRecipeByItemName("Zinc Ore").catch(e => {
-			console.log(e);
-			return undefined
-		});
-
-		expect(result).toStrictEqual(undefined);
-	});
 	
-	it("Maple Longbow", async() => {
-		const result = await getRecipeByItemName("Maple Longbow").catch(e => {
-			console.log(e);
-			return undefined
-		});
-
-		expect(result).toMatchObject(mapleLongbowRecipe);
+	it("Cotton Yarn", async() => {
+		const result = await parser.getRecipeByItemName("Cotton Yarn").catch(() => undefined);
+		expect(result).toMatchObject(cottonYarnRecipe);
 	});
-});
 
-describe("Frowth Formula Gamma", async () => {
-	it("Should return the correct recipe", async() => {
-		const result = await getRecipeByItemName("Growth Formula Gamma").catch(e => {
-			console.log(e);
-			return undefined
-		});
-
+	it("Growth Formula Gamma", async() => {
+		const result = await parser.getRecipeByItemName("Growth Formula Gamma").catch(() => undefined);
 		expect(result).toMatchObject(growthFormulaGammaRecipe);
 	});
 });
 
-describe("Get the cotton yarn recipe", async () => {
-	it("Should return the correct recipe", async() => {
-		const result = await getRecipeByItemName("Cotton Yarn").catch(e => {
-			console.log(e);
-			return undefined
-		});
-
-		expect(result).toMatchObject(cottonYarnRecipe);
+describe('Large Recipes', () => { 
+	it("Maple Longbow", async() => {
+		const result = await parser.getRecipeByItemName("Maple Longbow").catch(() => undefined);
+		expect(result).toMatchObject(mapleLongbowRecipe);
 	});
-});
-
-describe("Get the pastoral oak cane recipe", async () => {
-	it("Should return the correct recipe", async() => {
-		const result = await getRecipeByItemName("Pastoral Oak Cane").catch(e => {
-			console.log(e);
-			return undefined
-		});
-
+	
+	it("Pastoral Oak Cane", async() => {
+		const result = await parser.getRecipeByItemName("Pastoral Oak Cane").catch(() => undefined);
 		expect(result).toMatchObject(pastoralOakCaneRecipe);
 	});
-});
+})
 
+afterAll(async () => {
+	await parser.close();
+});

@@ -4,7 +4,7 @@ import {
 	DeserializedPacket,
 	EzFlag,
 	uint10,
-} from "./EzTypes";
+} from "./EzTypes.d";
 
 // Visual: https://lucid.app/lucidchart/b06bf1e5-8ae7-4e1b-8f32-f256003140d0/edit?invitationId=inv_2a212140-1bee-41d0-913d-4ef4706ba6b1&page=m2MpGyAuT.V7#
 export const deserialize = (msg: Buffer): DeserializedPacket => {
@@ -19,8 +19,8 @@ export const deserialize = (msg: Buffer): DeserializedPacket => {
 		const short = (msg[0] << 8) | msg[1];
 
 		// if the first 6 bits are not equal to our fixed length packet header, error
-		if (((short >> 10) & 0x3F) !== EzFlag.EZ) {
-			console.log(short >> 10 & 0x3F, "is not equal to", EzFlag.EZ);
+		if (((short >> 10) & EzFlag.EZ) !== EzFlag.EZ) {
+			console.log((short >> 10 & EzFlag.EZ).toString(16), "is not equal to", (EzFlag.EZ).toString(16));
 			throw new Error("Malformed packet");
 		}
 
@@ -34,15 +34,8 @@ export const deserialize = (msg: Buffer): DeserializedPacket => {
 		flag = short & 0x3F;
 	}
 
-	payload = msg.subarray(4, packetLength - 2);
-
+	payload = msg.subarray(4);
 	let decodedPayload = EzEncoder.decode(payload);
-	console.log("received:", id, flag, decodedPayload)
-
-	// bandaid for now - I'm really not sure why some messages are truncated.
-	if (decodedPayload[decodedPayload.length - 1] !== "}") {
-		decodedPayload = decodedPayload.substring(0,decodedPayload.length) + "}";
-	}
 
 	return {
 		id: id,

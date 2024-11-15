@@ -12,7 +12,20 @@ console.log(root("electron/lib"))
 // https://vitejs.dev/config/
 export default defineConfig({
 	test: {
-		exclude: [...configDefaults.exclude, 'node_modules/**']
+		coverage: {
+			exclude: [
+				...configDefaults.coverage.exclude!, // Default exclusions
+				'dist-electron/', // Exclude dist-electron directory
+				'ui/',             // Exclude ui directory
+				'**/node_modules/**', // Common exclusion for node_modules
+				'./*.ts',          // Exclude root level .ts files
+				'./*.js',          // Exclude root level .ts files
+			]
+		},
+		exclude: [
+			...configDefaults.exclude, 
+			"**\/node_modules/**"
+    ],
 	},
 	resolve: {
 		alias: {

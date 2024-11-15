@@ -52,7 +52,7 @@ def get_random_job_data():
 		"level": random.randint(1, 90),
 		"job_name": random.choice(ffxiv_jobs),
 		"current_xp": current_xp,
-		"max_xp": max_xp,
+		"max_xp": max_xp
 	}
 
 

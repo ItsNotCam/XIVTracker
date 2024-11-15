@@ -9,6 +9,7 @@ import initHandlers from './libs/events/handle';
 import ezRoute from './libs/net/EzRouter';
 import { DeserializedPacket } from './libs/net/ez/EzTypes';
 import EzWs from './libs/net/EzWs';
+import LuminaParser from './libs/lumina/LuminaParser';
 
 // const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -32,9 +33,8 @@ export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist')
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 'public') : RENDERER_DIST
 
 let win: BrowserWindow | null;
-// let UdpServer: EzUdpServer | null;
-// let TcpClient: EzTcpClient | null;
 let WebSocketClient: EzWs | null;
+let lParser: LuminaParser | null;
 
 function createWindow() {
 	win = new BrowserWindow({
@@ -56,8 +56,10 @@ function createWindow() {
 		win.loadFile(path.join(RENDERER_DIST, 'index.html'))
 	}
 
-	initNetworking(win!);
-	initHandlers(win, ipcMain, WebSocketClient!);
+	lParser = new LuminaParser().initSync()
+
+	initNetworking(win);
+	initHandlers(win, ipcMain, WebSocketClient!, lParser);
 
 	ipcMain.on("renderer-ready", (event) => {
 		event.sender.send("initial-data", "ok");
@@ -78,11 +80,11 @@ const initNetworking = (win: BrowserWindow) => {
 
 	console.log("creating websocket client");
 	try {
-		WebSocketClient = new EzWs((data: DeserializedPacket) => {
+		WebSocketClient = new EzWs(50085, (data: DeserializedPacket) => {
 			ezRoute(win, data as DeserializedPacket);
 		}, (connected: boolean) => {
 			win.webContents.send("broadcast:tcp-connected", connected);
-		});
+		}).connect();
 	} catch (e) {
 		console.error("error creating websocket client:\n", e);
 	}
