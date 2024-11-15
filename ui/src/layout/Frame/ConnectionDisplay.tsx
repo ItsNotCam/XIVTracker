@@ -1,4 +1,4 @@
-import { invoke, onReceive } from '@electron-lib/eventHelpers';
+import { invoke, onReceive } from '@electron-lib/events/eventHelpers';
 import { useState, useEffect, useRef } from 'react';
 
 const ConnectionStatus: React.FC = () => {

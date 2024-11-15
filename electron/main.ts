@@ -3,12 +3,12 @@ import { app, BrowserWindow, ipcMain } from 'electron'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
-import initHandlers from './lib/events/handle';
+import initHandlers from './libs/events/handle';
 // import EzTcpClient from '../lib/net/EzTcp.ts.old';
 // import EzUdpServer from '../lib/net/EzUdp';
-import ezRoute from './lib/net/EzRouter';
-import { DeserializedPacket } from './lib/net/ez/EzTypes';
-import EzWs from './lib/net/EzWs';
+import ezRoute from './libs/net/EzRouter';
+import { DeserializedPacket } from './libs/net/ez/EzTypes';
+import EzWs from './libs/net/EzWs';
 
 // const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))

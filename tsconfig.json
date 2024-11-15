@@ -23,7 +23,7 @@
 		/* Custom @app directory */
 		"baseUrl": ".",
 		"paths": {
-			"@electron-lib/*": ["electron/lib/*"],
+			"@electron-lib/*": ["electron/libs/*"],
 			"@electron/*": ["electron/*"],
 
 			// ui
@@ -36,6 +36,6 @@
 		"rootDir": ".",
 		"outDir": "./dist"
   },
-  "include": ["electron", "ui/src", "electron/lib"],
+  "include": ["electron", "ui/src", "electron/libs", "jest.config.js"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

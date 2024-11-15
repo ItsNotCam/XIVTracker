@@ -1,5 +1,5 @@
-import { onReceive } from "@electron-lib/eventHelpers";
-import { Location } from "@electron-lib/types";
+import { onReceive } from "@electron-lib/events/eventHelpers";
+import { Location } from "@electron/libs/types";
 import { useEffect, useState } from "react";
 import { FC } from "react";
 

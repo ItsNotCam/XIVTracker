@@ -3,6 +3,7 @@ import path from 'node:path'
 import electron from 'vite-plugin-electron/simple'
 import react from '@vitejs/plugin-react'
 import TsconfigPaths from 'vite-plugin-tsconfig-paths';
+import { configDefaults  } from 'vitest/config';
 
 const root = (p: string) => path.join(path.resolve(__dirname), p);
 
@@ -10,6 +11,9 @@ console.log(root("electron/lib"))
 
 // https://vitejs.dev/config/
 export default defineConfig({
+	test: {
+		exclude: [...configDefaults.exclude, 'node_modules/**']
+	},
 	resolve: {
 		alias: {
 			"@lib": path.join(__dirname, "electron/lib")

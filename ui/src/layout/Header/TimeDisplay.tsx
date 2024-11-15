@@ -1,4 +1,4 @@
-import { useState, useEffect, FC, useRef } from 'react';
+import { useState, useEffect, FC } from 'react';
 
 import ClockImage from '@assets/images/etc-clock.png'
 import { IpcRendererEvent } from 'electron';
