@@ -131,11 +131,13 @@ const JobDisplay: React.FC<JobDisplayProps> = ({ type = "main", initialJob }) =>
 		onReceive(`update:job-${type}`, handleJobChange);
 		onReceive("update:level", handleLevelChange);
 		onReceive("update:xp", handleXpChange);
+		onReceive("broadcast:tcp-connected", getJobInfo);
 
 		return () => {
 			window.ipcRenderer.removeListener(`update:job-${type}`, handleJobChange)
 			window.ipcRenderer.removeListener("update:level", handleLevelChange);
 			window.ipcRenderer.removeListener("update:xp", handleXpChange);
+			window.ipcRenderer.removeListener("broadcast:tcp-connected", getJobInfo);
 		};
 	}, []);
 
