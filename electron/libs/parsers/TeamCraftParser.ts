@@ -64,7 +64,7 @@ export default class TeamCraftParser {
 		}
 
 		const processPath = process.cwd();
-		const filepath = path.resolve(`${processPath}/electron/data/${dataType}.json`);
+		const filepath = path.resolve(`${processPath}/electron/data/teamcraft/${dataType}.json`);
 		if(!fsSync.existsSync(filepath)) {
 			throw(new Error("File does not exist: " + filepath));
 		}
@@ -83,7 +83,7 @@ export default class TeamCraftParser {
 		}
 
 		const processPath = process.cwd();
-		const filepath = path.resolve(`${processPath}/electron/data/${dataType}.json`);
+		const filepath = path.resolve(`${processPath}/electron/data/teamcraft/${dataType}.json`);
 		const fileExists = await fs.stat(filepath).catch(() => false);
 		if(!fileExists) {
 			throw new Error("File does not exist: " + filepath);
@@ -389,8 +389,6 @@ export default class TeamCraftParser {
 		if(dropSource) {
 			dropSources = dropSource;
 		}
-
-		console.log("Level", recipeData);
 
 		let newRecipe: TCRecipe = {
 			id: itemId,
