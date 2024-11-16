@@ -1,5 +1,5 @@
 import EzSerDe from "./ez/EzSerDe";
-import { DeserializedPacket, EzFlag, uint6 } from "./ez/EzTypes";
+import { DeserializedPacket, EzFlag, uint6 } from "./ez/EzTypes.d";
 
 import WebSocket from 'ws';
 
@@ -68,6 +68,7 @@ export default class EzWs {
 			return;
 		}
 
+		console.log(`Received ${EzFlag[deserializedMsg.flag]}: ${deserializedMsg.payload.toString()}`);
 		if (this.requests.has(deserializedMsg.id)) {
 			const handler: WsHandler = this.requests.get(deserializedMsg.id)!;
 			handler.resolve(deserializedMsg.payload.toString());

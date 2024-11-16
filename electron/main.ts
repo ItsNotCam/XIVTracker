@@ -9,7 +9,7 @@ import initHandlers, { initWindowControls } from './libs/events/handle';
 import ezRoute from './libs/net/EzRouter';
 import { DeserializedPacket } from './libs/net/ez/EzTypes';
 import EzWs from './libs/net/EzWs';
-import TeamCraftParser from './libs/lumina/TeamCraftParser';
+import TeamCraftParser from './libs/parsers/TeamCraftParser';
 
 // const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))

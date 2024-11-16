@@ -1,5 +1,5 @@
 import { it, expect, afterAll, suite, beforeEach, beforeAll, test, assert } from "vitest";
-import TeamCraftParser from "../electron/libs/lumina/TeamCraftParser";
+import TeamCraftParser from "../electron/libs/parsers/TeamCraftParser";
 
 // vi.spyOn(console, 'log').mockImplementation(() => {});
 // vi.spyOn(console, 'warn').mockImplementation(() => {});

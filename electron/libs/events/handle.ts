@@ -3,8 +3,8 @@ import { handle } from "./eventHelpers";
 import EzWs from "../net/EzWs";
 import { EzFlag } from "../net/ez/EzTypes.d";
 import { JobState, Location } from "../types.d";
-import TeamCraftParser from "../lumina/TeamCraftParser";
-import { TCRecipe } from "../lumina/TeamCraftTypes.d";
+import TeamCraftParser from "../parsers/TeamCraftParser";
+import { TCRecipe } from "../parsers/TeamCraftTypes";
 
 export function initWindowControls(ipcMain: any, win: BrowserWindow) {
 	// Ensure the window object is valid
