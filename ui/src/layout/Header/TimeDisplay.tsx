@@ -33,7 +33,7 @@ const Clock: FC<{ initialTime: string }> = ({ initialTime }) => {
 			console.log("updating world time to", newTime);
 		} else {
 			const t = await invoke("ask:time");
-			setWorldtime(t);
+			setWorldtime(t.toUpperCase());
 		}
 	}
 

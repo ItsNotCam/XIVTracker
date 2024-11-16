@@ -1,4 +1,4 @@
-import { TCRecipe } from '@electron-lib/lumina/TeamCraftTypes';
+import { TCRecipe } from '@electron-lib/parsers/TeamCraftTypes';
 import React from 'react';
 
 export interface SearchBarProps {

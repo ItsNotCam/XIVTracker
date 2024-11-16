@@ -1,4 +1,4 @@
-import { TCGatheringType, TCRecipe } from '@electron-lib/lumina/TeamCraftTypes';
+import { TCGatheringType, TCRecipe } from '@electron-lib/parsers/TeamCraftTypes';
 import React, { useRef } from 'react';
 import SearchBar from './SearchBar';
 
@@ -15,7 +15,7 @@ const RecipeSearch: React.FC = () => {
 		if(result !== null && result.name === recipeData?.name) {
 			return;
 		}
-		
+
 		setRecipeData(result);
 		if (result) {
 			reqs.current = [
