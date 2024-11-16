@@ -13,11 +13,12 @@ const tabs = [
 interface SidebarProps {
 	setCurrentTab: (index: number) => void;
 	currentTab: number;
+	className?: string;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ setCurrentTab, currentTab }) => {
+const Sidebar: React.FC<SidebarProps> = ({ setCurrentTab, currentTab, className }) => {
 	return (
-		<div className="flex flex-col w-fit">
+		<div className={`flex flex-col w-fit ${className}`}>
 			{tabs.map((tab, index) => (
 				<button  
 					key={`tab-${tab.name}`} 

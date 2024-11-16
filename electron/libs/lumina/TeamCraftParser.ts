@@ -395,17 +395,19 @@ export default class TeamCraftParser {
 			dropSources = dropSource;
 		}
 
-		let newRecipe: any = {
+		console.log("Level", recipeData);
+
+		let newRecipe: TCRecipe = {
 			id: itemId,
 			amount: recipeData.yields,
-			name: itemName,
-			icon_path: iconPath,
+			name: itemName || "",
+			icon_path: iconPath || "",
 			gathering: gathering,
 			drop_sources: dropSources,
 			crafting: {
 				job: recipeData.job,
-				job_name: jobName,
-				level: Math.max(recipeData.lvl, recipeData.rlvl)
+				job_name: jobName || "",
+				level: recipeData.lvl
 			},
 			ingredients: []
 		}
