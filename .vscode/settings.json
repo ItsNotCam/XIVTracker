@@ -1,7 +1,8 @@
 {
   "files.associations": {
     "*.json5": "json",
-    "*.sqlite": "sql"
+    "*.sqlite": "sql",
+		"*.meta": ".json"
   }
 	,
 	"files.exclude": {
@@ -19,5 +20,6 @@
     "tsconfig.electron.json": "typescript-def",
     "tsconfig.react.json": "typescript-def",
     "tsconfig.node.json": "typescript-def",
+    "*.meta": "lib",
   }
 }
