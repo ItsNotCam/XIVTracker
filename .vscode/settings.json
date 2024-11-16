@@ -1,6 +1,7 @@
 {
   "files.associations": {
-    "*.json5": "json"
+    "*.json5": "json",
+    "*.sqlite": "sql"
   }
 	,
 	"files.exclude": {
