@@ -10,13 +10,15 @@ const ConnectionStatus: React.FC = () => {
 	}
 
 	useEffect(() => {
-		onReceive("broadcast:tcp-connected", handleTcpConnected);
+		const handleTcpConnectedRef = handleTcpConnected;
+
+		onReceive("broadcast:tcp-connected", handleTcpConnectedRef);
 		invoke("ask:tcp-connected").then((connected: boolean) => {
 			setIsConnected(connected);
 		});
 
 		return () => {
-			window.ipcRenderer.removeListener("broadcast:tcp-connected", handleTcpConnected);
+			window.ipcRenderer.removeListener("broadcast:tcp-connected", handleTcpConnectedRef);
 		}
 	}, []);
 

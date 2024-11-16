@@ -24,8 +24,8 @@ const Sidebar: React.FC<SidebarProps> = ({ setCurrentTab, currentTab, className 
 					key={`tab-${tab.name}`} 
 					onClick={() => setCurrentTab(index)}
 					className={`
-						cursor-pointer py-2 px-4 transition-colors duration-100 hover:bg-custom-gray-500
-						${currentTab === index && " bg-custom-gray-500"}
+						outline-none focus:outline-none cursor-pointer py-2 px-4 transition-colors 
+						duration-100 hover:bg-custom-gray-500 ${currentTab === index && " bg-custom-gray-500"}
 					`}
 				>
 					<img className="w-[56px] mx-auto" src={tab.src}/>

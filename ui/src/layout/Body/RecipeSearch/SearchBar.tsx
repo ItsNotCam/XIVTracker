@@ -73,7 +73,9 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearchComplete }) => {
 				</svg>
 				<input type="text" className="bg-transparent outline-none focus:outline-none flex-grow" name="recipe-search-name"/>
 				<button disabled={isSearching} className='cursor-pointer h-8 w-8 hover:bg-custom-gray-300 rounded-full grid place-items-center mr-2 group'>
-					{isSearching ? <LoadingIcon className="animate-spin" /> : <SearchButtonIcon className='fill-custom-gray-100 group-hover:ml-1 transition-[margin]'/>}
+					{isSearching 
+						? <LoadingIcon className="animate-spin" /> 
+						: <SearchButtonIcon className='fill-custom-gray-100 group-hover:ml-1 transition-[margin]'/>}
 				</button>
 		</form>
 	);

@@ -1,13 +1,16 @@
-import { useState, useEffect, FC } from 'react';
+import { useState, useEffect, FC, useRef } from 'react';
 
 import ClockImage from '@assets/images/etc-clock.png'
 import { IpcRendererEvent } from 'electron';
+import { invoke, onReceive, send } from '@electron-lib/events/eventHelpers';
 
 const Clock: FC<{ initialTime: string }> = ({ initialTime }) => {
-	const [currentTime, setCurrentTime] = useState<string>("00:00 PM");
-	const [worldTime, setCurrentWorldTime] = useState<string>(initialTime);
+	const realTimeTimeout = useRef<NodeJS.Timeout | null>(null);
 
-	const setTime = () => {
+	const [currentTime, setCurrentTime] = useState<string>("00:00 PM");
+	const [worldTime, setWorldtime] = useState<string>(initialTime);
+
+	const updateRealTime = () => {
 		const date = new Date();
 		const minutes = date.getMinutes().toString().padStart(2, '0');
 		const AMPM = date.getHours() >= 12 ? 'PM' : 'AM';
@@ -24,17 +27,45 @@ const Clock: FC<{ initialTime: string }> = ({ initialTime }) => {
 		setCurrentTime(`${hoursStr}:${minutes} ${AMPM}`);
 	}
 
-	const updateWorldTime = (_event: IpcRendererEvent, newTime: string) => {
-		setCurrentWorldTime(newTime);
+	const updateWorldTime = async (_event?: IpcRendererEvent, newTime?: string) => {
+		if(newTime) {
+			setWorldtime(newTime);
+			console.log("updating world time to", newTime);
+		} else {
+			const t = await invoke("ask:time");
+			setWorldtime(t);
+		}
 	}
 
-	// dont need to set an interval because the entire component refreshes on change
+	const handleConnectionChange = (_: any, connected: boolean) => {
+		if(connected) {
+			console.log("Clock: reconnected to server");
+			updateWorldTime();
+		} else {
+			console.log("Clock: disconnected from server");
+		}
+	}
+
 	useEffect(() => {
-		const timer = setTimeout(setTime, 1000);
+		updateRealTime();
+		updateWorldTime();
+
+		realTimeTimeout.current = setInterval(updateRealTime, 1000);
+
+		const worldTimeRef = updateWorldTime;
+		const onConnectionChangeRef = handleConnectionChange;
+
+		onReceive("update:time", worldTimeRef);
+		onReceive("broadcast:tcp-connected", onConnectionChangeRef);
+
 		return () => {
-			if(timer) {
-				clearTimeout(timer);
+			if(realTimeTimeout.current) {
+				clearTimeout(realTimeTimeout.current);
+				realTimeTimeout.current = null;
 			}
+			
+			window.ipcRenderer.removeListener("update:time", worldTimeRef);
+			window.ipcRenderer.removeListener("broadcast:tcp-connected", onConnectionChangeRef);
 		};
 	}, []);
 

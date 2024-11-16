@@ -15,9 +15,11 @@ const LocationDisplay: FC<{ initialLocation: Location }> = ({ initialLocation: i
 	};
 
 	useEffect(() => {
-		onReceive("update:location-*", handleLocationChange);
+		const handleLocationChangeRef = handleLocationChange;
+
+		onReceive("update:location-*", handleLocationChangeRef);
 		return () => {
-			window.ipcRenderer.removeListener("update:location-*", handleLocationChange);
+			window.ipcRenderer.removeListener("update:location-*", handleLocationChangeRef);
 		};
 	}, []);
 
