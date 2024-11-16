@@ -9,7 +9,7 @@ type WsHandler = {
 }
 
 export default class EzWs {
-	private readonly port: number;
+	private readonly PORT: number;
 	private socket: WebSocket | null = null;
 	private requests: Map<uint6, WsHandler>;
 	private handle: (packet: DeserializedPacket) => void;
@@ -18,14 +18,14 @@ export default class EzWs {
 
 	constructor(port: number, handle: (msg: DeserializedPacket) => void, setConnected: (connected: boolean) => void) {
 		this.requests = new Map();
-		this.port = port;
+		this.PORT = port;
 		this.handle = handle;
 		this.setConnected = setConnected;
 	}
 
 	public connect = (): EzWs | null => {
 		try {
-			this.socket = new WebSocket(`ws://localhost:${this.port}`);
+			this.socket = new WebSocket(`ws://localhost:${this.PORT}`);
 		} catch (e) {
 			console.error("Error creating websocket connection:", e);
 			this.setConnected(false);
@@ -41,18 +41,22 @@ export default class EzWs {
 		this.socket.on("open", this.handleOpen);
 		this.socket.on("error", this.handleError);
 		this.socket.on("close", this.handleClose);
-
-		this.setConnected(true);
-
 		return this;
 	}
 
 	private scheduleReconnect() {
-		if (this.reconnectTimeout) {
+		if(this.reconnectTimeout) {
 			clearTimeout(this.reconnectTimeout);
 		}
 
-		this.reconnectTimeout = setTimeout(this.connect, 1000);
+		this.reconnectTimeout = setTimeout(() => {
+			this.connect();
+		}, 2000);
+	}
+
+	public reconnect() {
+		this.close();
+		this.connect();
 	}
 
 	private handleMessage = (data: Buffer) => {
@@ -75,8 +79,7 @@ export default class EzWs {
 
 	public send(routeFlag: EzFlag, data: string | Buffer, id?: number): void {
 		if (!this.isConnected()) {
-			console.error("Error sending message - not connected");
-			return;
+			throw(new Error("Not connected"));
 		}
 		const payload = (typeof data === "string") ? Buffer.from(data) : data;
 		const serializedMsg = EzSerDe.serialize(routeFlag, payload, id);
@@ -85,8 +88,7 @@ export default class EzWs {
 
 	public async sendAndAwaitResponse(routeFlag: EzFlag, data?: string | Buffer): Promise<string | undefined> {
 		if (!this.isConnected()) {
-			console.error("Error sending message - not connected");
-			return undefined;
+			throw(new Error("Not connected"));
 		}
 
 		let id: number = 0;
@@ -121,40 +123,42 @@ export default class EzWs {
 
 	public isConnected = (): boolean => {
 		if(this.socket === null) {
-			console.log("socket is null")
 			return false;
 		}
 
 		if(this.socket.readyState !== WebSocket.OPEN) {
-			console.log("socket is not open, it is", this.socket.readyState);
 			return false;
 		}
 		
 		return true;
 	};
 
-	public close = (): void => {
-		if (this.isConnected()) {
-			this.socket!.close()
+	public close = (reconnect: boolean = true, force: boolean = false): void => {
+		if(this.socket === null || !this.isConnected()) {
+			if(!force) {
+				throw(new Error("Not connected"));
+			}
 		}
-		this.setConnected(false);
+
+		this.socket!.close()
+		if(reconnect) {
+			this.scheduleReconnect();
+		}
 	};
 
-	private handleError = (ev: any) => {
-		console.error("WebSocket error:", ev.code);
+	private handleError = () => {
 		if (!this.isConnected()) {
 			this.scheduleReconnect();
 		}
 	}
 
 	private handleOpen = () => {
-		console.log("WebSocket opened");
+		console.log("Connection opened");
 		this.setConnected(true);
 	}
 
-	private handleClose = (ev: CloseEvent) => {
-		console.log("WebSocket closed:", ev);
-		this.setConnected(false);
+	private handleClose = () => {
+		console.log("Connection closed");
 		this.scheduleReconnect();
 	}
 }

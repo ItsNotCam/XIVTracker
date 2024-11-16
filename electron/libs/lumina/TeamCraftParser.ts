@@ -27,8 +27,6 @@ export default class TeamCraftParser {
 	public async init(): Promise<TeamCraftParser> {
 		this.files = new Map<string, any>();
 
-		console.log("Loading data...");
-
     for (const [,dt] of this.dataTypes.entries()) {
 			try { 
 				const data = await this.loadData(dt);
@@ -66,7 +64,6 @@ export default class TeamCraftParser {
 		}
 
 		const processPath = process.cwd();
-		// const filepath = path.resolve(path.dirname(), `../../data/${dataType}.json`);
 		const filepath = path.resolve(`${processPath}/electron/data/${dataType}.json`);
 		if(!fsSync.existsSync(filepath)) {
 			throw(new Error("File does not exist: " + filepath));
@@ -76,7 +73,6 @@ export default class TeamCraftParser {
 		return JSON.parse(data.toString());
 	}
 	
-
 	public async loadData(dataType: string): Promise<any> {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
@@ -88,7 +84,6 @@ export default class TeamCraftParser {
 
 		const processPath = process.cwd();
 		const filepath = path.resolve(`${processPath}/electron/data/${dataType}.json`);
-		console.log(filepath)
 		const fileExists = await fs.stat(filepath).catch(() => false);
 		if(!fileExists) {
 			throw new Error("File does not exist: " + filepath);

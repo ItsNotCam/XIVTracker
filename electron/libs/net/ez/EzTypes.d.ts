@@ -44,5 +44,7 @@ export enum EzFlag {
 	LOCATION_LAST = 0x1F,
 	JOB_ALL = 0x20,
 	JOB_MAIN = 0x21,
+	TIME = 0x22,
+	NAME = 0x23,
 	ECHO = 0x3FF,
 }

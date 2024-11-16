@@ -42,9 +42,9 @@ export async function invoke(eventName: EventType, args?: any[] | any): Promise<
 		}
 
 		if(Array.isArray(args)) {
-			window.ipcRenderer.invoke(eventName, ...args).then(resolve).catch(reject);
+			window.ipcRenderer.invoke(eventName, ...args).then(resolve).catch(() => resolve(null));
 		} else {
-			window.ipcRenderer.invoke(eventName, args).then(resolve).catch(reject);
+			window.ipcRenderer.invoke(eventName, args).then(resolve).catch(() => resolve(null));
 		}
 	})
 }

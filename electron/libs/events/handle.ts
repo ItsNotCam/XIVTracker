@@ -47,7 +47,14 @@ export default async function initHandlers(win: BrowserWindow, ipcMain: any, Web
 	});
 
 	handle("ask:job-main", ipcMain, async (): Promise<JobState | undefined> => {
-		const response = await WebSocketClient.sendAndAwaitResponse(EzFlag.JOB_MAIN);
+		let response: string | undefined;
+		try {
+			response = await WebSocketClient.sendAndAwaitResponse(EzFlag.JOB_MAIN);
+		} catch(e: any) {
+			console.log("Error getting main job:", e.message);
+			return undefined;
+		}
+
 		if (response === undefined) {
 			return undefined;
 		}
@@ -79,5 +86,10 @@ export default async function initHandlers(win: BrowserWindow, ipcMain: any, Web
 	const Parser = await new TeamCraftParser().init();
 	handle("ask:recipe", ipcMain, async (event: any, itemName: string): Promise<TCRecipe | null> => {
 		return Parser.getRecipeByItemIdentifier(itemName);
+	});
+
+	handle("ask:time", ipcMain, async (): Promise<string | undefined> => {
+		const time = await WebSocketClient.sendAndAwaitResponse(EzFlag.TIME);
+		return time;
 	});
 }
