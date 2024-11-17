@@ -4,8 +4,11 @@ import path from 'node:path'
 
 import initHandlers, { initWindowControls } from './libs/events/handle';
 import ezRoute from './libs/net/EzRouter';
-import { DeserializedPacket } from './libs/net/ez/EzTypes';
+import { DeserializedPacket } from './libs/net/ez/EzTypes.d';
 import EzWs from './libs/net/EzWs';
+
+import UpdateTCData from "../electron/data/updateTCData.mjs";
+import EzDb from '../electron/libs/db/EzDb';
 
 // const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -20,8 +23,9 @@ process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 
 
 let win: BrowserWindow | null;
 let WebSocketClient: EzWs | null;
+let db: EzDb | null;
 
-function createWindow() {
+async function createWindow() {
 	win = new BrowserWindow({
 		icon: path.join(process.env.VITE_PUBLIC || "", 'electron-vite.svg'),
 		webPreferences: {
@@ -39,9 +43,8 @@ function createWindow() {
 		win.loadFile(path.join(RENDERER_DIST, 'index.html'))
 	}
 
-	console.log("creating window");
-	initWindowControls(ipcMain!, win);
-	initNetworking(win);
+	initWindowControls(ipcMain!, win!);
+	initNetworking(win!);
 	initHandlers(win!, ipcMain, WebSocketClient!);
 }
 
@@ -73,6 +76,12 @@ app.on('activate', () => {
 	}
 })
 
-app.whenReady().then(() => {
-	createWindow()
+app.whenReady().then(async() => {
+	await UpdateTCData();
+	db = await new EzDb().init();
+	await createWindow();
 });
+
+async function asyncSleep(ms: number) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}

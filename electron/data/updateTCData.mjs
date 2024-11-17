@@ -1,12 +1,20 @@
-import * as fs from 'fs/promises';
-import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
+import {
+	readdir,
+	stat,
+	unlink,
+	mkdir,
+	writeFile,
+	readFile
+} from 'fs/promises';
+
+import { resolve } from 'path';
+// import { fileURLToPath } from 'url';
 import generateSheets from './generate.mjs';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const __dataFolder = path.resolve(__dirname, "teamcraft");
-const __metaFile = path.resolve(__dataFolder, ".meta")
+// TODO: These will have to be changed for release build
+const __dirname = process.cwd();
+const __dataFolder = resolve(__dirname, "electron/data/teamcraft");
+const __metaFile = resolve(__dataFolder, ".meta")
 const __rootRepoPath = "https://raw.githubusercontent.com/ffxiv-teamcraft/ffxiv-teamcraft/refs/heads/staging/libs/data/src/lib/json"
 
 // function declarations
@@ -37,7 +45,7 @@ export default async function UpdateTCData() {
 	} = await getCurrentAndLastestVersions(metadata);
 
 	// if we're up to date, exit
-	if(currentVersion.toString() === latestVersion.toString()) {
+	if((currentVersion.toString() === latestVersion.toString()) && (await readdir(__dataFolder)).length > 0) {
 		console.log("[Update TC Data] Already up to date, exiting");
 		return; 
 	}
@@ -76,14 +84,14 @@ export const metaFiles = [
 export const clearAllData = async() => {
 	console.log("[Update TC Data] Clearing all data");
 	try {
-		const files = await fs.readdir(__dataFolder);
+		const files = await readdir(__dataFolder);
 		for (const file of files) {
 			if (file.endsWith('.json') || file.endsWith('.meta')) {
-				await fs.unlink(path.join(__dataFolder, file));
+				await unlink(join(__dataFolder, file));
 			}
 		}
-		// await fs.rmdir(__dataFolder, { recursive: true });
-		const cleared = (await fs.readdir(__dataFolder)).length === 0;
+		// await rmdir(__dataFolder, { recursive: true });
+		const cleared = (await readdir(__dataFolder)).length === 0;
 		if(cleared) {
 			console.log("[Update TC Data] Data folder cleared");
 		} else {
@@ -108,7 +116,7 @@ loadMetadata = async() => {
 	console.log("[Update TC Data] Loading metadata from file:", __metaFile);
 	let fileData = null;
 	try {
-		fileData = await fs.readFile(__metaFile);
+		fileData = await readFile(__metaFile);
 	} catch {
 		console.log("[Update TC Data] Metadata file not found, creating new one");
 		return await createNewMetaFile();
@@ -130,7 +138,7 @@ getCurrentAndLastestVersions = async(metadata) => {
 	console.log("[Update TC Data] Getting current and latest versions");
 	let valid = false;
 
-	const fileData = await fs.readFile(__metaFile);
+	const fileData = await readFile(__metaFile);
 	const savedReleaseDate = new Date(metadata.tc_last_release_date);
 	let repoReleaseDate = undefined;
 
@@ -157,7 +165,7 @@ createNewMetaFile = async() => {
 	}
 
 	try {
-		await fs.writeFile(
+		await writeFile(
 			__metaFile,
 			JSON.stringify(metadata)
 		)
@@ -173,45 +181,34 @@ createNewMetaFile = async() => {
 
 validateAndCreateDataFolder = async() => {
 	try {
-		await fs.stat(__dataFolder);
+		await stat(__dataFolder);
 		console.log("[Update TC Data] Data folder exists");
 	} catch {
-		await fs.mkdir(__dataFolder);
+		await mkdir(__dataFolder);
 		console.log("[Update TC Data] Data folder created");
 	}
 }
 
 updateMetadataFile = async(metadata) => {
 	console.log("[Update TC Data] Updating metadata file:", __metaFile);
-	await fs.writeFile(__metaFile, JSON.stringify(metadata));
+	await writeFile(__metaFile, JSON.stringify(metadata));
 	console.log("[Update TC Data] Metadata file updated");
 }
 
 downloadFiles = async (fileNames) => {
 	for (const fileName of fileNames) {
 		const fileUrl = `${__rootRepoPath}/${fileName}`;
-		const filePath = path.resolve(__dataFolder, fileName);
+		const filePath = resolve(__dataFolder, fileName);
 		try {
 			const response = await fetch(fileUrl);
 			if (!response.ok) {
 				throw new Error(`[Update TC Data] Failed to fetch ${fileName}`);
 			}
 			const fileData = await response.text();
-			await fs.writeFile(filePath, fileData);
-			console.log(`[Update TC Data] Downloaded and saved ${fileName}`);
+			await writeFile(filePath, fileData);
+			console.log(`[Update TC Data] Downloaded and saved ${__dataFolder}/${fileName}`);
 		} catch (error) {
 			console.error(`[Update TC Data] Error downloading ${fileName}:`, error);
 		}
 	}
 };
-
-// only run the process automatically if this is the executed file
-if (process.argv[1] === __filename) {
-	const doTheThing = async () => {
-		console.log("[Update TC Data] Checking for updates");
-		await UpdateTCData();
-		console.log("[Update TC Data] Done");
-	}
-
-	doTheThing();
-}

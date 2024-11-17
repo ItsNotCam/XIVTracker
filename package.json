@@ -7,9 +7,10 @@
     "dev": "vite",
     "build": "tsc && vite build && electron-builder -w",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "postinstall": "install-app-deps"
   },
-  "dependencies": {
+  "dependencies": { 
     "bufferutil": "^4.0.8",
     "dotenv": "^16.4.5",
     "fs-promise": "^2.0.3",
@@ -39,6 +40,7 @@
     "autoprefixer": "^10.4.20",
     "electron": "^30.0.1",
     "electron-builder": "^24.13.3",
+    "electron-rebuild": "^3.2.9",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "postcss": "^8.4.47",

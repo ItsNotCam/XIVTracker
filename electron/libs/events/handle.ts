@@ -83,14 +83,8 @@ export default async function initHandlers(win: BrowserWindow, ipcMain: any, Web
 		return undefined;
 	});
 
-	let Parser: TeamCraftParser;
-	try {
-		Parser = await new TeamCraftParser().init();
-	} catch (e) {
-		console.error("Failed to initialize TeamCraftParser:", (e as any).message);
-	}
-
 	handle("ask:recipe", ipcMain, async (event: any, itemName: string): Promise<TCRecipe | null> => {
+		let Parser: TeamCraftParser = await new TeamCraftParser().init();
 		return Parser!.getRecipeByItemIdentifier(itemName);
 	});
 

@@ -4,9 +4,10 @@ import sqlite3 from "sqlite3";
 import * as fs from "fs/promises"
 import { EzDBNotConnectedError } from "./EzDbTypes.d";
 
+import { fileURLToPath } from 'url';
+
 // Enable verbose mode for additional logging
 sqlite3.verbose();
-
 
 export default class EzDb {
 	public readonly DB_PATH;
@@ -174,8 +175,8 @@ export default class EzDb {
 	}
 
 	public async init(): Promise<EzDb> {
-		if(!this.connection) {
-			throw(new EzDBNotConnectedError());
+		if(!await EzDb.dbFileExists(this.DB_PATH)) {
+			await EzDb.createNew(this.DB_PATH);
 		}
 
 		let initScript: string | undefined;
