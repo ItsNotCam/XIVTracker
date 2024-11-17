@@ -1,5 +1,6 @@
 electron/data/teamcraft/.meta
 electron/data/teamcraft/**.json
+**.ignore
 
 # Logs
 logs
