@@ -3,13 +3,30 @@ import * as fs from "node:fs/promises";
 import * as fsSync from "node:fs";
 import { TCDropSource, TCGathering, TCGatheringType, TCGatheringNode, TCRecipe } from "./TeamCraftTypes";
 
+export type TCDataType = 
+	"items"
+| "xiv_item-id-by-name"
+| "xiv_recipe-by-id"
+| "item-level"
+| "item-icons"
+| "job-name"
+| "xiv_gathering-items-by-id"
+| "gathering-search-index"
+| "gathering-types"
+| "xiv_map-entries-by-id"
+| "drop-sources"
+| "mobs"
+| "xiv_monsters-by-id"
+| "places"
+| "xiv_nodes-by-item-id";
+
 export default class TeamCraftParser {
-	private files: Map<string, any> | null = null;
+	private files: Map<TCDataType, any> | null = null;
 	
-	private readonly dataTypes: string[] = [
-		"items", "item-id-by-name", "recipe-by-id", "item-level", "item-icons", "job-name",
-		"gathering-items-by-id", "gathering-search-index", "gathering-types", "map-entries-by-id",
-		"drop-sources", "mobs", "monsters-by-id", "places", "nodes-by-item-id"
+	private readonly dataTypes: TCDataType[] = [
+		"items", "xiv_item-id-by-name", "xiv_recipe-by-id", "item-level", "item-icons", "job-name",
+		"xiv_gathering-items-by-id", "gathering-search-index", "gathering-types", "xiv_map-entries-by-id",
+		"drop-sources", "mobs", "xiv_monsters-by-id", "places", "xiv_nodes-by-item-id"
 	]
 
 	constructor() {	}
@@ -25,11 +42,11 @@ export default class TeamCraftParser {
 	}
 
 	public async init(): Promise<TeamCraftParser> {
-		this.files = new Map<string, any>();
+		this.files = new Map<TCDataType, any>();
 
     for (const [,dt] of this.dataTypes.entries()) {
 			try { 
-				const data = await this.loadData(dt);
+				const data = await this.loadData((dt));
 				this.files!.set(dt, data);
 			} catch(e) { 
 				console.error("Failed to get data for:", dt, e);
@@ -40,12 +57,12 @@ export default class TeamCraftParser {
 	}
 	
 	public initSync(): TeamCraftParser {
-		this.files! = new Map<string, any>();
+		this.files! = new Map<TCDataType, any>();
 
     for (const dt in this.dataTypes) {
 			try { 
 				const data = this.loadDataSync(this.dataTypes[dt]); 
-				this.files!.set(dt, data);
+				this.files!.set(dt as TCDataType, data);
 			} catch(e) { 
 				console.error("Failed to get data for:", this.dataTypes[dt], e);
 			}
@@ -54,7 +71,7 @@ export default class TeamCraftParser {
 		return this;
 	}
 
-	public loadDataSync(dataType: string): any {
+	public loadDataSync(dataType: TCDataType): any {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
 		}
@@ -73,7 +90,7 @@ export default class TeamCraftParser {
 		return JSON.parse(data.toString());
 	}
 	
-	public async loadData(dataType: string): Promise<any> {
+	public async loadData(dataType: TCDataType): Promise<any> {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
 		}
@@ -110,7 +127,7 @@ export default class TeamCraftParser {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
 		}
-		const items = this.files!.get("item-id-by-name");
+		const items = this.files!.get("xiv_item-id-by-name");
 		if(items === undefined) {
 			throw(new Error("Items not loaded, " + this.files!.size));
 		}
@@ -127,7 +144,7 @@ export default class TeamCraftParser {
 			throw(new Error("Parser not initialized"));
 		}
 
-		const items = this.files!.get("recipe-by-id");
+		const items = this.files!.get("xiv_recipe-by-id");
 		if(items.hasOwnProperty(recipeId)) {
 			return items[recipeId];
 		}
@@ -185,7 +202,7 @@ export default class TeamCraftParser {
 			throw(new Error("Parser not initialized"));
 		}
 
-		const levels = this.files!.get("gathering-items-by-id");
+		const levels = this.files!.get("xiv_gathering-items-by-id");
 		if(levels.hasOwnProperty(itemId.toString())) {
 			return parseInt(levels[itemId].level);
 		}
@@ -250,9 +267,9 @@ export default class TeamCraftParser {
 			throw(new Error("Parser not initialized"));
 		}
 
-		const monsters = this.files!.get("monsters-by-id");
+		const monsters = this.files!.get("xiv_monsters-by-id");
 
-		const mapEntries = this.files!.get("map-entries-by-id");
+		const mapEntries = this.files!.get("xiv_map-entries-by-id");
 		const zoneEntries = this.files!.get("places");
 		
 		let data = null;
@@ -310,7 +327,7 @@ export default class TeamCraftParser {
 			throw(new Error("Parser not initialized"));
 		}
 
-		const nodes = this.files!.get("nodes-by-item-id");
+		const nodes = this.files!.get("xiv_nodes-by-item-id");
 		if(nodes === undefined || !nodes.hasOwnProperty(itemId.toString())) {
 			console.log("No nodes found for item id: " + itemId);
 			return null;
@@ -325,7 +342,7 @@ export default class TeamCraftParser {
 			let mapName = "";
 			let zoneName = "";
 
-			const mapEntries = this.files!.get("map-entries-by-id");
+			const mapEntries = this.files!.get("xiv_map-entries-by-id");
 			if(mapId !== undefined && mapEntries !== undefined && mapEntries.hasOwnProperty(mapId.toString())) {
 				mapName = mapEntries[mapId.toString()].name;
 			}
