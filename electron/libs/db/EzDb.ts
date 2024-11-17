@@ -108,17 +108,66 @@ export default class EzDb {
 		})
 	}
 
+	public async getOne(sql: string): Promise<any> {
+		if(!this.connection) {
+			throw(new EzDBNotConnectedError());
+		}
+
+		if(!sql.match(/^SELECT/i) && !sql.match(/^PRAGMA/i)) {
+			throw(new Error("Only SELECT queries are allowed"));
+		}
+
+		return new Promise((resolve, reject) => {
+			this.connection!.get(sql, (err, row) => {
+				if(err) {
+					reject(new Error("Failed to execute query: " + err.message));
+				}
+
+				resolve(row);
+			});
+		});
+	};
+
+	public async getAll(sql: string): Promise<any[]> {
+		if(!this.connection) {
+			throw(new EzDBNotConnectedError());
+		}
+
+		if(!sql.match(/^SELECT/i) && !sql.match(/^PRAGMA/i)) {
+			throw(new Error("Only SELECT queries are allowed"));
+		}
+
+
+		let result: any[] = await new Promise((resolve,reject) => {
+			let results: any[] = []
+			this.connection!.each(sql, (err, row) => {
+				if(err) {
+					reject(new Error("Failed to execute query: " + err.message));
+				}
+				results.push(row);
+			}, ((err: Error | null) => {
+				if(err) {
+					reject(new Error("Failed to execute query: " + err.message));
+				}
+				resolve(results)
+			}));
+		});
+
+		return result;
+	}
+
+
 	public async exec(sql: string): Promise<void> {
 		if(!this.connection) {
 			throw(new EzDBNotConnectedError());
 		}
 
-		return new Promise((resolve, reject) => {	
-			this.connection!.exec(sql, (err: Error | null) => {
+		this.connection = await new Promise((resolve, reject) => {	
+			const c = this.connection!.exec(sql, function(err: Error | null) {
 				if(err) {
 					reject(err);
 				} else {
-					resolve();
+					resolve(c);
 				}
 			});
 		});
