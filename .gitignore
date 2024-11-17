@@ -1,3 +1,5 @@
+electron/data/teamcraft/.meta
+electron/data/teamcraft/**.json
 
 # Logs
 logs
