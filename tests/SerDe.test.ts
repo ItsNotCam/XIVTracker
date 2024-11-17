@@ -5,24 +5,24 @@ import { throws } from "assert";
 
 
 describe("Serialize", async () => {
-	it("NULL", async() => {
+	it.concurrent("NULL", async() => {
 		const result = EzSerDe.serialize(EzFlag.NULL, Buffer.alloc(0), 0);
 		expect(result.length).toBe(4);
 	})
 
-	it("Hello, World!", async() => {
+	it.concurrent("Hello, World!", async() => {
 		const message = "Hello, World!";
 		const result = EzSerDe.serialize(EzFlag.NULL, Buffer.from(message), 0);
 		expect(result.length).toBe(4 + Math.ceil(message.length * 6 / 8));
 	})
 
-	it("Lorem 200", async() => {
+	it.concurrent("Lorem 200", async() => {
 		const message = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.";
 		const result = EzSerDe.serialize(EzFlag.NULL, Buffer.from(message), 0);
 		expect(result.length).toBe(4 + Math.ceil(message.length * 6 / 8));
 	})
 	
-	test('random', () => {
+	it.concurrent('random', () => {
 		for(let run = 0; run < 100; run++) {
 			let message = "";
 			const characters = 'abcdefghijklmnopqrstuvwxyz0123456789_,{}[]()-';
@@ -39,13 +39,13 @@ describe("Serialize", async () => {
 });
 
 describe('Deserialize', () => { 
-	it('Invalid', () => {
+	it.concurrent('Invalid', () => {
 		throws(() => { 
 			EzSerDe.deserialize(Buffer.from([0x00, 0x00, 0x00, 0x00])) 
 		}, new Error("Malformed packet"));
 	});
 	
-	it('NULL', () => {
+	it.concurrent('NULL', () => {
 		let result: any | null;
 
 		try {
@@ -61,7 +61,7 @@ describe('Deserialize', () => {
 		expect(result.payload.toString(), "Invalid payload").toBe("");
 	});
 	
-	test('Hello, World!', () => {
+	it.concurrent('Hello, World!', () => {
 		let result: any | null;
 
 		const message = "hello, world!";
@@ -80,7 +80,7 @@ describe('Deserialize', () => {
 		expect(resultMessage, "Invalid payload").toBe(message);
 	});
 	
-	test('Lorem 200', () => {
+	it.concurrent('Lorem 200', () => {
 		let result: any | null;
 
 		const message = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.".toLowerCase();
@@ -100,7 +100,7 @@ describe('Deserialize', () => {
 	});
 	
 	
-	test('random', () => {
+	it.concurrent('random', () => {
 		for(let run = 0; run < 100; run++) {
 			let result: any | null;
 

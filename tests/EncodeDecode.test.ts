@@ -2,21 +2,21 @@ import { assert, expect, it, describe } from "vitest";
 import EzEncoder, { EzEncoding } from "../electron/libs/net/ez/EzEncoder";
 
 describe('Encode', () => {
-	it('Empty', () => {
+	it.concurrent('Empty', () => {
 		let message = "";
 		let serialized: any = EzEncoder.encode(message);
 		console.log(serialized);
 		expect(serialized.length).toBe(Math.ceil(message.length * 6 / 8));
 	});
 
-	it('Hello, World', () => {
+	it.concurrent('Hello, World', () => {
 		const message = "hello, world! ";
 		const serialized = EzEncoder.encode(message);
 		console.log(serialized);
 		expect(serialized.length).toBe(Math.ceil(message.length * 6 / 8));
 	});
 
-	it('Random', () => {
+	it.concurrent('Random', () => {
 		for (let run = 0; run < 100; run++) {
 			let message = "";
 			const randomLength = Math.floor(Math.random() * (700 - 2 + 1)) + 2;
@@ -33,7 +33,7 @@ describe('Encode', () => {
 
 describe('Decode', () => {
 
-	it('Hello, World!', () => {
+	it.concurrent('Hello, World!', () => {
 		let serialized: any = Buffer.from([
 			0xb6, 0xac, 0x71, 0xd0, 0xd0, 0x7c, 0xd3, 0x7c, 0x69, 0x08
 		])
@@ -41,13 +41,13 @@ describe('Decode', () => {
 		expect(deEncoded).toBe("hello, world!");
 	});
 
-	it('Empty', () => {
+	it.concurrent('Empty', () => {
 		let serialized: any = Buffer.alloc(0);
 		const deEncoded = EzEncoder.decode(serialized);
 		expect(deEncoded).toBe("");
 	});
 
-	it('Odd', () => {
+	it.concurrent('Odd', () => {
 		let serialized: any = Buffer.from([
 			0xb6, 0xac, 0x71, 0xd0, 0xd0, 0x7c, 0xd3, 0x7c, 0x69, 0x08, 0x10
 		]);
@@ -55,7 +55,7 @@ describe('Decode', () => {
 		expect(deEncoded).toBe("hello, world! ");
 	});
 
-	it('Random', () => {
+	it.concurrent('Random', () => {
 		for (let run = 0; run < 100; run++) {
 			let message = "";
 			const randomLength = Math.max(1, Math.floor(Math.random() * (700 - 2 + 1)) + 2);
