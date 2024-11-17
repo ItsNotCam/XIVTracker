@@ -1,7 +1,7 @@
 import * as fs from 'fs/promises';
 
 import {
-	resolve,
+	resolve as pathResolve,
 } from 'path';
 
 const first = 0;
@@ -58,7 +58,7 @@ async function generate(basePath) {
 
 			if(outFilename && data) {
 				console.log(`[Update TC Data] Writing ${outFilename}`);
-				await fs.writeFile(resolve(basePath, outFilename), JSON.stringify(data, null, 2));
+				await fs.writeFile(pathResolve(basePath, outFilename), JSON.stringify(data, null, 2));
 				console.log(`[Update TC Data] Wrote and saved ${outFilename}`);
 			}
 		}));
@@ -69,7 +69,7 @@ async function generate(basePath) {
 generateItems = async(basePath) => {
 	console.log("[Update TC Data] Generating items...");
 	const itemsData = JSON.parse(await fs.readFile(
-		resolve(basePath, `items.json`), 'utf8')
+		pathResolve(basePath, `items.json`), 'utf8')
 	);
 	let outData = {};
 	for (let rowId = first; rowId < last; rowId++) {
@@ -86,7 +86,7 @@ generateItems = async(basePath) => {
 generateRecipes = async(basePath) => {
 	console.log("[Update TC Data] Generating recipes...");
 	const recipesData = JSON.parse(await fs.readFile(
-		resolve(basePath, `recipes.json`), 'utf8')
+		pathResolve(basePath, `recipes.json`), 'utf8')
 	);
 
 	let outData = {};
@@ -101,7 +101,7 @@ generateRecipes = async(basePath) => {
 generateGatheringItems = async(basePath) => {
 	console.log("[Update TC Data] Generating gathering items...");
 	const gatheringData = JSON.parse(await fs.readFile(
-		resolve(basePath, `gathering-items.json`), 'utf8')
+		pathResolve(basePath, `gathering-items.json`), 'utf8')
 	);
 	
 	let outData = {};
@@ -120,7 +120,7 @@ generateGatheringItems = async(basePath) => {
 generateMapEntries = async(basePath) => {
 	console.log("[Update TC Data] Generating map entries...");
 	const mapEntriesData = JSON.parse(await fs.readFile(
-		resolve(basePath, `map-entries.json`), 'utf8')
+		pathResolve(basePath, `map-entries.json`), 'utf8')
 	);
 
 	let outData = {};
@@ -134,7 +134,7 @@ generateMapEntries = async(basePath) => {
 generateMonsters = async(basePath) => {
 	console.log("[Update TC Data] Generating monsters...");
 	const monstersData = JSON.parse(await fs.readFile(
-		resolve(basePath, `monsters.json`), 'utf8')
+		pathResolve(basePath, `monsters.json`), 'utf8')
 	);
 
 	let outData = {};
@@ -149,7 +149,7 @@ generateMonsters = async(basePath) => {
 generateNodes = async(basePath) => {
 	console.log("[Update TC Data] Generating nodes...");
 	const nodesData = JSON.parse(await fs.readFile(
-		resolve(basePath, `nodes.json`), 'utf8')
+		pathResolve(basePath, `nodes.json`), 'utf8')
 	);
 
 	let outData = {};

@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "postinstall": "install-app-deps"
   },
-  "dependencies": { 
+  "dependencies": {
     "bufferutil": "^4.0.8",
     "dotenv": "^16.4.5",
     "fs-promise": "^2.0.3",

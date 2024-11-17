@@ -78,7 +78,7 @@ app.on('activate', () => {
 
 app.whenReady().then(async() => {
 	await UpdateTCData();
-	db = await new EzDb().init();
+	// db = await new EzDb().init();
 	await createWindow();
 });
 
