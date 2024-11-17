@@ -1,9 +1,15 @@
 import { WebSocketServer } from 'ws';
 import EzWs from '../electron/libs/net/EzWs';
-import { afterAll, beforeAll, expect, test } from 'vitest';
+import { afterAll, beforeAll, expect, test, vi } from 'vitest';
 import { EzFlag } from '../electron/libs/net/ez/EzTypes.d';
 import { EzEncoding } from '../electron/libs/net/ez/EzEncoder';
 import { spawn } from 'child_process';
+
+
+vi.spyOn(console, 'log').mockImplementation(() => {});
+vi.spyOn(console, 'warn').mockImplementation(() => {});
+vi.spyOn(console, 'error').mockImplementation(() => {});
+
 
 let electronProcess: any;
 
