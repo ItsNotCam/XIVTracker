@@ -1,5 +1,5 @@
 import { BrowserWindow } from "electron";
-import { EventType } from "../types.d";
+import { EventType } from "../../@types/Common";
 
 export function emitOnLoad(eventName: EventType, listener: (event: Electron.IpcRendererEvent, args: any[] | any) => void) {
 	// onReceive("broadcast:renderer-ready", () => {

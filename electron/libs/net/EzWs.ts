@@ -1,5 +1,5 @@
 import EzSerDe from "./ez/EzSerDe";
-import { DeserializedPacket, EzFlag, uint6 } from "./ez/EzTypes.d";
+import { DeserializedPacket, EzFlag, uint6 } from "../../@types/EzNet";
 
 import WebSocket from 'ws';
 

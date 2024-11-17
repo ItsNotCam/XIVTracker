@@ -25,6 +25,7 @@
 		"paths": {
 			"@electron-lib/*": ["electron/libs/*"],
 			"@electron/*": ["electron/*"],
+			"@xiv-types/*": ["electron/@types/*"],
 
 			// ui
 			"@ui/*": ["ui/src/*"],
@@ -36,6 +37,6 @@
 		"rootDir": ".",
 		"outDir": "./dist"
   },
-  "include": ["electron", "ui/src", "electron/libs", "jest.config.js"],
+  "include": ["electron", "ui/src", "electron/libs", "tests", "jest.config.js"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

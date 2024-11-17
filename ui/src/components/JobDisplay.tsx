@@ -3,7 +3,7 @@ import * as __WebpackModuleApi from 'webpack-module-api';
 
 import React, { useEffect } from 'react';
 import XPBar from '@ui/components/XPBar';
-import { Job } from '@electron/libs/types';
+import { Job } from '@electron/@types/Common';
 
 import { invoke, onReceive } from '@electron-lib/events/eventHelpers';
 import JobIcons from '@ui/util/jobIcons';

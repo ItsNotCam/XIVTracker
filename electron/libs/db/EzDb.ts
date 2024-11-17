@@ -1,241 +1,170 @@
-import path from "path";
-import sqlite3 from "sqlite3";
+import { Low } from 'lowdb';
+import { JSONFile } from 'lowdb/node';
+import path from 'path';
+import DBSchema, { RecentSearch } from '../../@types/EzDb'
+import { TCRecipe } from '@electron/@types/TCParser';
 
-import * as fs from "fs/promises"
-import { EzDBNotConnectedError } from "./EzDbTypes.d";
-
-import { fileURLToPath } from 'url';
-
-// Enable verbose mode for additional logging
-sqlite3.verbose();
 
 export default class EzDb {
-	public readonly DB_PATH;
-	private static readonly INIT_DB_SCRIPT_PATH = `${process.cwd()}/electron/data/db/InitDB.sqlite`;
-	public static readonly DEFAULT_DB_PATH = path.resolve(`${process.cwd()}/electron/data/db/xiv-db.db`);
+	public static readonly DEFAULT_DB_PATH = path.resolve(path.join(`electron/data/db/db.db`));
 
-	private connection: sqlite3.Database | null = null;
+	private static readonly DB_NOT_CONNECTED = new Error("DB not connected");
+	private maxRecentSearchCount: number;
+	private db: Low<DBSchema> | null = null;
+	private readonly dbPath: string;
+	private autocommit: boolean;
 
-	constructor(p?: string) {
-		this.DB_PATH = p || EzDb.DEFAULT_DB_PATH;
-	}	
-
-	public isConnected(): boolean {
-		return this.connection !== null;
-	}
-
-	public async reconnect(): Promise<EzDb> {
-		this.close();
-		return await this.connect();
-	}
-
-	private static async dbFileExists(p: string): Promise<boolean> {
-		try {
-			const stats = await fs.stat(p);
-			return stats.isFile() && path.extname(p) === ".db";
-		} catch {
-			return false;
-		}
-	}
-
-	public static async createNew(dbPath: string = EzDb.DEFAULT_DB_PATH, force: boolean = false): Promise<EzDb> {
-		if(path.extname(dbPath) !== ".db") {
-			throw(new Error("Invalid file extension, must be .db"));
-		}
-
-		// if the db exists and we're not forcing a new one, throw an error
-		const exists = await EzDb.dbFileExists(dbPath);
-		if(exists && !force) {
-			throw(new Error("DB exists"));
-		}
-
-		// Delete the existing one
-		if(exists) {
-			try {
-				await fs.unlink(dbPath);
-			} catch (e: any) {
-				throw(new Error("Failed to delete existing DB file: " + e.message));
-			}
-		}
-
-		// Create a new one
-		try {
-			// this is mad ugly, but it's the only way I can think of to check if the db is valid
-			const newDb = await new Promise<sqlite3.Database>((resolve, reject) => {
-				// try to create a new database, resolve the promise if it's successful else reject
-				const db = new sqlite3.Database(dbPath, (err: Error | null) => {
-					if(err) { 
-						reject(err); 
-					} else { 
-						resolve(db); 
-					}
-				});
-			});
-
-			await new Promise((resolve, reject) => {
-				newDb.close((err: Error | null) => {
-					if(err) { 
-						reject(new Error("Failed to close the temporary database" + err.message)); 
-					} else {
-						resolve(dbPath);
-					}
-				});
-			});
-		} catch(e: any) {
-			throw(new Error("Failed to create the new database: " + e.message));
-		}
-
-		// return a new EzDb instance
-		return await new EzDb(dbPath);
-	}
-	
-	public async connect(): Promise<EzDb> {
-		if(this.connection) {
-			throw(new Error("DB already connected"));
-		}
-
-		if(!await EzDb.dbFileExists(this.DB_PATH)) {
-			throw(new Error("DB file does not exist"));
-		}
-
-		return new Promise((resolve, reject) => {
-			this.connection = new sqlite3.Database(this.DB_PATH, (err: Error | null) => {
-				if(err) {
-					reject(err);
-				} else {
-					resolve(this);
-				}
-			});
-		})
-	}
-
-	public async getOne(sql: string): Promise<any> {
-		if(!this.connection) {
-			throw(new EzDBNotConnectedError());
-		}
-
-		if(!sql.match(/^SELECT/i) && !sql.match(/^PRAGMA/i)) {
-			throw(new Error("Only SELECT queries are allowed"));
-		}
-
-		return new Promise((resolve, reject) => {
-			this.connection!.get(sql, (err, row) => {
-				if(err) {
-					reject(new Error("Failed to execute query: " + err.message));
-				}
-
-				resolve(row);
-			});
-		});
-	};
-
-	public async getAll(sql: string): Promise<any[]> {
-		if(!this.connection) {
-			throw(new EzDBNotConnectedError());
-		}
-
-		if(!sql.match(/^SELECT/i) && !sql.match(/^PRAGMA/i)) {
-			throw(new Error("Only SELECT queries are allowed"));
-		}
-
-
-		let result: any[] = await new Promise((resolve,reject) => {
-			let results: any[] = []
-			this.connection!.each(sql, (err, row) => {
-				if(err) {
-					reject(new Error("Failed to execute query: " + err.message));
-				}
-				results.push(row);
-			}, ((err: Error | null) => {
-				if(err) {
-					reject(new Error("Failed to execute query: " + err.message));
-				}
-				resolve(results)
-			}));
-		});
-
-		return result;
-	}
-
-
-	public async exec(sql: string): Promise<void> {
-		if(!this.connection) {
-			throw(new EzDBNotConnectedError());
-		}
-
-		this.connection = await new Promise((resolve, reject) => {	
-			const c = this.connection!.exec(sql, function(err: Error | null) {
-				if(err) {
-					reject(err);
-				} else {
-					resolve(c);
-				}
-			});
-		});
+	constructor(
+		dbPath: string = EzDb.DEFAULT_DB_PATH, 
+		maxRecentSearchCount: number = 10, 
+		autocommit: boolean = true
+	) {
+		this.dbPath = dbPath;
+		this.maxRecentSearchCount = maxRecentSearchCount;
+		this.autocommit = autocommit;
 	}
 
 	public async init(): Promise<EzDb> {
-		if(!await EzDb.dbFileExists(this.DB_PATH)) {
-			await EzDb.createNew(this.DB_PATH);
+		if(this.db !== null) {
+			throw new Error("DB already connected");
 		}
 
-		let initScript: string | undefined;
-		try {
-			initScript = await fs.readFile(EzDb.INIT_DB_SCRIPT_PATH, "utf-8");
-		} catch(e: any) {
-			throw(new Error("Failed to read file: " + e.message));	
-		}
+		const adapter = new JSONFile<DBSchema>(this.dbPath);
+		this.db = new Low<DBSchema>(adapter, {} as DBSchema);
 
-		try {
-			await this.exec(initScript);
-		} catch(e: any) {
-			throw(new Error("Failed to execute initialization script: " + e.message))
-		}
+		await this.db.read();
+		this.db.data ||= { 
+			RecentSearches: [], 
+			Recipes: new Map<string, TCRecipe>() 
+		};
+		await this.db.write();
 
 		return this;
 	}
 
-	public async close(): Promise<boolean> {
-		if(!this.connection) {
-			console.error("DB is not connected");
-			return false;
-		}
+	public setMaxRecentSearchCount(count: number) {
+		this.maxRecentSearchCount = count;
 
-		let closed = false;
-		try {
-			await new Promise<boolean>((resolve, reject) => {
-				this.connection!.close((err) => {
-					if(err) {
-						reject(err);
-					} else {
-						closed = true;
-						resolve(true)
-					}
-				});
-			})
-		} catch(e: any) {
-			console.error("Failed to close db:", e.message);
+		if(this.db !== null && this.db.data.RecentSearches !== undefined) {
+			while(this.db.data.RecentSearches.length > this.maxRecentSearchCount) {
+				this.removeOldestRecentSearch();
+			}
+			this.db.write();
 		}
-
-		if(closed) {
-			this.connection = null;
-		}
-
-		return closed;
 	}
 
-	public async wipeFile(): Promise<void> {
-		if(this.connection) {
-			this.close();
+	public isConnected = (): boolean => this.db !== null;
+
+	public async close(): Promise<void> {
+		await this.db?.write();
+		this.db = null;
+	}
+
+	public setAutoCommit(autocommit: boolean) {
+		this.autocommit = autocommit;
+	}
+
+	public async commit() {
+		await this.db?.write();
+	}
+
+	public async addRecentSearch(newSearch: string, date?: Date): Promise<void> {
+		if(this.db == null) {
+			throw EzDb.DB_NOT_CONNECTED;
 		}
 
-		// if the db exists and we're not forcing a new one, throw an error
-		try {
-			await fs.unlink(this.DB_PATH);
-		} catch (e: any) {
-			if(e.code !== "ENOENT") {
-				throw(new Error("Failed to delete existing DB file: " + e.message));
-			}
+		let RecentSearches = this.db.data.RecentSearches || [];
+		if(RecentSearches.length > 0) {
+			RecentSearches = RecentSearches.filter(search => search.name !== newSearch);
+		}
+
+		if(RecentSearches.length >= this.maxRecentSearchCount) {
+			RecentSearches.pop();
+		}
+
+		RecentSearches.unshift({
+			name: newSearch,
+			date: date || new Date()
+		});
+
+		this.db.data.RecentSearches = RecentSearches;
+
+		if(this.autocommit) {
+			await this.db.write();
+		}
+	}
+
+	public getRecentSearches(limit?: number): RecentSearch[] {
+		if(this.db === null) {
+			throw EzDb.DB_NOT_CONNECTED;
+		}
+
+		const RecentSearches = this.db.data.RecentSearches || [];
+		return limit ? RecentSearches.slice(0,limit) : RecentSearches;
+	}
+
+	public byName(): RecentSearch[] {
+		if(this.db === null) {
+			throw EzDb.DB_NOT_CONNECTED;
+		}
+
+		const { RecentSearches } = this.db.data;
+		return RecentSearches.sort((a, b) => a.name.localeCompare(b.name));
+	}
+
+	public byDate(): RecentSearch[] {
+		if(this.db === null) {
+			throw EzDb.DB_NOT_CONNECTED;
+		}
+
+		const { RecentSearches } = this.db.data;
+		return RecentSearches.sort((a, b) => {
+			if(a > b) return 1;
+			if(a < b) return -1;
+			return 0;
+		});
+	}
+
+	public async removeRecentSearch(searchToRemove: string): Promise<void> {
+		if(this.db === null) {
+			throw EzDb.DB_NOT_CONNECTED;
+		}
+
+		const { RecentSearches } = this.db.data;
+		this.db.data.RecentSearches = RecentSearches
+			.filter(search => search.name !== searchToRemove);
+
+		if(this.autocommit) {
+			await this.db.write();
+		}
+	}
+
+	public async removeOldestRecentSearch(): Promise<void> {
+		if(this.db === null) {
+			throw EzDb.DB_NOT_CONNECTED;
+		}
+
+		this.db.data.RecentSearches.pop();
+
+		if(this.autocommit) {
+			await this.db.write();
+		}
+	}
+
+	public async addRecipe(newRecipe: TCRecipe): Promise<void> {
+		if(this.db === null) {
+			throw EzDb.DB_NOT_CONNECTED;
+		}
+
+		const { Recipes } = this.db.data;
+		if(Recipes.has(newRecipe.name)) {
+			return;
+		}
+
+		Recipes.set(newRecipe.name, newRecipe);
+		
+		if(this.autocommit) {
+			await this.db.write;
 		}
 	}
 }

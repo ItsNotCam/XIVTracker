@@ -1,5 +1,5 @@
 import { BrowserWindow } from "electron";
-import { DeserializedPacket, EzFlag } from "./ez/EzTypes.d";
+import { DeserializedPacket, EzFlag } from "../../@types/EzNet";
 import { sendToClient } from "../events/eventHelpers";
 
 export default function ezRoute(win: BrowserWindow, msg: DeserializedPacket) {

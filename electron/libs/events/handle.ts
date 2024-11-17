@@ -1,10 +1,10 @@
 import { BrowserWindow } from "electron";
 import { handle } from "./eventHelpers";
 import EzWs from "../net/EzWs";
-import { EzFlag } from "../net/ez/EzTypes.d";
-import { JobState, Location } from "../types.d";
+import { EzFlag } from "../../@types/EzNet";
+import { JobState, Location } from "../../@types/Common";
 import TeamCraftParser from "../parsers/TeamCraftParser";
-import { TCRecipe } from "../parsers/TeamCraftTypes";
+import { TCRecipe } from "../../@types/TCParser";
 
 export function initWindowControls(ipcMain: any, win: BrowserWindow) {
 	// Ensure the window object is valid

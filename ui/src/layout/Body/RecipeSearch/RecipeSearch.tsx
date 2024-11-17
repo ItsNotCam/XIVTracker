@@ -1,4 +1,4 @@
-import { TCGatheringType, TCRecipe } from '@electron-lib/parsers/TeamCraftTypes';
+import { TCGatheringType, TCRecipe } from '@electron/@types/TCParser';
 import React, { useRef } from 'react';
 import SearchBar from './SearchBar';
 

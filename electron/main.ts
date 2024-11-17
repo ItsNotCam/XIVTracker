@@ -4,7 +4,7 @@ import path from 'node:path'
 
 import initHandlers, { initWindowControls } from './libs/events/handle';
 import ezRoute from './libs/net/EzRouter';
-import { DeserializedPacket } from './libs/net/ez/EzTypes.d';
+import { DeserializedPacket } from './@types/EzNet';
 import EzWs from './libs/net/EzWs';
 
 import UpdateTCData from "../electron/data/updateTCData.mjs";
