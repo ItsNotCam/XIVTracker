@@ -1,5 +1,5 @@
 import EzSerDe from "./ez/EzSerDe";
-import { DeserializedPacket, EzFlag, uint6 } from "./ez/EzTypes";
+import { DeserializedPacket, EzFlag, uint6 } from "./ez/EzTypes.d";
 
 import WebSocket from 'ws';
 
@@ -9,26 +9,28 @@ type WsHandler = {
 }
 
 export default class EzWs {
+	private readonly PORT: number;
 	private socket: WebSocket | null = null;
 	private requests: Map<uint6, WsHandler>;
 	private handle: (packet: DeserializedPacket) => void;
 	private setConnected: (connected: boolean) => void;
 	private reconnectTimeout: NodeJS.Timeout | null = null;
 
-	constructor(handle: (msg: DeserializedPacket) => void, setConnected: (connected: boolean) => void) {
+	constructor(port: number, handle: (msg: DeserializedPacket) => void, setConnected: (connected: boolean) => void) {
 		this.requests = new Map();
+		this.PORT = port;
 		this.handle = handle;
 		this.setConnected = setConnected;
-		this.initSocket();
 	}
 
-	private initSocket = () => {
+	public connect = (): EzWs | null => {
 		try {
-			this.socket = new WebSocket('ws://localhost:50085');
+			this.socket = new WebSocket(`ws://localhost:${this.PORT}`);
 		} catch (e) {
 			console.error("Error creating websocket connection:", e);
+			this.setConnected(false);
 			this.scheduleReconnect();
-			return;
+			return null;
 		}
 
 		if (!this.socket) {
@@ -39,14 +41,22 @@ export default class EzWs {
 		this.socket.on("open", this.handleOpen);
 		this.socket.on("error", this.handleError);
 		this.socket.on("close", this.handleClose);
+		return this;
 	}
 
 	private scheduleReconnect() {
-		if (this.reconnectTimeout) {
+		if(this.reconnectTimeout) {
 			clearTimeout(this.reconnectTimeout);
 		}
 
-		this.reconnectTimeout = setTimeout(this.initSocket, 1000);
+		this.reconnectTimeout = setTimeout(() => {
+			this.connect();
+		}, 2000);
+	}
+
+	public reconnect() {
+		this.close();
+		this.connect();
 	}
 
 	private handleMessage = (data: Buffer) => {
@@ -58,6 +68,7 @@ export default class EzWs {
 			return;
 		}
 
+		console.log(`Received ${EzFlag[deserializedMsg.flag]}: ${deserializedMsg.payload.toString()}`);
 		if (this.requests.has(deserializedMsg.id)) {
 			const handler: WsHandler = this.requests.get(deserializedMsg.id)!;
 			handler.resolve(deserializedMsg.payload.toString());
@@ -69,10 +80,8 @@ export default class EzWs {
 
 	public send(routeFlag: EzFlag, data: string | Buffer, id?: number): void {
 		if (!this.isConnected()) {
-			console.error("Error sending message - not connected");
-			return;
+			throw(new Error("Not connected"));
 		}
-
 		const payload = (typeof data === "string") ? Buffer.from(data) : data;
 		const serializedMsg = EzSerDe.serialize(routeFlag, payload, id);
 		this.socket!.send(serializedMsg);
@@ -80,8 +89,7 @@ export default class EzWs {
 
 	public async sendAndAwaitResponse(routeFlag: EzFlag, data?: string | Buffer): Promise<string | undefined> {
 		if (!this.isConnected()) {
-			console.error("Error sending message - not connected");
-			return undefined;
+			throw(new Error("Not connected"));
 		}
 
 		let id: number = 0;
@@ -114,30 +122,44 @@ export default class EzWs {
 		});
 	}
 
-	public isConnected = (): boolean => this.socket !== null && this.socket.readyState === WebSocket.OPEN;
-
-	public close = (): void => {
-		if (this.isConnected()) {
-			this.socket!.close()
+	public isConnected = (): boolean => {
+		if(this.socket === null) {
+			return false;
 		}
-		this.setConnected(false);
+
+		if(this.socket.readyState !== WebSocket.OPEN) {
+			return false;
+		}
+		
+		return true;
 	};
 
-	private handleError = (ev: any) => {
-		console.error("WebSocket error:", ev.code);
+	public close = (reconnect: boolean = true, force: boolean = false): void => {
+		if(this.socket === null || !this.isConnected()) {
+			if(!force) {
+				throw(new Error("Not connected"));
+			}
+		}
+
+		this.socket!.close()
+		if(reconnect) {
+			this.scheduleReconnect();
+		}
+	};
+
+	private handleError = () => {
 		if (!this.isConnected()) {
 			this.scheduleReconnect();
 		}
 	}
 
 	private handleOpen = () => {
-		console.log("WebSocket opened");
+		console.log("Connection opened");
 		this.setConnected(true);
 	}
 
-	private handleClose = (ev: CloseEvent) => {
-		console.log("WebSocket closed:", ev);
-		this.setConnected(false);
+	private handleClose = () => {
+		console.log("Connection closed");
 		this.scheduleReconnect();
 	}
 }

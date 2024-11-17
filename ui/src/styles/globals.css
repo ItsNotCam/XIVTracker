@@ -41,6 +41,9 @@ img {
 	max-height: 100%;
 }
 
+.grid-centered {
+	@apply col-start-1 col-end-2 row-start-1 row-end-2
+}
 
 .font-forum {
 	font-family: 'Forum';

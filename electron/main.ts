@@ -1,27 +1,17 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
-// import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
-import initHandlers from './events/handle';
-// import EzTcpClient from '../lib/net/EzTcp.ts.old';
-// import EzUdpServer from '../lib/net/EzUdp';
-import ezRoute from '../lib/net/EzRouter';
-import { DeserializedPacket } from '../lib/net/ez/EzTypes';
-import EzWs from '../lib/net/EzWs';
+import initHandlers, { initWindowControls } from './libs/events/handle';
+import ezRoute from './libs/net/EzRouter';
+import { DeserializedPacket } from './libs/net/ez/EzTypes.d';
+import EzWs from './libs/net/EzWs';
+
+import UpdateTCData from "../electron/data/updateTCData.mjs";
+import EzDb from '../electron/libs/db/EzDb';
 
 // const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-
-// The built directory structure
-//
-// ├─┬─┬ dist
-// │ │ └── index.html
-// │ │
-// │ ├─┬ dist-electron
-// │ │ ├── main.js
-// │ │ └── preload.mjs
-// │
 process.env.APP_ROOT = path.join(__dirname, '..')
 
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
@@ -32,21 +22,18 @@ export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist')
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 'public') : RENDERER_DIST
 
 let win: BrowserWindow | null;
-// let UdpServer: EzUdpServer | null;
-// let TcpClient: EzTcpClient | null;
 let WebSocketClient: EzWs | null;
+let db: EzDb | null;
 
-function createWindow() {
+async function createWindow() {
 	win = new BrowserWindow({
 		icon: path.join(process.env.VITE_PUBLIC || "", 'electron-vite.svg'),
 		webPreferences: {
 			preload: path.join(__dirname, 'preload.mjs'),
 		},
-		// alwaysOnTop: true,
 		autoHideMenuBar: true,
 		frame: false,
 		minWidth: 800
-		// transparent: true,
 	})
 
 	if (VITE_DEV_SERVER_URL) {
@@ -56,53 +43,21 @@ function createWindow() {
 		win.loadFile(path.join(RENDERER_DIST, 'index.html'))
 	}
 
-	// initNetworking(win!);
-	// initHandlers(win, ipcMain, WebSocketClient!);
-
-	ipcMain.on("renderer-ready", (event) => {
-		event.sender.send("initial-data", "ok");
-		if (win) {
-			win.webContents.send("setup-completed");
-			console.log("window sent setup completed")
-		} else {
-			console.log("failed to send setup-completed - no window can be found")
-		}
-	});
+	initWindowControls(ipcMain!, win!);
+	initNetworking(win!);
+	initHandlers(win!, ipcMain, WebSocketClient!);
 }
 
 const initNetworking = (win: BrowserWindow) => {
-	// UdpServer = new EzUdpServer((msg: Buffer) => {
-	// 	const data: any = deserialize(msg);
-	// 	ezRoute(win, data);
-	// });
-
-	console.log("creating websocket client");
 	try {
-		WebSocketClient = new EzWs((data: DeserializedPacket) => {
+		WebSocketClient = new EzWs(50085, (data: DeserializedPacket) => {
 			ezRoute(win, data as DeserializedPacket);
 		}, (connected: boolean) => {
 			win.webContents.send("broadcast:tcp-connected", connected);
-		});
+		}).connect();
 	} catch (e) {
 		console.error("error creating websocket client:\n", e);
 	}
-
-
-	// TcpClient = new EzTcpClient(
-	// 	(msg: Buffer) => {
-	// 		const data: any = deserialize(msg);
-	// 		ezRoute(win, data);
-	// 	}, 
-	// 	(connected: boolean) => {
-	// 		console.log('TCP connected:', connected);
-	// 		sendToClient('broadcast:tcp-connected', win, connected);
-	// 	}
-	// );
-
-	// console.log("sending response");
-	// TcpClient.sendAndAwaitResponse(EzFlag.LOCATION_ALL).then((response: Buffer) => {
-	// 	console.log(response.toString());
-	// });
 }
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -110,22 +65,23 @@ const initNetworking = (win: BrowserWindow) => {
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') {
-		// UdpServer?.close();
-		// TcpClient?.close();
-
 		app.quit()
 		win = null
 	}
 })
 
 app.on('activate', () => {
-	// On OS X it's common to re-create a window in the app when the
-	// dock icon is clicked and there are no other windows open.
 	if (BrowserWindow.getAllWindows().length === 0) {
 		createWindow()
 	}
 })
 
-app.whenReady().then(() => {
-	createWindow()
+app.whenReady().then(async() => {
+	await UpdateTCData();
+	// db = await new EzDb().init();
+	await createWindow();
 });
+
+async function asyncSleep(ms: number) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}

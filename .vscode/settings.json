@@ -1,6 +1,8 @@
 {
   "files.associations": {
-    "*.json5": "json"
+    "*.json5": "json",
+    "*.sqlite": "sql",
+		"*.meta": ".json"
   }
 	,
 	"files.exclude": {
@@ -8,7 +10,8 @@
 		"**/dist-electron": true,
 		"**/dist": true,
 		"**/node_modules": true,
-		"**/.vscode": true,
+		"**/coverage": true,
+		// "**/.vscode": true,
 	},
 	"material-icon-theme.folders.associations": {
 		"electron": "React-components",
@@ -18,5 +21,6 @@
     "tsconfig.electron.json": "typescript-def",
     "tsconfig.react.json": "typescript-def",
     "tsconfig.node.json": "typescript-def",
+    "*.meta": "lib",
   }
 }

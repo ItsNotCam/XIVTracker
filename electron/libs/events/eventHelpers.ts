@@ -1,5 +1,5 @@
 import { BrowserWindow } from "electron";
-import { EventType } from "./types";
+import { EventType } from "../types.d";
 
 export function emitOnLoad(eventName: EventType, listener: (event: Electron.IpcRendererEvent, args: any[] | any) => void) {
 	// onReceive("broadcast:renderer-ready", () => {
@@ -35,9 +35,17 @@ export function emit(eventName: EventType, listener: (event: Electron.IpcRendere
 	window.ipcRenderer.emit(eventName, listener);
 }
 
-export async function invoke(eventName: EventType): Promise<any> {
+export async function invoke(eventName: EventType, args?: any[] | any): Promise<any> {
 	return new Promise(async (resolve, reject) => {
-		window.ipcRenderer.invoke(eventName).then(resolve).catch(reject);
+		if(!window || !window.ipcRenderer) {
+			reject(new Error("ipcRenderer is not available on the window object"));
+		}
+
+		if(Array.isArray(args)) {
+			window.ipcRenderer.invoke(eventName, ...args).then(resolve).catch(() => resolve(null));
+		} else {
+			window.ipcRenderer.invoke(eventName, args).then(resolve).catch(() => resolve(null));
+		}
 	})
 }
 

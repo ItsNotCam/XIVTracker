@@ -3,7 +3,7 @@ import { IpcRendererEvent } from 'electron';
 import { withCommas } from '@ui/util/util';
 
 import GilImage from "@assets/images/etc-gil.png";
-import { onReceive } from '@lib/eventHelpers';
+import { onReceive } from '@electron-lib/events/eventHelpers';
 
 const GilDisplay: React.FC = () => {
 	const [amount, setAmount] = React.useState(3250);
@@ -13,9 +13,11 @@ const GilDisplay: React.FC = () => {
 	}
 
   useEffect(() => {	
-		// onReceive("update:gil", updateGilAmount);
+		const updateGilAmountRef = updateGilAmount;
+
+		onReceive("update:gil", updateGilAmountRef);
 		return () => {
-			// window.ipcRenderer.removeListener("update:gil", updateGilAmount);
+			window.ipcRenderer.removeListener("update:gil", updateGilAmountRef);
 		}
 	}, []);
 	

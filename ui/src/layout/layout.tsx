@@ -1,5 +1,5 @@
-import Header from '@ui/layout/Header/_page';
-import Body from '@ui/layout/Body/_page';
+import Header from '@ui/layout/Header/_Root';
+import Body from '@ui/layout/Body/_Root';
 
 export default function App() {
 	return (

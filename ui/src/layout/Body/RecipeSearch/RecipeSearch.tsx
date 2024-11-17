@@ -1,33 +1,128 @@
-import React from 'react';
+import { TCGatheringType, TCRecipe } from '@electron-lib/parsers/TeamCraftTypes';
+import React, { useRef } from 'react';
+import SearchBar from './SearchBar';
+
+import JobIcons from '@ui/util/jobIcons';
+import { toTitleCase } from '@ui/util/util';
 
 const RecipeSearch: React.FC = () => {
-	const handleRecipeSearch = (event: React.FormEvent<HTMLFormElement>) => {
-		event.preventDefault();
+	const reqs = useRef<any[]>([])
+
+	const [recipeData, setRecipeData] = React.useState<TCRecipe | null>(null);
+	const [craftingRequirements, setCraftingRequirements] = React.useState<any[]>([]);
+
+	const onSearchComplete = async (result: TCRecipe | null) => {
+		if(result !== null && result.name === recipeData?.name) {
+			return;
+		}
+
+		setRecipeData(result);
+		if (result) {
+			reqs.current = [
+				{ job: result.crafting?.job_name, level: result.crafting?.level, icon_path: JobIcons[result.crafting?.job_name || ""] }
+			]
+
+			await getAllCraftingRequirements(result);
+			setCraftingRequirements(reqs.current);
+		}
 	}
 
-	const SearchButtonIcon: React.FC<{ className?: string }> = ({ className }) => (
-		<svg xmlns="http://www.w3.org/2000/svg" className={className} height="1.5rem" viewBox="0 -960 960 960" width="1.5rem">
-			<path d="m560-240-56-58 142-142H160v-80h486L504-662l56-58 240 240-240 240Z"/>
-		</svg>
-	)
+	const getAllCraftingRequirements = async (recipeData: TCRecipe) => {
+		recipeData.ingredients.forEach((ingredient: TCRecipe) => {
+			const level = recipeData.crafting?.level;
+			const crafting = ingredient.crafting;
+			const gathering = ingredient.gathering;
+			if (crafting && level && level > 1) {
+				let changed = false;
+				reqs.current.forEach((curJob, i) => {
+					if (curJob.job === crafting?.job_name) {
+						curJob = {
+							...curJob,
+							level: Math.max(curJob.level, level)
+						}
+						changed = true;
+					}
+				})
+
+				if (!changed) {
+					reqs.current.push({
+						job: crafting?.job_name,
+						level: crafting?.level,
+						icon_path: JobIcons[crafting.job_name]
+					});
+				}
+			}
+			if (gathering && gathering.level > 1) {
+				const level = gathering.level;
+				gathering.types?.forEach((t: TCGatheringType) => {
+					console.log(`UNDEFINED asfoiugsaviydfkjlk '${t.name}'`, JobIcons[t.name])
+					let jobname = ""
+					if (t.name === "Mining" || t.name === "Quarrying") {
+						jobname = "miner";
+					} else {
+						jobname = "botanist";
+					}
+
+					let changed = false;
+					reqs.current.forEach((curJob, i) => {
+						if (curJob.job === jobname) {
+							curJob = {
+								...curJob,
+								level: Math.max(curJob.level, level)
+							}
+							changed = true;
+						}
+					})
+
+					if (!changed) {
+						reqs.current.push({ job: jobname, level: level || -1, icon_path: JobIcons[jobname] });
+					}
+				});
+			}
+			if (ingredient.ingredients && ingredient.ingredients.length > 0) {
+				getAllCraftingRequirements(ingredient);
+			}
+		});
+	}
 
 	return (
-		<div className="flex flex-row justify-between items-center">
-			<h1 className="text-content-header">CRAFTING</h1>
-			<form onSubmit={handleRecipeSearch} className="
-				w-[clamp(200px,60%,400px)] rounded-full bg-custom-gray-900 
-				text-white flex flex-row gap-2 items-center
-			">
-					<svg xmlns="http://www.w3.org/2000/svg" className="fill-custom-gray-100/50 ml-3 my-2" height="24px" viewBox="0 -960 960 960" width="24px" >
-						<path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/>
-					</svg>
-					<input type="text" className="bg-transparent outline-none focus:outline-none flex-grow"/>
-					<button className='cursor-pointer h-8 w-8 hover:bg-custom-gray-300 rounded-full grid place-items-center mr-2 group'>
-						<SearchButtonIcon className='fill-custom-gray-100 group-hover:ml-1 transition-[margin]'/>
-					</button>
-			</form>
-		</div>
-	);
+		<>
+			<div className="flex flex-row justify-between items-center p-4">
+				<h1 className="text-content-header">CRAFTING</h1>
+				<SearchBar onSearchComplete={onSearchComplete} />
+			</div>
+			{recipeData === null && <h1 className="3xl text-center mt-8">Search for a recipe to get started</h1>}
+			{recipeData && (
+				<div className="overflow-y-auto px-4">
+					<div className="flex flex-row gap-4 items-center">
+						<img src={recipeData?.icon_path} className="w-auto h-auto" alt="Recipe Icon" />
+						<div className="font-forum flex-shrink-0">
+							<h1 className='text-4xl'>{recipeData?.name}</h1>
+							<div className="text-3xl forum flex flex-row gap-2">
+								<img src={JobIcons[recipeData?.crafting?.job_name || ""]} className="h-[1.2em] w-[1.2em] inline" />
+								<p>Lvl. {recipeData?.crafting?.level}</p>
+							</div>
+						</div>
+						<div className="flex flex-wrap flex-row gap-2 overflow-visible z-10">
+							{craftingRequirements?.map((req) => (
+								<div key={`crafting-req-${req.job}`} className="grid place-items-center group">
+									<h1 className='grid-centered z-[1] group-hover:opacity-100 opacity-0 transition-opacity duration-100 translate-y-10'>
+										{toTitleCase(req.job)}
+									</h1>
+									<img src={req.icon_path} className="grid-centered h-[64px] w-[64px]" />
+									<div className="h-[80%] w-[80%] bg-black/40 group-hover:bg-black/0 grid place-items-center grid-centered rounded-lg transition-colors duration-100">
+										<h1 className="text-2xl pointer-events-none group-hover:opacity-0 opacity-100 transition-opacity" style={{
+											color: Math.random() > 0.5 ? 'lime' : 'red'
+										}}>{req.level}</h1>
+									</div>
+								</div>
+							))}
+						</div>
+					</div>
+					<div className="">
+					</div>
+				</div>)}
+		</>);
 };
 
 export default RecipeSearch;

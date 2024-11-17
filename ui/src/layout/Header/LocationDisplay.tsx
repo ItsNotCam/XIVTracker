@@ -1,5 +1,5 @@
-import { onReceive } from "@lib/eventHelpers";
-import { Location } from "@lib/types";
+import { onReceive } from "@electron-lib/events/eventHelpers";
+import { Location } from "@electron/libs/types";
 import { useEffect, useState } from "react";
 import { FC } from "react";
 
@@ -15,9 +15,11 @@ const LocationDisplay: FC<{ initialLocation: Location }> = ({ initialLocation: i
 	};
 
 	useEffect(() => {
-		// onReceive("update:location-*", handleLocationChange);
+		const handleLocationChangeRef = handleLocationChange;
+
+		onReceive("update:location-*", handleLocationChangeRef);
 		return () => {
-			// window.ipcRenderer.removeListener("update:location-*", handleLocationChange);
+			window.ipcRenderer.removeListener("update:location-*", handleLocationChangeRef);
 		};
 	}, []);
 

@@ -3,11 +3,40 @@ import path from 'node:path'
 import electron from 'vite-plugin-electron/simple'
 import react from '@vitejs/plugin-react'
 import TsconfigPaths from 'vite-plugin-tsconfig-paths';
+import { configDefaults  } from 'vitest/config';
 
-const root = (p: string) => path.resolve(__dirname, p);
+const root = (p: string) => path.join(path.resolve(__dirname), p);
+
+console.log(root("electron/lib"))
 
 // https://vitejs.dev/config/
 export default defineConfig({
+	test: {
+		coverage: {
+			exclude: [
+				...configDefaults.coverage.exclude!, // Default exclusions
+				'dist-electron/', // Exclude dist-electron directory
+				'ui/',             // Exclude ui directory
+				'**/node_modules/**', // Common exclusion for node_modules
+				'./*.ts',          // Exclude root level .ts files
+				'./*.js',          // Exclude root level .ts files
+			]
+		},
+		exclude: [
+			...configDefaults.exclude, 
+			"**\/node_modules/**"
+    ],
+	},
+	resolve: {
+		alias: {
+			"@lib": path.join(__dirname, "electron/lib")
+		}
+	},
+	build: {
+		rollupOptions: {
+			external: ["@lib/events/handle"]
+		}
+	},
   plugins: [
     react(),
 		TsconfigPaths(),

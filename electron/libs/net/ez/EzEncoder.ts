@@ -1,5 +1,5 @@
 export const EzEncoding = [
-	"NUL", " ", "!", "\"", "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", "-", ".",
+	"", " ", "!", "\"", "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", "-", ".",
 	"/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", "<", "=", ">", "?", "@",
 	"[", "]", "{", "}", "_", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l",
 	"m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
@@ -26,7 +26,7 @@ class EzEncoder {
 	}
 
 	finalize(): Buffer {
-		if (this.bitsUsed > 0) {
+		if (this.bitsUsed !== 0) {
 			this.buffer[this.bufferIndex] = (this.word << (8 - this.bitsUsed)) & 0xFF;
 		}
 		return this.buffer;
@@ -60,15 +60,10 @@ const decode = (buffer: Buffer): string => {
 	let decodedString = "";
 
 	// Decode each 6-bit chunk from the buffer
-	while (bitUnpacker.bufferIndex < buffer.length) {
+	while (bitUnpacker.bufferIndex <= buffer.length) {
 		const encodedValue = bitUnpacker.unpack();
-		if (encodedValue >= EzEncoding.length || encodedValue < 0) {
-			decodedString += "~"
-		} else {
-			decodedString += EzEncoding[encodedValue]
-		}
+		decodedString += EzEncoding[encodedValue]
 	}
-
 	return decodedString;
 };
 

@@ -52,14 +52,14 @@ def get_random_job_data():
 		"level": random.randint(1, 90),
 		"job_name": random.choice(ffxiv_jobs),
 		"current_xp": current_xp,
-		"max_xp": max_xp,
+		"max_xp": max_xp
 	}
 
 
 async def echo(websocket):
 	async def send_random_job_data():
 		while True:
-			await asyncio.sleep(random.randint(2, 5))  # Random delay between 5 to 15 seconds
+			await asyncio.sleep(random.randint(5, 10))  # Random delay between 5 to 15 seconds
 			job_data = json.dumps(get_random_job_data()).encode("utf-8")
 			msg = serialize(0x21, job_data, random.randint(1, 1000))  # Random packet ID
 			print("sending:", job_data)
@@ -71,13 +71,12 @@ async def echo(websocket):
 		message = await websocket.recv()
 		
 		# async for message in websocket:
-		print(f"Received message: {message}")
 		message_hex = message.hex()
-		print(f"Received message (hex): {message_hex}")
 		packet = deserialize(message)
 		
 		flag = packet["flag"]
 		payload = packet["payload"]
+		print("received:", message_hex, packet)
 		
 		if flag == 2:
 			utf8_msg = payload.encode("utf-8")
@@ -89,6 +88,11 @@ async def echo(websocket):
 			print("sending:", utf8_msg)
 			msg = serialize(0x21, utf8_msg, packet["id"])
 			await websocket.send(msg)  # Send back to the same websocket connection
+		elif flag == 0x22:
+			utf8_msg = f"{random.randint(1, 12):02}:{random.randint(0, 59):02} {'am' if random.randint(0, 1) == 0 else 'pm'}".encode("utf-8")
+			print("sending:", utf8_msg)
+			msg = serialize(flag, utf8_msg, packet["id"])
+			await websocket.send(msg)
 
 async def main():
     # Create and start the WebSocket server

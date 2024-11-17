@@ -13,18 +13,19 @@ const tabs = [
 interface SidebarProps {
 	setCurrentTab: (index: number) => void;
 	currentTab: number;
+	className?: string;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ setCurrentTab, currentTab }) => {
+const Sidebar: React.FC<SidebarProps> = ({ setCurrentTab, currentTab, className }) => {
 	return (
-		<div className="flex flex-col w-fit">
+		<div className={`flex flex-col w-fit ${className}`}>
 			{tabs.map((tab, index) => (
 				<button  
 					key={`tab-${tab.name}`} 
 					onClick={() => setCurrentTab(index)}
 					className={`
-						cursor-pointer py-2 px-4 transition-colors duration-100 hover:bg-custom-gray-500
-						${currentTab === index && " bg-custom-gray-500"}
+						outline-none focus:outline-none cursor-pointer py-2 px-4 transition-colors 
+						duration-100 hover:bg-custom-gray-500 ${currentTab === index && " bg-custom-gray-500"}
 					`}
 				>
 					<img className="w-[56px] mx-auto" src={tab.src}/>

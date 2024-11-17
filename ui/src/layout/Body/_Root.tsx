@@ -12,11 +12,13 @@ const Body: React.FC = () => {
 	const [currentTab, setCurrentTab] = useState<number>(0);
 
 	return (
-		<main className="w-full flex flex-row flex-grow">
+		<main className="grid grid-cols-[auto,1fr] grid-rows-1 h-[calc(100vh-180px)]">
 			<Sidebar currentTab={currentTab} setCurrentTab={setCurrentTab}/>
-			<div className="flex-grow bg-custom-gray-500 h-full p-4">
-				{pages[currentTab]}
-			</div>
+			{pages.map((page: any,i) => (
+				<div className={`bg-custom-gray-500 grid grid-rows-[auto,1fr] grid-cols-1 ${currentTab !== i && "hidden"}`}>
+					{page}
+				</div>
+			))}
 		</main>
 	);
 };

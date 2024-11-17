@@ -96,8 +96,42 @@ export type EventType =
 	"ask:xp" |
 	"ask:level" |
 
+	"ask:recipe" | 
+
 	// global
 	"broadcast:renderer-ready" |
 	"broadcast:tcp-connected" |
 	"renderer-ready" |
 	"setup-complete"
+
+export class JobState {
+	public level: number;
+	public job_name: string;
+	public current_xp: number;
+	public max_xp: number;
+
+	constructor(level: number, jobName: string, currentXP: number, maxXP: number) {
+		this.level = level;
+		this.job_name = jobName;
+		this.current_xp = currentXP;
+		this.max_xp = maxXP;
+	}
+
+	static fromJson(json: string): JobState {
+		const state = JSON.parse(json);
+		return new JobState(state.level, state.job_name, state.current_xp, state.max_xp);
+	}
+
+	static createInstance(): JobState {
+		return new JobState(0, "", 0, 0);
+	}
+}
+
+export type Recipe = {
+	id: number;
+	amount: number;
+	quality: number;
+	name?: string;
+	icon_path?: string;
+	ingredients?: Recipe[];
+}
