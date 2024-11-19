@@ -1,6 +1,8 @@
 electron/data/teamcraft/.meta
 electron/data/teamcraft/**.json
 **.ignore
+**.db
+**.sqlite
 
 # Logs
 logs
