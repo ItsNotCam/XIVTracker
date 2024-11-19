@@ -51,7 +51,7 @@ const Frame: React.FC = () => {
 			{/* <h1 className="text-white text-xl">XIV TRACKER</h1> */}
 			<div className="flex flex-row items-center gap-2">
 				<GilDisplay />
-				<ConnectionStatus />
+				{/* <ConnectionStatus /> */}
 			</div>
 		</div>
 	)

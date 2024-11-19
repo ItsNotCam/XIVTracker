@@ -11,7 +11,6 @@
     "postinstall": "install-app-deps"
   },
   "dependencies": {
-    "@types/lowdb": "^1.0.15",
     "bufferutil": "^4.0.8",
     "dotenv": "^16.4.5",
     "fs-promise": "^2.0.3",
@@ -21,12 +20,12 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rimraf": "^6.0.1",
-    "sqlite3": "^5.1.7",
     "uuid": "^11.0.3",
     "ws": "^8.18.0"
   },
   "devDependencies": {
     "@eslint/object-schema": "^2.1.4",
+    "@types/lowdb": "^1.0.15",
     "@types/node": "^22.9.0",
     "@types/react": "^18.2.64",
     "@types/react-dom": "^18.2.21",

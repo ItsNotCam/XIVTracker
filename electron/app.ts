@@ -13,7 +13,6 @@ export default class XIVTrackerApp {
 
 	constructor(win: BrowserWindow) {
 		this.win = win;
-
 		try {
 			this.wsClient = new EzWs(
 				50085, 
@@ -33,7 +32,7 @@ export default class XIVTrackerApp {
 		this.wsClient.connect();
 
 		if(this.eventRegister) {
-			this.eventRegister.init();
+			await this.eventRegister.init();
 		}
 		
 		this.initWindowControls();

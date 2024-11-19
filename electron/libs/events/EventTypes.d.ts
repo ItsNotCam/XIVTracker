@@ -30,12 +30,16 @@ export type EventType =
 	| "ask:location-territory"
 	| "ask:time"
 	| "ask:inventory"
+
+	// job
 	| "ask:job-*"
 	| "ask:job-all"
 	| "ask:job-main"
 	| "ask:job-current"
 	| "ask:xp"
 	| "ask:level"
+
+	// recipe
 	| "ask:recipe"
 	| "ask:recent-recipe-searches"
 

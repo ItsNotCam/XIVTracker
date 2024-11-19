@@ -13,21 +13,22 @@ export const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL'] + "ui\\ind
 export const MAIN_DIST = path.join(process.env.APP_ROOT, 'dist-electron')
 export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist')
 
-process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 'public') : RENDERER_DIST
+// process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 'public') : RENDERER_DIST
+process.env.VITE_PUBLIC = RENDERER_DIST;
 
-let win: BrowserWindow | null;
 let App: XIVTrackerApp | null;
 
-async function createWindow() {
-	win = new BrowserWindow({
+function createWindow() {
+	const win: BrowserWindow = new BrowserWindow({
 		icon: path.join(process.env.VITE_PUBLIC || "", 'electron-vite.svg'),
 		webPreferences: {
-			preload: path.join(__dirname, 'preload.mjs'),
+			preload: path.join(__dirname, 'preload.ts'),
+			// contextIsolation: true
 		},
 		autoHideMenuBar: true,
 		frame: false,
 		minWidth: 800
-	})
+	});
 
 	if (VITE_DEV_SERVER_URL) {
 		win.loadURL(VITE_DEV_SERVER_URL)
@@ -35,30 +36,43 @@ async function createWindow() {
 		// win.loadFile('dist/index.html')
 		win.loadFile(path.join(RENDERER_DIST, 'index.html'))
 	}
+
+	console.log(win);
+
+	return win;
 }
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
-app.on('window-all-closed', () => {
-	if (process.platform !== 'darwin') {
-		app.quit()
-		win = null
-	}
-})
-
-app.on('activate', () => {
-	if (BrowserWindow.getAllWindows().length === 0) {
-		createWindow()
-	}
-})
-
 app.whenReady().then(async() => {
-	await UpdateTCData();
-	await createWindow();
-
-	if(win) {
-		App = new XIVTrackerApp(win);
-		App.init();
+	try {
+		await UpdateTCData();
+	} catch(e: any) {
+		console.log("Failed to update teamcraft data:", e.message);
 	}
+
+	let win: BrowserWindow;
+	try {
+		win = createWindow();
+	} catch(e: any) {
+		throw `Failed to create window: ${e.message}`;
+	}
+
+	try {
+		App = new XIVTrackerApp(win);
+		await App.init();
+	} catch(e: any) {
+		throw `Failed to initialize app: ${e.message}`;
+	}
+
+	app.on('window-all-closed', () => {
+		if (process.platform !== 'darwin') {
+			app.quit()
+			win.destroy()
+		}
+	})
+
+	// app.on('activate', () => {
+	// 	if (BrowserWindow.getAllWindows().length === 0) {
+	// 		createWindow();
+	// 	}
+	// })
 });

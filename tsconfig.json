@@ -7,6 +7,10 @@
     "skipLibCheck": true,
 		"allowJs": true,
 
+		// types
+    "types": ["node"],
+    "esModuleInterop": true,
+
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
@@ -40,10 +44,13 @@
   },
   "include": [
 		"electron", 
-		"ui/src", 
-		"electron/libs", 
+		"ui", 
 		"tests", 
-		"jest.config.js"
+		"jest.config.js",
+    "globals.d.ts"
+	],
+	"exclude": [
+		"node_modules"
 	],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

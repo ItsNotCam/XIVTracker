@@ -13,9 +13,10 @@ const GilDisplay: React.FC = () => {
   useEffect(() => {	
 		const updateGilAmountRef = updateGilAmount;
 
+		console.log(window.ipcRenderer);
 		onReceive("update:gil", updateGilAmountRef);
 		return () => {
-			window.ipcRenderer.removeListener("update:gil", updateGilAmountRef);
+			// window.ipcRenderer.removeListener("update:gil", updateGilAmountRef);
 		}
 	}, []);
 	

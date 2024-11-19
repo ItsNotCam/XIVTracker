@@ -1,7 +1,7 @@
 import { useState, useEffect, FC, useRef } from 'react';
 
 import ClockImage from '@assets/images/etc-clock.png'
-import { invoke, onReceive } from '@ui/util/util';
+import { onReceive } from '@ui/util/util';
 
 const Clock: FC<{ initialTime: string }> = ({ initialTime }) => {
 	const realTimeTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -31,8 +31,9 @@ const Clock: FC<{ initialTime: string }> = ({ initialTime }) => {
 			setWorldtime(newTime);
 			console.log("updating world time to", newTime);
 		} else {
-			const t = await invoke("ask:time");
-			setWorldtime(t.toUpperCase());
+			// const t = await AskApi.askGameTime();
+			// const t = await xivApi.askFor.time(); // ipcrend window.invoke("ask:time");
+			// setWorldtime(t.toUpperCase());
 		}
 	}
 

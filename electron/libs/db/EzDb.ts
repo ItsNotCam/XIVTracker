@@ -1,7 +1,7 @@
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import path from 'path';
-import DBSchema, { DBSearchItem } from './EzDb.d'
+import DBSchema, { DBSearchItem } from './EzDbTypes'
 import { TCRecipe } from '@electron-lib/providers/RecipeProviderTypes';
 
 
