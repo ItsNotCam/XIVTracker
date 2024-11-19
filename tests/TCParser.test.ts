@@ -1,5 +1,5 @@
 import { it, expect, afterAll, suite, beforeEach, beforeAll, test, assert, vi } from "vitest";
-import TeamCraftParser, { TCDataType } from "../electron/libs/parsers/TeamCraftParser";
+import TeamCraftParser, { TCDataType } from "../electron/libs/providers/RecipeProvider";
 
 // vi.spyOn(console, 'log').mockImplementation(() => {});
 // vi.spyOn(console, 'warn').mockImplementation(() => {});
