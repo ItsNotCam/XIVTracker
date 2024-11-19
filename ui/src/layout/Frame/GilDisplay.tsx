@@ -1,14 +1,12 @@
 import React, { useEffect } from 'react';
-import { IpcRendererEvent } from 'electron';
-import { withCommas } from '@ui/util/util';
+import { onReceive, withCommas } from '@ui/util/util';
 
 import GilImage from "@assets/images/etc-gil.png";
-import { onReceive } from '@electron-lib/events/eventHelpers';
 
 const GilDisplay: React.FC = () => {
 	const [amount, setAmount] = React.useState(3250);
 
-	const updateGilAmount = (_event: IpcRendererEvent, amount: number) => {
+	const updateGilAmount = (_event: any, amount: number) => {
 		setAmount(amount);
 	}
 

@@ -1,8 +1,7 @@
 import { useState, useEffect, FC, useRef } from 'react';
 
 import ClockImage from '@assets/images/etc-clock.png'
-import { IpcRendererEvent } from 'electron';
-import { invoke, onReceive, send } from '@electron-lib/events/eventHelpers';
+import { invoke, onReceive } from '@ui/util/util';
 
 const Clock: FC<{ initialTime: string }> = ({ initialTime }) => {
 	const realTimeTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -27,7 +26,7 @@ const Clock: FC<{ initialTime: string }> = ({ initialTime }) => {
 		setCurrentTime(`${hoursStr}:${minutes} ${AMPM}`);
 	}
 
-	const updateWorldTime = async (_event?: IpcRendererEvent, newTime?: string) => {
+	const updateWorldTime = async (_event?: any, newTime?: string) => {
 		if(newTime) {
 			setWorldtime(newTime);
 			console.log("updating world time to", newTime);

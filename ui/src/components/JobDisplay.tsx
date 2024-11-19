@@ -1,12 +1,8 @@
-// @ts-ignore
-import * as __WebpackModuleApi from 'webpack-module-api';
-
 import React, { useEffect } from 'react';
 import XPBar from '@ui/components/XPBar';
-import { Job } from '@electron/@types/Common';
-
-import { invoke, onReceive } from '@electron-lib/events/eventHelpers';
-import JobIcons from '@ui/util/jobIcons';
+import { Job } from '@electron/libs/CommonTypes';
+import { JobIconList } from '@assets/images/jobs';
+import { invoke, onReceive } from '@ui/util/util';
 
 interface JobDisplayProps {
 	type: "current" | "main",
@@ -30,14 +26,14 @@ const JobDisplay: React.FC<JobDisplayProps> = ({ type = "main", initialJob }) =>
 		}
 	}
 
-	const handleJobChange = (_event: Electron.Event, newJob: Job) => {
+	const handleJobChange = (_event: any, newJob: Job) => {
 		setJob((current: Job) => ({
 			...current,
 			...newJob
 		}));
 	}
 
-	const handleLevelChange = (_event: Electron.Event, newLevel: Job) => {
+	const handleLevelChange = (_event: any, newLevel: Job) => {
 		setJob((current: Job) => ({
 			...current,
 			level: newLevel.level,
@@ -46,7 +42,7 @@ const JobDisplay: React.FC<JobDisplayProps> = ({ type = "main", initialJob }) =>
 		}));
 	}
 
-	const handleXpChange = (_event: Electron.Event, newXp: number) => {
+	const handleXpChange = (_event: any, newXp: number) => {
 		setJob((current: Job) => ({
 			...current,
 			current_xp: newXp
@@ -73,7 +69,7 @@ const JobDisplay: React.FC<JobDisplayProps> = ({ type = "main", initialJob }) =>
 		<div className="relative grid grid-cols-[70px,1fr] grid-rows-[auto,1fr,auto] h-full w-[300px] p-4">
 			<img
 				className="col-start-1 col-end-2 row-start-1 row-end-3"
-				src={JobIcons[job.job_name.toLowerCase().replace(" ", "-")]}
+				src={JobIconList[job.job_name.toLowerCase().replace(" ", "-")]}
 			/>
 			<h2 className="text-custom-text-secondary-300 text-xl row-start-1 row-end-2 col-start-2 col-end-3 ml-[0.6rem]">
 				LEVEL {job.level}

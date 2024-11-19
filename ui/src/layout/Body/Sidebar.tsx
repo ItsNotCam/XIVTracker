@@ -1,8 +1,5 @@
+import { CraftingImage, GoalsImage, JobsImage } from '@ui/assets/images/tabs';
 import React from 'react';
-
-import CraftingImage from '@assets/images/tabs/tabs-search.png';
-import GoalsImage from '@assets/images/tabs/tabs-goals.png';
-import JobsImage from '@assets/images/tabs/tabs-jobs.png';
 
 const tabs = [
 	{ name: "Crafting", src: CraftingImage },

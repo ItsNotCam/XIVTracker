@@ -1,13 +1,13 @@
-import { onReceive } from "@electron-lib/events/eventHelpers";
-import { Location } from "@electron/@types/Common";
-import { useEffect, useState } from "react";
-import { FC } from "react";
+import { useEffect, useState, FC } from "react";
+
+import { Location } from "@electron/libs/CommonTypes";
+import { onReceive } from "@ui/util/util";
 
 
 const LocationDisplay: FC<{ initialLocation: Location }> = ({ initialLocation: initialLocation }) => {
 	const [location, setLocation] = useState<Location>(initialLocation);
 
-	const handleLocationChange = (_event: Electron.Event, newLocation: Location) => {
+	const handleLocationChange = (_event: any, newLocation: Location) => {
 		setLocation((currentLocation: Location) => ({
 			...currentLocation,
 			...newLocation

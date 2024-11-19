@@ -1,9 +1,11 @@
 import React from 'react';
+
+import { Job, Location } from '@electron/libs/CommonTypes';
+
 import Clock from '@ui/layout/Header/TimeDisplay';
 import LocationDisplay from '@ui/layout/Header/LocationDisplay';
 import NameDisplay from '@ui/layout/Header/NameDisplay';
 import JobDisplay from '@ui/components/JobDisplay';
-import { Job, Location } from '@electron/@types/Common';
 
 const Header: React.FC = () => {
 	const initialLocation: Location = {
