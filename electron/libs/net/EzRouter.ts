@@ -1,6 +1,6 @@
 import { BrowserWindow } from "electron";
-import { DeserializedPacket, EzFlag } from "../../@types/EzNet";
-import { sendToClient } from "../events/eventHelpers";
+import { DeserializedPacket, EzFlag } from "./EzTypes.d";
+import { sendToClient } from "../events/EventHelpers";
 
 export default function ezRoute(win: BrowserWindow, msg: DeserializedPacket) {
 	switch (msg.flag) {

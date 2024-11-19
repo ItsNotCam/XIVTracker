@@ -1,5 +1,5 @@
-import EzSerDe from "./ez/EzSerDe";
-import { DeserializedPacket, EzFlag, uint6 } from "../../@types/EzNet";
+import EzSerDe from "./EzSerDe";
+import { DeserializedPacket, EzFlag, uint6 } from "./EzTypes.d";
 
 import WebSocket from 'ws';
 
@@ -16,21 +16,20 @@ export default class EzWs {
 	private setConnected: (connected: boolean) => void;
 	private reconnectTimeout: NodeJS.Timeout | null = null;
 
-	constructor(port: number, handle: (msg: DeserializedPacket) => void, setConnected: (connected: boolean) => void) {
+	constructor(port: number, handleUnregisteredMessage: (msg: DeserializedPacket) => void, setConnected: (connected: boolean) => void) {
 		this.requests = new Map();
 		this.PORT = port;
-		this.handle = handle;
+		this.handle = handleUnregisteredMessage;
 		this.setConnected = setConnected;
 	}
 
-	public connect = (): EzWs | null => {
+	public connect = (): EzWs => {
 		try {
 			this.socket = new WebSocket(`ws://localhost:${this.PORT}`);
-		} catch (e) {
-			console.error("Error creating websocket connection:", e);
+		} catch (e: any) {
 			this.setConnected(false);
 			this.scheduleReconnect();
-			return null;
+			throw(new Error("Error creating websocket connection: " + e.message));
 		}
 
 		if (!this.socket) {
@@ -41,6 +40,7 @@ export default class EzWs {
 		this.socket.on("open", this.handleOpen);
 		this.socket.on("error", this.handleError);
 		this.socket.on("close", this.handleClose);
+
 		return this;
 	}
 
@@ -87,7 +87,7 @@ export default class EzWs {
 		this.socket!.send(serializedMsg);
 	}
 
-	public async sendAndAwaitResponse(routeFlag: EzFlag, data?: string | Buffer): Promise<string | undefined> {
+	public async ask(routeFlag: EzFlag, data?: string | Buffer): Promise<string | undefined> {
 		if (!this.isConnected()) {
 			throw(new Error("Not connected"));
 		}
