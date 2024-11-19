@@ -1,11 +1,11 @@
 import { TCRecipe } from "../providers/RecipeProviderTypes";
 
-export interface SearchItem {
+export interface DBSearchItem {
 	name: string,
 	date: Date
 }
 
 export default interface DBSchema {
-	RecentRecipeSearches: SearchItem[],
+	RecentRecipeSearches: DBSearchItem[],
 	Recipes: Map<string,TCRecipe>
 }

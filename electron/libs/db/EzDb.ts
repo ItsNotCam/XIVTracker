@@ -1,7 +1,7 @@
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import path from 'path';
-import DBSchema, { SearchItem } from './EzDb.d'
+import DBSchema, { DBSearchItem } from './EzDb.d'
 import { TCRecipe } from '@electron-lib/providers/RecipeProviderTypes';
 
 
@@ -94,7 +94,7 @@ export default class EzDb {
 		}
 	}
 
-	public getRecentSearches(limit?: number): SearchItem[] {
+	public getRecentSearches(limit?: number): DBSearchItem[] {
 		if(this.db === null) {
 			throw EzDb.DB_NOT_CONNECTED;
 		}
@@ -103,7 +103,7 @@ export default class EzDb {
 		return limit ? RecentSearches.slice(0,limit) : RecentSearches;
 	}
 
-	public byName(): SearchItem[] {
+	public byName(): DBSearchItem[] {
 		if(this.db === null) {
 			throw EzDb.DB_NOT_CONNECTED;
 		}
@@ -112,7 +112,7 @@ export default class EzDb {
 		return RecentSearches.sort((a, b) => a.name.localeCompare(b.name));
 	}
 
-	public byDate(): SearchItem[] {
+	public byDate(): DBSearchItem[] {
 		if(this.db === null) {
 			throw EzDb.DB_NOT_CONNECTED;
 		}
