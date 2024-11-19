@@ -135,7 +135,7 @@ test("NULL", { timeout: 10000 }, async () => {
 		}
 
 		const message = 0x00.toString();
-		const response = await wsc!.sendAndAwaitResponse(EzFlag.NULL, message);
+		const response = await wsc!.ask(EzFlag.NULL, message);
 		if (response === message) {
 			success = true;
 			break;
@@ -152,7 +152,7 @@ test("Hello, World", { timeout: 10000 }, async () => {
 	await wait(1000);
 
 	const message = "hello, world!";
-	const response = await wsc!.sendAndAwaitResponse(EzFlag.NULL, message);
+	const response = await wsc!.ask(EzFlag.NULL, message);
 	expect(response).toStrictEqual(message);
 });
 
@@ -164,7 +164,7 @@ test("Lorem 200", { timeout: 10000 }, async () => {
 	await wait(1000);
 
 	const message = "lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.".toLowerCase();
-	const response = await wsc!.sendAndAwaitResponse(EzFlag.NULL, message);
+	const response = await wsc!.ask(EzFlag.NULL, message);
 	expect(response).toStrictEqual(message);
 });
 
@@ -176,7 +176,7 @@ test("Random", { timeout: 10000 }, async () => {
 			message += EzEncoding[Math.floor(Math.random() * EzEncoding.length)];
 		}
 
-		const response = await wsc!.sendAndAwaitResponse(EzFlag.NULL, message);
+		const response = await wsc!.ask(EzFlag.NULL, message);
 		expect(message).toBe(response);
 		await wait(100);
 }});
@@ -189,7 +189,7 @@ test("Should decode valid json", { timeout: 10000 }, async () => {
 	await wait(1000);
 
 	const job_data = get_random_job_data();
-	const response = await wsc!.sendAndAwaitResponse(EzFlag.JOB_MAIN, JSON.stringify(job_data));
+	const response = await wsc!.ask(EzFlag.JOB_MAIN, JSON.stringify(job_data));
 	expect(response).toStrictEqual(JSON.stringify(job_data));
 });
 

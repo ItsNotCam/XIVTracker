@@ -1,6 +1,6 @@
 import { assert, describe, expect, it, test } from "vitest";
 import EzSerDe from "../electron/libs/net/ez/EzSerDe";
-import { EzFlag } from "../electron/libs/net/ez/EzTypes.d";
+import { EzFlag } from "@electron-lib/net/EzTypes";
 import { throws } from "assert";
 
 

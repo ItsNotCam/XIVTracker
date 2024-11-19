@@ -6,7 +6,7 @@ import * as fs from "fs/promises";
 import { afterEach } from "node:test";
 import path from "path";
 
-const asyncSleep = async (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const asyncSleep = async (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 const validateTCFiles = async () => {
 	let files = (await fs.readdir(dataFolder)).filter(f => f.endsWith(".json"));
