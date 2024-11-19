@@ -1,4 +1,3 @@
-/* Image imports */
 import AlchemistImg from "@assets/images/jobs/job-alchemist.png";
 import ArcherImg from "@assets/images/jobs/job-archer.png";
 import ArmorerImg from "@assets/images/jobs/job-armorer.png";
@@ -36,7 +35,47 @@ import WarriorImg from '@assets/images/jobs/job-warrior.png';
 import WeaverImg from "@assets/images/jobs/job-weaver.png";
 import WhiteMageImg from '@assets/images/jobs/job-white-mage.png';
 
-const JobIcons: { [key: string]: string } = {
+// export
+export {
+	AlchemistImg,
+	ArcherImg,
+	ArmorerImg,
+	AstrologianImg,
+	BardImg,
+	BlackMageImg,
+	BlacksmithImg,
+	BlueMageImg,
+	BotanistImg,
+	CarpenterImg,
+	CulinarianImg,
+	ConjurerImg,
+	DancerImg,
+	DarkKnightImg,
+	DragoonImg,
+	FisherImg,
+	GoldsmithImg,
+	GunbreakerImg,
+	LancerImg,
+	LeatherworkerImg,
+	MachinistImg,
+	MinerImg,
+	MonkImg,
+	NinjaImg,
+	PaladinImg,
+	PictomancerImg,
+	ReaperImg,
+	RedMageImg,
+	SageImg,
+	SamuraiImg,
+	ScholarImg,
+	SummonerImg,
+	ViperImg,
+	WarriorImg,
+	WeaverImg,
+	WhiteMageImg
+}
+
+export const JobIconList: { [key: string]: string } = {
 	alchemist:      AlchemistImg,
 	archer:        	ArcherImg,
 	armorer:        ArmorerImg,
@@ -74,5 +113,3 @@ const JobIcons: { [key: string]: string } = {
 	weaver:         WeaverImg,
 	"white-mage":   WhiteMageImg,
 };
-
-export default JobIcons;
