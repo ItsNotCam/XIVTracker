@@ -10,13 +10,16 @@ import { EventType, EventTypes } from "./EventTypes.d";
 
 export default class EventRegister {
 	private readonly app: XIVTrackerApp;
+	private readonly parser: TeamCraftParser | null = null;
 
 	constructor(app: XIVTrackerApp) {
 		this.app = app;
+		this.parser = new TeamCraftParser();
 	}
 
-	public init(): EventRegister {
+	public async init(): Promise<EventRegister> {
 		this.initWindowControls(this.app.getWindow());
+		this.parser!.init();
 
 		listen("update:gil", this.handleUpdateGil);
 
@@ -118,9 +121,11 @@ export default class EventRegister {
 	}
 
 	private async handleAskForRecipe(_:any, itemName: string): Promise<TCRecipe | null> {
-		let Parser: TeamCraftParser = await new TeamCraftParser().init();
-		this.app.getDB().addRecentSearch(itemName);
-		return Parser!.getRecipeByItemIdentifier(itemName);
+		const recipe = this.parser!.getRecipeByItemIdentifier(itemName);
+		if(recipe !== null) {
+			this.app.getDB().addRecentSearch(itemName);
+		}
+		return recipe;
 	}
 
 	private handleAskRecentRecipeSearches(): string[] {
