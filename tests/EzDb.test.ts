@@ -1,9 +1,7 @@
 import EzDb from "@electron-lib/db/EzDb";
-import Types from "@xiv-types/Types";
-import { afterAll, afterEach, beforeEach, assert, beforeAll, expect, it, suite } from "vitest";
+import { afterAll, afterEach, beforeEach, expect, it, suite } from "vitest";
 
 import * as fs from 'fs/promises';
-import { fail } from "assert";
 
 let db: EzDb;
 const DB_PATH: string = "temp.db";
