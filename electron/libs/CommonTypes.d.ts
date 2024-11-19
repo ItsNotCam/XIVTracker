@@ -54,56 +54,6 @@ export interface Material {
 	location: Location;
 }
 
-export type EventType =
-	"tcp-connected" |
-	"heartbeat" |
-
-	// recv
-	"update:gil" |
-	"update:location-*" |
-	"update:location-all" |
-	"update:location-position" |
-	"update:location-area" |
-	"update:location-subarea" |
-	"update:location-territory" |
-	"update:time" |
-	"update:inventory" |
-	"update:job-*" |
-	"update:job-all" |
-	"update:job-main" |
-	"update:job-current" |
-	"update:xp" |
-	"update:level" |
-
-	// ask general
-	"ask:tcp-connected" |
-	"ask:all" |
-
-	// ask specific
-	"ask:gil" |
-	"ask:location-*" | // wildcard - called every time any location update event is thrown - reduces the amount of listeners required
-	"ask:location-all" |
-	"ask:location-position" |
-	"ask:location-area" |
-	"ask:location-subarea" |
-	"ask:location-territory" |
-	"ask:time" |
-	"ask:inventory" |
-	"ask:job-*" | // wildcard - called every time any job update event is thrown - reduces the amount of listeners required
-	"ask:job-all" |
-	"ask:job-main" |
-	"ask:job-current" |
-	"ask:xp" |
-	"ask:level" |
-
-	"ask:recipe" | 
-
-	// global
-	"broadcast:renderer-ready" |
-	"broadcast:tcp-connected" |
-	"renderer-ready" |
-	"setup-complete"
-
 export class JobState {
 	public level: number;
 	public job_name: string;
