@@ -21,7 +21,7 @@ export default class EventRegister {
 		listen("update:gil", this.handleUpdateGil);
 
 		handle("ask:tcp-connected", this.handleAskTcpConnected.bind(this));
-		handle("ask:job-main", this.handleAskJobMain.bind(this));
+		handle("ask:job-main", this.handleAskJobMain.bind(this));w
 		handle("ask:location-all", this.handleAskGetLocationAll.bind(this));
 		handle("ask:recipe", this.handleAskForRecipe.bind(this));
 		handle("ask:recent-recipe-searches", this.handleAskRecentRecipeSearches.bind(this));
