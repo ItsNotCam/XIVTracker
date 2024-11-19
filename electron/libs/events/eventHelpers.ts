@@ -1,11 +1,5 @@
-import { BrowserWindow } from "electron";
-import { EventType } from "../../@types/Common";
-
-export function emitOnLoad(eventName: EventType, listener: (event: Electron.IpcRendererEvent, args: any[] | any) => void) {
-	// onReceive("broadcast:renderer-ready", () => {
-	// 	window.ipcRenderer.on(eventName, listener);
-	// });
-}
+import { BrowserWindow, ipcMain } from "electron";
+import { EventType } from "./EventTypes";
 
 export function onReceive(events: EventType[] | EventType, listener: (event: Electron.IpcRendererEvent, args: any[] | any) => void) {
 	if (Array.isArray(events)) {
@@ -17,7 +11,11 @@ export function onReceive(events: EventType[] | EventType, listener: (event: Ele
 	}
 }
 
-export function handle(events: EventType[] | EventType, ipcMain: any, listener: (event: Electron.IpcRendererEvent, args: any[] | any) => void) {
+export function listen(eventName: EventType, listener: (event: Electron.IpcMainInvokeEvent, ...args: any[]) => any) {
+	ipcMain.addListener(eventName, listener);
+}
+
+export function handle(events: EventType[] | EventType, listener: (event: Electron.IpcMainInvokeEvent, ...args: any[]) => any) {
 	if (Array.isArray(events)) {
 		events.forEach((eventName: EventType) => {
 			ipcMain.handle(eventName, listener);
