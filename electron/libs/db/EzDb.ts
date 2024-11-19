@@ -1,8 +1,8 @@
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import path from 'path';
-import DBSchema, { RecentSearch } from '../../@types/EzDb'
-import { TCRecipe } from '@electron/@types/TCParser';
+import DBSchema, { SearchItem } from './EzDb.d'
+import { TCRecipe } from '@electron-lib/providers/RecipeProviderTypes';
 
 
 export default class EzDb {
@@ -34,7 +34,7 @@ export default class EzDb {
 
 		await this.db.read();
 		this.db.data ||= { 
-			RecentSearches: [], 
+			RecentRecipeSearches: [], 
 			Recipes: new Map<string, TCRecipe>() 
 		};
 		await this.db.write();
@@ -45,8 +45,8 @@ export default class EzDb {
 	public setMaxRecentSearchCount(count: number) {
 		this.maxRecentSearchCount = count;
 
-		if(this.db !== null && this.db.data.RecentSearches !== undefined) {
-			while(this.db.data.RecentSearches.length > this.maxRecentSearchCount) {
+		if(this.db !== null && this.db.data.RecentRecipeSearches !== undefined) {
+			while(this.db.data.RecentRecipeSearches.length > this.maxRecentSearchCount) {
 				this.removeOldestRecentSearch();
 			}
 			this.db.write();
@@ -73,7 +73,7 @@ export default class EzDb {
 			throw EzDb.DB_NOT_CONNECTED;
 		}
 
-		let RecentSearches = this.db.data.RecentSearches || [];
+		let RecentSearches = this.db.data.RecentRecipeSearches || [];
 		if(RecentSearches.length > 0) {
 			RecentSearches = RecentSearches.filter(search => search.name !== newSearch);
 		}
@@ -87,37 +87,37 @@ export default class EzDb {
 			date: date || new Date()
 		});
 
-		this.db.data.RecentSearches = RecentSearches;
+		this.db.data.RecentRecipeSearches = RecentSearches;
 
 		if(this.autocommit) {
 			await this.db.write();
 		}
 	}
 
-	public getRecentSearches(limit?: number): RecentSearch[] {
+	public getRecentSearches(limit?: number): SearchItem[] {
 		if(this.db === null) {
 			throw EzDb.DB_NOT_CONNECTED;
 		}
 
-		const RecentSearches = this.db.data.RecentSearches || [];
+		const RecentSearches = this.db.data.RecentRecipeSearches || [];
 		return limit ? RecentSearches.slice(0,limit) : RecentSearches;
 	}
 
-	public byName(): RecentSearch[] {
+	public byName(): SearchItem[] {
 		if(this.db === null) {
 			throw EzDb.DB_NOT_CONNECTED;
 		}
 
-		const { RecentSearches } = this.db.data;
+		const { RecentRecipeSearches: RecentSearches } = this.db.data;
 		return RecentSearches.sort((a, b) => a.name.localeCompare(b.name));
 	}
 
-	public byDate(): RecentSearch[] {
+	public byDate(): SearchItem[] {
 		if(this.db === null) {
 			throw EzDb.DB_NOT_CONNECTED;
 		}
 
-		const { RecentSearches } = this.db.data;
+		const { RecentRecipeSearches: RecentSearches } = this.db.data;
 		return RecentSearches.sort((a, b) => {
 			if(a > b) return 1;
 			if(a < b) return -1;
@@ -130,8 +130,8 @@ export default class EzDb {
 			throw EzDb.DB_NOT_CONNECTED;
 		}
 
-		const { RecentSearches } = this.db.data;
-		this.db.data.RecentSearches = RecentSearches
+		const { RecentRecipeSearches: RecentSearches } = this.db.data;
+		this.db.data.RecentRecipeSearches = RecentSearches
 			.filter(search => search.name !== searchToRemove);
 
 		if(this.autocommit) {
@@ -144,7 +144,7 @@ export default class EzDb {
 			throw EzDb.DB_NOT_CONNECTED;
 		}
 
-		this.db.data.RecentSearches.pop();
+		this.db.data.RecentRecipeSearches.pop();
 
 		if(this.autocommit) {
 			await this.db.write();
