@@ -5,5 +5,5 @@ interface DBSearchItem {
 
 interface DBSchema {
 	RecentRecipeSearches: DBSearchItem[],
-	Recipes: Map<string,TCRecipe>
+	Recipes: { [key: string]: TCRecipe }
 }
