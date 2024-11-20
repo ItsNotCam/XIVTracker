@@ -1,4 +1,5 @@
 import EzEncoder from "./EzEncoder";
+import { EzFlag } from "./EzWs";
 
 // Visual: https://lucid.app/lucidchart/b06bf1e5-8ae7-4e1b-8f32-f256003140d0/edit?invitationId=inv_2a212140-1bee-41d0-913d-4ef4706ba6b1&page=m2MpGyAuT.V7#
 export const deserialize = (msg: Buffer): DeserializedPacket => {

@@ -2,6 +2,8 @@ import { BrowserWindow, ipcMain } from "electron";
 import { EventTypes, handle, listen } from "./EventHelpers";
 import TeamCraftParser from "../providers/RecipeProvider";
 import XIVTrackerApp from "../../app";
+import { EzFlag } from "../net/EzWs";
+import JobState from "../JobState";
 
 export default class EventRegister {
 	private readonly app: XIVTrackerApp;
@@ -116,16 +118,44 @@ export default class EventRegister {
 	}
 
 	private async handleAskForRecipe(_:any, itemName: string): Promise<TCRecipe | null> {
-		const recipe = this.parser!.getRecipeByItemIdentifier(itemName);
-		if(recipe !== null) {
-			this.app.getDB().addRecentSearch(itemName);
+		if(!this.parser) {
+			console.error("TeamCraftParser instance is not valid.");
+			return null;
 		}
+
+		const existingRecipe: TCRecipe | undefined = await this.app.getDB().tryGetRecipe(itemName);
+		if(existingRecipe){
+			console.log("Recipe already exists in the database.");
+			this.app.getDB().addRecentSearch(itemName);
+			return existingRecipe;
+		}
+
+		const recipe = this.parser.getRecipeByItemIdentifier(itemName);
+		if(recipe) {
+			console.log("Recipe found for item:", itemName);
+			await this.app.getDB().addRecentSearch(itemName);
+			await this.app.getDB().addRecipe(recipe);
+		}
+
 		return recipe;
 	}
 
-	private handleAskRecentRecipeSearches(): string[] {
-		const recipes = this.app.getDB().getRecentSearches();
-		return recipes.map(r => r.name) || [];
+	private async handleAskRecentRecipeSearches(): Promise<any> {
+		const recentSearches = this.app.getDB().getRecentSearches();
+
+		const r = await new Promise(async(resolve, _) => {
+			const result = await Promise.all(recentSearches.map(async (search: DBSearchItem) => {
+				const recipe = await this.app.getDB().tryGetRecipe(search.name).catch((e) => {console.log(e)});	
+				return {
+					name: search.name,
+					date: search.date,
+					recipe: recipe
+				}
+			}));
+			resolve(result);
+		});
+
+		return r;
 	}
 
 	private async handleAskGameTime(): Promise<string | undefined> {

@@ -27,13 +27,12 @@ export default class EzDb {
 		}
 
 		const adapter = new JSONFile<DBSchema>(this.dbPath);
-		this.db = new Low<DBSchema>(adapter, {} as DBSchema);
+		this.db = new Low<DBSchema>(adapter, {
+			RecentRecipeSearches: [],
+			Recipes: {}
+		});
 
 		await this.db.read();
-		this.db.data ||= { 
-			RecentRecipeSearches: [], 
-			Recipes: new Map<string, TCRecipe>() 
-		};
 		await this.db.write();
 
 		return this;
@@ -59,6 +58,19 @@ export default class EzDb {
 
 	public setAutoCommit(autocommit: boolean) {
 		this.autocommit = autocommit;
+	}
+
+	public async tryGetRecipe(recipeName: string): Promise<TCRecipe | undefined> {
+		if(this.db === null) {
+			throw EzDb.DB_NOT_CONNECTED;
+		}
+
+		const { Recipes } = this.db.data;
+		if(Recipes === undefined || Recipes[recipeName] === undefined) {
+			return undefined;
+		}
+		
+		return Recipes[recipeName];
 	}
 
 	public async commit() {
@@ -153,15 +165,16 @@ export default class EzDb {
 			throw EzDb.DB_NOT_CONNECTED;
 		}
 
-		const { Recipes } = this.db.data;
-		if(Recipes.has(newRecipe.name)) {
-			return;
-		}
+		await this.db.read();
 
-		Recipes.set(newRecipe.name, newRecipe);
-		
+		let Recipes = this.db.data.Recipes || { };
+		Recipes[newRecipe.name] = newRecipe;
+
+		console.log(Recipes);
+		this.db.data.Recipes = Recipes;
+
 		if(this.autocommit) {
-			await this.db.write;
+			await this.db.write();
 		}
 	}
 }
