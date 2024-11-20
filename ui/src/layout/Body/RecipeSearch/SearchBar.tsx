@@ -2,53 +2,23 @@
 import React from 'react';
 
 export interface SearchBarProps {
-	onSearchComplete: (recipe: TCRecipe | null) => void
+	handleSearch: (recipeName: string) => void,
+	isSearching: boolean
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ onSearchComplete }) => {
-	
-	const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
-
-	const [isSearching, setIsSearching] = React.useState(false);
+const SearchBar: React.FC<SearchBarProps> = ({ handleSearch, isSearching }) => {
 	const [_, setSearchError] = React.useState<string | null>(null);
 
-	const handleSearch = async(event: React.FormEvent<HTMLFormElement>) => {
+	const handleSubmit = async(event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
-		if(isSearching) {
+		const formData = new FormData(event.currentTarget as HTMLFormElement);
+		const recipeName = formData.get('recipe-search-name');
+		if(typeof recipeName !== 'string') {
+			setSearchError('Invalid recipe name');
 			return;
 		}
 
-		const isSearchingTimeout = setTimeout(() => {
-			setIsSearching(true);
-		}, 200);
-
-		const formData = new FormData(event.currentTarget as HTMLFormElement);
-		const recipeName = formData.get('recipe-search-name');
-
-		if(timeoutRef.current) clearTimeout(timeoutRef.current);
-
-		timeoutRef.current = setTimeout(() => {
-			setIsSearching(false);
-		}, 2000);
-
-		window.ipcRenderer.invoke('ask:recipe', recipeName).then(async(response: TCRecipe | null) => {
-			setIsSearching(false);
-			onSearchComplete(response);
-		}).catch((error: Error) => {
-			if(timeoutRef.current) {
-				clearTimeout(timeoutRef.current);
-			}
-			setSearchError(error.message);
-			setIsSearching(false);
-		}).finally(() => {
-			if(timeoutRef.current) {
-				clearTimeout(timeoutRef.current);
-				setIsSearching(false);
-			}
-			if(isSearchingTimeout) {
-				clearTimeout(isSearchingTimeout);
-			}
-		});
+		handleSearch(recipeName);
 	}
 
 	const SearchButtonIcon: React.FC<{ className?: string }> = ({ className }) => (
@@ -64,7 +34,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearchComplete }) => {
 	)
 
 	return (
-		<form onSubmit={handleSearch} className="
+		<form onSubmit={handleSubmit} className="
 			w-[clamp(200px,60%,400px)] rounded-full bg-custom-gray-900 
 			text-white flex flex-row gap-2 items-center
 		">
