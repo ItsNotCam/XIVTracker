@@ -1,6 +1,7 @@
 import { assert, describe, expect, it } from "vitest";
 import { throws } from "assert";
 import EzSerDe from "../electron/libs/net/EzSerDe";
+import { EzFlag } from "../electron/libs/net/EzWs";
 
 
 describe("Serialize", async () => {
