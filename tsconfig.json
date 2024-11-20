@@ -7,6 +7,9 @@
     "skipLibCheck": true,
 		"allowJs": true,
 
+		/* types */
+		"typeRoots": ["./node_modules/@types", "./types"],
+
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
@@ -24,6 +27,7 @@
 		/* Custom @app directory */
 		"baseUrl": ".",
 		"paths": { 
+			"*": ["types/*"],
 			"@electron-lib/*": ["electron/libs/*"],
 			"@electron/*": ["electron/*"],
 			"@xiv-types/*": ["electron/@types/*"],
@@ -40,10 +44,9 @@
   },
   "include": [
 		"electron", 
-		"ui/src", 
-		"electron/libs", 
+		"ui", 
 		"tests", 
-		"jest.config.js"
+		"types/**/*.d.ts",  
 	],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

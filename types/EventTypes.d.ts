@@ -1,4 +1,4 @@
-export type EventType =
+type EventType =
 	// recv
 	| "update:gil"
 	| "update:location-*"
@@ -45,7 +45,7 @@ export type EventType =
 	| "renderer-ready"
 	| "setup-complete";
 
-export const EventTypes: string[] = [
+const EventTypes: string[] = [
 	// recv
 	"update:gil",
 	"update:location-*",

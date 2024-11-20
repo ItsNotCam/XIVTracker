@@ -1,9 +1,6 @@
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import path from 'path';
-import DBSchema, { DBSearchItem } from './EzDb.d'
-import { TCRecipe } from '@electron-lib/providers/RecipeProviderTypes';
-
 
 export default class EzDb {
 	public static readonly DEFAULT_DB_PATH = path.resolve(path.join(`electron/data/db/db.db`));
@@ -75,7 +72,7 @@ export default class EzDb {
 
 		let RecentSearches = this.db.data.RecentRecipeSearches || [];
 		if(RecentSearches.length > 0) {
-			RecentSearches = RecentSearches.filter(search => search.name !== newSearch);
+			RecentSearches = RecentSearches.filter((search: DBSearchItem) => search.name !== newSearch);
 		}
 
 		if(RecentSearches.length >= this.maxRecentSearchCount) {
@@ -109,7 +106,7 @@ export default class EzDb {
 		}
 
 		const { RecentRecipeSearches: RecentSearches } = this.db.data;
-		return RecentSearches.sort((a, b) => a.name.localeCompare(b.name));
+		return RecentSearches.sort((a: DBSearchItem, b: DBSearchItem) => a.name.localeCompare(b.name));
 	}
 
 	public byDate(): DBSearchItem[] {
@@ -118,7 +115,7 @@ export default class EzDb {
 		}
 
 		const { RecentRecipeSearches: RecentSearches } = this.db.data;
-		return RecentSearches.sort((a, b) => {
+		return RecentSearches.sort((a: DBSearchItem, b: DBSearchItem) => {
 			if(a > b) return 1;
 			if(a < b) return -1;
 			return 0;
@@ -130,9 +127,9 @@ export default class EzDb {
 			throw EzDb.DB_NOT_CONNECTED;
 		}
 
-		const { RecentRecipeSearches: RecentSearches } = this.db.data;
-		this.db.data.RecentRecipeSearches = RecentSearches
-			.filter(search => search.name !== searchToRemove);
+		const { RecentRecipeSearches } = this.db.data;
+		this.db.data.RecentRecipeSearches = RecentRecipeSearches
+			.filter((search: DBSearchItem) => search.name !== searchToRemove);
 
 		if(this.autocommit) {
 			await this.db.write();

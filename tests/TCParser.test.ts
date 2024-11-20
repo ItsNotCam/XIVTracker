@@ -1,4 +1,4 @@
-import { it, expect, afterAll, suite, beforeEach, beforeAll, test, assert, vi } from "vitest";
+import { it, expect, afterAll, suite, beforeAll, test, assert } from "vitest";
 import TeamCraftParser, { TCDataType } from "../electron/libs/providers/RecipeProvider";
 
 // vi.spyOn(console, 'log').mockImplementation(() => {});
@@ -204,7 +204,7 @@ suite("Parser Tests", async () => {
 			try {
 				tempValidParser.close();
 				assert.fail("Failed")
-			} catch(e) {
+			} catch(e: any) {
 				expect(e.message).toBe("Parser not initialized");
 			}
 		});
@@ -221,7 +221,7 @@ suite("Parser Tests", async () => {
 			try {
 				validParser.loadDataSync("haha ok" as TCDataType);
 				assert.fail("Failed")
-			} catch(e) {
+			} catch(e: any) {
 				expect(e.message).toMatch(re);
 			}
 		});
@@ -275,7 +275,7 @@ suite("Parser Tests", async () => {
 			const newParser = new TeamCraftParser();
 			try {
 				newParser.initSync();
-			} catch (e) {
+			} catch (e: any) {
 				if (/Failed to get data for: .*/.test(e.message)) {
 					newParser.close();
 				}
@@ -313,7 +313,7 @@ suite("Parser Tests", async () => {
 			try {
 				invalidParser.getGatheringLocationsById(5132);
 				assert.fail("Failed")
-			} catch(e) {
+			} catch(e: any) {
 				expect(e.message).toBe("Parser not initialized");
 			}
 		});
@@ -322,7 +322,7 @@ suite("Parser Tests", async () => {
 			try {
 				invalidParser.getDropSourceById(5132);
 				assert.fail("Failed")
-			} catch(e) {
+			} catch(e: any) {
 				expect(e.message).toBe("Parser not initialized");
 			}
 		});
@@ -331,7 +331,7 @@ suite("Parser Tests", async () => {
 			try {
 				invalidParser.getRecipeRecursive(5132);
 				assert.fail("Failed")
-			} catch(e) {
+			} catch(e: any) {
 				expect(e.message).toBe("Parser not initialized");
 			}
 		});

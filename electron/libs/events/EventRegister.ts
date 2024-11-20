@@ -1,12 +1,7 @@
 import { BrowserWindow, ipcMain } from "electron";
-import { handle, listen } from "./EventHelpers";
-import { EzFlag } from "../net/EzTypes.d";
-import { JobState, Location } from "../CommonTypes.d";
+import { EventTypes, handle, listen } from "./EventHelpers";
 import TeamCraftParser from "../providers/RecipeProvider";
-import { TCRecipe } from "../providers/RecipeProviderTypes";
 import XIVTrackerApp from "../../app";
-import { EventType, EventTypes } from "./EventTypes.d";
-
 
 export default class EventRegister {
 	private readonly app: XIVTrackerApp;

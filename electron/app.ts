@@ -1,9 +1,8 @@
 import EventRegister from './libs/events/EventRegister';
 import { BrowserWindow, ipcMain } from 'electron'
 import EzWs from './libs/net/EzWs';
-import EzDb from './libs/db/EzDb';
 import ezRoute from '../electron/libs/net/EzRouter';
-import { DeserializedPacket } from '../electron/libs/net/EzTypes.d';
+import EzDb from '../electron/libs/db/EzDb';
 
 export default class XIVTrackerApp {
 	private win: BrowserWindow;
@@ -35,7 +34,7 @@ export default class XIVTrackerApp {
 		if(this.eventRegister) {
 			this.eventRegister.init();
 		}
-		
+
 		this.initWindowControls();
 	}
 	

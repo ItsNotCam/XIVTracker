@@ -1,41 +1,41 @@
-export enum DataTypes {
+enum DataTypes {
 	position, rotation
 }
 
-export interface Position {
+interface Position {
 	x: number;
 	y: number;
 }
 
-export interface Rotation {
+interface Rotation {
 	rot: number;
 }
 
-export interface Job {
+interface Job {
 	level: number;
 	job_name: string;
 	current_xp: number;
 	max_xp: number;
 }
 
-export interface MaterialJob {
+interface MaterialJob {
 	name: string;
 	id: number;
 	level: number;
 }
 
-export interface Experience {
+interface Experience {
 	xp_current: number,
 	xp_max: number,
 	level: number
 }
 
-export interface SheetObject {
+interface SheetObject {
 	name: string;
 	id: string;
 }
 
-export interface Location {
+interface Location {
 	region?: SheetObject;
 	territory?: SheetObject;
 	area?: SheetObject;
@@ -45,7 +45,7 @@ export interface Location {
 	radius?: number;
 }
 
-export interface Material {
+interface Material {
 	name: string;
 	id: number;
 	icon: string;
@@ -54,7 +54,7 @@ export interface Material {
 	location: Location;
 }
 
-export class JobState {
+class JobState {
 	public level: number;
 	public job_name: string;
 	public current_xp: number;
@@ -77,7 +77,7 @@ export class JobState {
 	}
 }
 
-export type Recipe = {
+type Recipe = {
 	id: number;
 	amount: number;
 	quality: number;

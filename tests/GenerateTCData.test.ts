@@ -1,6 +1,6 @@
 import UpdateTCData, { clearAllData, metaFiles, dataFolder } from "../electron/data/updateTCData.mjs";
 
-import { afterAll, assert, beforeAll, describe, expect, it, suite } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 
 import * as fs from "fs/promises";
 import { afterEach } from "node:test";

@@ -1,22 +1,22 @@
 // Positional data 0x01 -> 0x0F
 
-export type uint16 = number;
-export type uint10 = number;
-export type uint8 = number;
-export type uint6 = number;
+type uint16 = number;
+type uint10 = number;
+type uint8 = number;
+type uint6 = number;
 
-export interface PacketResponse {
+interface PacketResponse {
 	status: uint8;
 	data: any | null;
 }
 
-export interface DeserializedPacket {
+interface DeserializedPacket {
 	id: uint10;
 	flag: uint6;
 	payload: Buffer;
 }
 
-export enum EzFlag {
+enum EzFlag {
 	NULL = 0x01,
 	HEARTBEAT = 0x02,
 	EZ = 0x1D,

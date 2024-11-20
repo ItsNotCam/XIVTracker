@@ -1,6 +1,4 @@
 import EzSerDe from "./EzSerDe";
-import { DeserializedPacket, EzFlag, uint6 } from "./EzTypes.d";
-
 import WebSocket from 'ws';
 
 type WsHandler = {

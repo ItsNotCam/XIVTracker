@@ -1,7 +1,6 @@
-import { assert, describe, expect, it, test } from "vitest";
-import EzSerDe from "../electron/libs/net/ez/EzSerDe";
-import { EzFlag } from "@electron-lib/net/EzTypes";
+import { assert, describe, expect, it } from "vitest";
 import { throws } from "assert";
+import EzSerDe from "../electron/libs/net/EzSerDe";
 
 
 describe("Serialize", async () => {

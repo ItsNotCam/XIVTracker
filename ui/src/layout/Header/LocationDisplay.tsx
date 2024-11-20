@@ -1,6 +1,4 @@
 import { useEffect, useState, FC } from "react";
-
-import { Location } from "@electron/libs/CommonTypes";
 import { onReceive } from "@ui/util/util";
 
 

@@ -1,15 +1,9 @@
 import EzEncoder from "./EzEncoder";
 
-import {
-	DeserializedPacket,
-	EzFlag,
-	uint10,
-} from "../net/EzTypes.d";
-
 // Visual: https://lucid.app/lucidchart/b06bf1e5-8ae7-4e1b-8f32-f256003140d0/edit?invitationId=inv_2a212140-1bee-41d0-913d-4ef4706ba6b1&page=m2MpGyAuT.V7#
 export const deserialize = (msg: Buffer): DeserializedPacket => {
 	// these primitive types are just sugar.
-	let packetLength: uint10;
+	// let packetLength: uint10;
 	let id: uint10;
 	let flag: EzFlag;
 	let payload: Buffer;
@@ -25,7 +19,7 @@ export const deserialize = (msg: Buffer): DeserializedPacket => {
 		}
 
 		// packet length is the last 10 bits = 0011 1111 1111 = 0x3FF
-		packetLength = (short & 0x3FF);
+		// packetLength = (short & 0x3FF);
 	}
 
 	{

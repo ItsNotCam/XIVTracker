@@ -1,5 +1,5 @@
+import EzEncoder, { EzEncoding } from "../electron/libs/net/EzEncoder";
 import { assert, expect, it, describe } from "vitest";
-import EzEncoder, { EzEncoding } from "../electron/libs/net/ez/EzEncoder";
 
 describe('Encode', () => {
 	it.concurrent('Empty', () => {

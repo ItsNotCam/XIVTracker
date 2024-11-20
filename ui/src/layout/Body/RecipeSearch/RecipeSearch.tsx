@@ -1,6 +1,5 @@
 import './recipe-search.css';
 
-import { TCGatheringType, TCRecipe } from '@electron/libs/providers/RecipeProviderTypes';
 import React, { useRef } from 'react';
 import SearchBar from './SearchBar';
 
@@ -36,7 +35,7 @@ const RecipeSearch: React.FC = () => {
 			const gathering = ingredient.gathering;
 			if (crafting && level && level > 1) {
 				let changed = false;
-				reqs.current.forEach((curJob, i) => {
+				reqs.current.forEach((curJob) => {
 					if (curJob.job === crafting?.job_name) {
 						curJob = {
 							...curJob,
@@ -66,7 +65,7 @@ const RecipeSearch: React.FC = () => {
 					}
 
 					let changed = false;
-					reqs.current.forEach((curJob, i) => {
+					reqs.current.forEach((curJob) => {
 						if (curJob.job === jobname) {
 							curJob = {
 								...curJob,

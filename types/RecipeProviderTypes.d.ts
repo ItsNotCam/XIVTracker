@@ -1,21 +1,21 @@
-export interface TCGatheringType {
+interface TCGatheringType {
 	id: number;
 	name: string;
 }
 
-export interface TCGathering {
+interface TCGathering {
 	level: number;
 	types: TCGatheringType[];
 	locations: TCGatheringNode[];
 }
 
-export interface TCDrop {
+interface TCDrop {
 	id: number;
 	name: string;
 	icon_path: string;
 }
 
-export interface TCPosition {
+interface TCPosition {
 	map: number;
 	zoneid: number;
 	level: number;
@@ -28,21 +28,21 @@ export interface TCPosition {
 	zone_name: string;
 }
 
-export interface TCDropSource {
+interface TCDropSource {
 	id: number;
 	name: string;
 	drops: TCDrop[];
 	positions: TCPosition[];
 }
 
-export interface TCCrafting {
+interface TCCrafting {
 	job: number;
 	job_name: string;
 	level: number;
 }
 
 // recipe haha
-export interface TCRecipe {
+interface TCRecipe {
 	id: number;
 	amount: number;
 	name: string;
@@ -56,7 +56,7 @@ export interface TCRecipe {
 
 
 // nodes
-export interface TCGatheringNode {
+interface TCGatheringNode {
 	limited: boolean;
 	level: number;
 	type: number;

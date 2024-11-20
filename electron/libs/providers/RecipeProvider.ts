@@ -1,7 +1,6 @@
 import path from "path";
 import * as fs from "node:fs/promises";
 import * as fsSync from "node:fs";
-import { TCDropSource, TCGathering, TCGatheringType, TCGatheringNode, TCRecipe } from "./RecipeProviderTypes";
 
 export type TCDataType = 
 	"items"

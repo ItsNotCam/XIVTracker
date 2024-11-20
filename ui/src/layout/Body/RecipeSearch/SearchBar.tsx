@@ -1,4 +1,4 @@
-import { TCRecipe } from '@electron/libs/providers/RecipeProviderTypes';
+// import { TCRecipe } from '@electron/libs/providers/RecipeProviderTypes';
 import React from 'react';
 
 export interface SearchBarProps {
@@ -10,7 +10,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearchComplete }) => {
 	const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
 	const [isSearching, setIsSearching] = React.useState(false);
-	const [searchError, setSearchError] = React.useState<string | null>(null);
+	const [_, setSearchError] = React.useState<string | null>(null);
 
 	const handleSearch = async(event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();

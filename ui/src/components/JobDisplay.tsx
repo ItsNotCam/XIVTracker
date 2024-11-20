@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import XPBar from '@ui/components/XPBar';
-import { Job } from '@electron/libs/CommonTypes';
 import { JobIconList } from '@assets/images/jobs';
 import { invoke, onReceive } from '@ui/util/util';
 
