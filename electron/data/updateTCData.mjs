@@ -45,10 +45,10 @@ export default async function UpdateTCData() {
 	} = await getCurrentAndLastestVersions(metadata);
 
 	// if we're up to date, exit
-	if((currentVersion.toString() === latestVersion.toString()) && (await readdir(__dataFolder)).length > 0) {
-		console.log("[Update TC Data] Already up to date, exiting");
-		return; 
-	}
+	// if((currentVersion.toString() === latestVersion.toString()) && (await readdir(__dataFolder)).length > 0) {
+	// 	console.log("[Update TC Data] Already up to date, exiting");
+	// 	return; 
+	// }
 
 	await updateMetadataFile({
 		...metadata,
@@ -212,3 +212,8 @@ downloadFiles = async (fileNames) => {
 		}
 	}
 };
+
+// run generate tc data if running this file directly
+if (process.argv[1] === new URL(import.meta.url).pathname) {
+	UpdateTCData().catch(console.error);
+}
