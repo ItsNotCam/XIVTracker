@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Sidebar from '@ui/layout/Body/Sidebar';
-import RecipeSearch from '@ui/layout/Body/RecipeSearch/RecipeSearch';
+import RecipeSearch from './RecipeSearch/_Root';
 
 const pages: JSX.Element[] = [
 	<RecipeSearch />,
@@ -12,14 +12,14 @@ const Body: React.FC = () => {
 	const [currentTab, setCurrentTab] = useState<number>(0);
 
 	return (
-		<main className="grid grid-cols-[auto,1fr] grid-rows-1 h-[calc(100vh-180px)]">
+		<section className="h-[calc(100vh-180px)] flex flex-row">
 			<Sidebar currentTab={currentTab} setCurrentTab={setCurrentTab}/>
 			{pages.map((page: any,i) => (
-				<div className={`bg-custom-gray-500 grid grid-rows-[auto,1fr] grid-cols-1 ${currentTab !== i && "hidden"}`}>
+				<div className="bg-custom-gray-500 flex-grow" style={{ display: currentTab === i ? 'block' : 'none' }}>
 					{page}
 				</div>
 			))}
-		</main>
+		</section>
 	);
 };
 

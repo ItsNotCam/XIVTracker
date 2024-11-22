@@ -1,6 +1,4 @@
-/* .crafting-requirement-container:has(>:hover) > :not(:hover) { */
 .crafting-requirement-container:has(>:hover) >:not(:hover) {
 	transition-duration: 200ms;
 	opacity: 0.5;
-	scale: 0.95;
 }

@@ -15,9 +15,9 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ setCurrentTab, currentTab, className }) => {
 	return (
-		<div className={`flex flex-col w-fit ${className}`}>
+		<ul className={`w-[80px] flex-shrink-0 ${className || ""}`}>
 			{tabs.map((tab, index) => (
-				<button  
+				<li  
 					key={`tab-${tab.name}`} 
 					onClick={() => setCurrentTab(index)}
 					className={`
@@ -26,9 +26,9 @@ const Sidebar: React.FC<SidebarProps> = ({ setCurrentTab, currentTab, className 
 					`}
 				>
 					<img className="w-[56px] mx-auto" src={tab.src}/>
-				</button>
+				</li>
 			))}
-		</div>
+		</ul>
 	);
 };
 
