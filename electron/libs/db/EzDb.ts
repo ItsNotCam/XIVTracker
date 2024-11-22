@@ -29,7 +29,8 @@ export default class EzDb {
 		const adapter = new JSONFile<DBSchema>(this.dbPath);
 		this.db = new Low<DBSchema>(adapter, {
 			RecentRecipeSearches: [],
-			Recipes: {}
+			Recipes: {},
+			FavoriteRecipes: []
 		});
 
 		await this.db.read();
@@ -56,6 +57,104 @@ export default class EzDb {
 		this.db = null;
 	}
 
+	public isFavoriteRecipe(recipeName: string): boolean {
+		if(this.db === null) {
+			throw EzDb.DB_NOT_CONNECTED;
+		}
+
+		const { FavoriteRecipes } = this.db.data;
+		if(FavoriteRecipes === undefined) {
+			return false;
+		}
+
+		return FavoriteRecipes.find((r: string) => r === recipeName) !== undefined;
+	}
+
+	public getFavoriteRecipes(): string[] {
+		if(this.db === null) {
+			throw EzDb.DB_NOT_CONNECTED;
+		}
+
+		const { FavoriteRecipes } = this.db.data;
+		return FavoriteRecipes || [];
+	}
+
+	public addFavoriteRecipe(recipeName: string) {
+		if(this.db === null) {
+			throw EzDb.DB_NOT_CONNECTED;
+		}
+
+		let { FavoriteRecipes } = this.db.data;
+		if(FavoriteRecipes === undefined) {
+			FavoriteRecipes = [recipeName];
+		} else if(this.tryGetRecipe(recipeName) !== undefined) {
+			FavoriteRecipes.push(recipeName);
+		}
+
+		this.db.data.FavoriteRecipes = FavoriteRecipes;
+
+		if(this.autocommit) {
+			this.db.write();
+		}
+	}
+
+	public toggleFavoriteRecipe(recipeName: string): boolean {
+		if(this.db === null) {
+			throw EzDb.DB_NOT_CONNECTED;
+		}
+
+		let isFavorite: boolean = false;
+
+		const { FavoriteRecipes } = this.db.data;
+		if(FavoriteRecipes === undefined) {
+			this.db.data.FavoriteRecipes = [recipeName];
+			isFavorite = true;
+		} else {
+			const existing = FavoriteRecipes.find((r: string) => r === recipeName);
+			if(existing !== undefined) {
+				isFavorite = false;
+				this.removeFavoriteRecipe(recipeName);
+			} else {
+				isFavorite = true;
+				this.addFavoriteRecipe(recipeName);
+			}
+		}
+
+		if(this.autocommit) {
+			this.db.write();
+		}
+
+		return isFavorite;
+	}
+
+	public removeFavoriteRecipe(recipe: string) {
+		if(this.db === null) {
+			throw EzDb.DB_NOT_CONNECTED;
+		}
+
+		const { FavoriteRecipes } = this.db.data;
+		if(FavoriteRecipes !== undefined && this.tryGetRecipe(recipe) !== undefined) {
+			this.db.data.FavoriteRecipes = FavoriteRecipes.filter((r: string) => r !== recipe);
+		}
+
+		if(this.autocommit) {
+			this.db.write();
+		}
+	}
+
+	public tryGetFavorite(recipeName: string): string | undefined {
+		if(this.db === null) {
+			throw EzDb.DB_NOT_CONNECTED;
+		}
+
+		const { FavoriteRecipes } = this.db.data;
+		if(FavoriteRecipes === undefined) {
+			return undefined;
+		}
+
+		return FavoriteRecipes.find((r: string) => r === recipeName);
+	}
+
 	public setAutoCommit(autocommit: boolean) {
 		this.autocommit = autocommit;
 	}
@@ -69,7 +168,7 @@ export default class EzDb {
 		if(Recipes === undefined || Recipes[recipeName] === undefined) {
 			return undefined;
 		}
-		
+
 		return Recipes[recipeName];
 	}
 
@@ -167,11 +266,13 @@ export default class EzDb {
 
 		await this.db.read();
 
-		let Recipes = this.db.data.Recipes || { };
-		Recipes[newRecipe.name] = newRecipe;
+		// let Recipes = this.db.data.Recipes || { };
+		// Recipes[newRecipe.name] = newRecipe;
 
-		console.log(Recipes);
-		this.db.data.Recipes = Recipes;
+		this.db.data.Recipes = {
+			...this.db.data.Recipes,
+			[newRecipe.name]: newRecipe
+		};
 
 		if(this.autocommit) {
 			await this.db.write();

@@ -192,6 +192,7 @@ export default class EzWs {
 
 	private handleClose = () => {
 		console.log("Connection closed");
+		this.setConnected(false);
 		this.scheduleReconnect();
 	}
 }

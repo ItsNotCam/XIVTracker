@@ -1,17 +1,17 @@
 import { BrowserWindow, ipcMain } from "electron";
 import { EventTypes, handle, listen } from "./EventHelpers";
-import TeamCraftParser from "../providers/RecipeProvider";
+import RecipeProvider from "../providers/RecipeProvider";
 import XIVTrackerApp from "../../app";
 import { EzFlag } from "../net/EzWs";
 import JobState from "../JobState";
 
 export default class EventRegister {
 	private readonly app: XIVTrackerApp;
-	private readonly parser: TeamCraftParser | null = null;
+	private readonly parser: RecipeProvider | null = null;
 
 	constructor(app: XIVTrackerApp) {
 		this.app = app;
-		this.parser = new TeamCraftParser();
+		this.parser = new RecipeProvider();
 	}
 
 	public async init(): Promise<EventRegister> {
@@ -26,8 +26,24 @@ export default class EventRegister {
 		handle("ask:recipe", this.handleAskForRecipe.bind(this));
 		handle("ask:recent-recipe-searches", this.handleAskRecentRecipeSearches.bind(this));
 		handle("ask:time", this.handleAskGameTime.bind(this));
+		handle("ask:favorite-recipes", this.handleAskFavoriteRecipes.bind(this));
+		handle("ask:is-favorite", this.handleAskIsFavoriteRecipe.bind(this));
+
+		handle("set:toggle-favorite-recipe", this.toggleFavoriteRecipes.bind(this));
 
 		return this;
+	}
+
+	private handleAskIsFavoriteRecipe(_: any, name: string) {
+		return this.app.getDB().isFavoriteRecipe(name);
+	}
+
+	private toggleFavoriteRecipes(_: any,name: string) {
+		return this.app.getDB().toggleFavoriteRecipe(name);
+	}
+
+	private handleAskFavoriteRecipes() {
+		return this.app.getDB().getFavoriteRecipes();
 	}
 
 	private sendToClient(event: EventType, data: any) {

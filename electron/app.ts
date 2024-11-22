@@ -17,7 +17,7 @@ export default class XIVTrackerApp {
 			this.wsClient = new EzWs(
 				50085, 
 				this.handleUnregisteredMessage,
-				this.handleWsConnected
+				this.handleWsConnected.bind(this)
 			);
 		} catch (e) {
 			throw e;
@@ -53,8 +53,8 @@ export default class XIVTrackerApp {
 		ezRoute(this.win, data as DeserializedPacket);
 	}
 
-	private handleWsConnected = () => {
-		this.win.webContents.send("broadcast:tcp-connected", true);
+	private handleWsConnected = (isConnected: boolean) => {
+		this.win.webContents.send("broadcast:tcp-connected", isConnected);
 	}
 
 	private initWindowControls() {

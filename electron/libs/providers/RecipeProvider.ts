@@ -2,7 +2,7 @@ import path from "path";
 import * as fs from "node:fs/promises";
 import * as fsSync from "node:fs";
 
-export type TCDataType = 
+export type TCFilename = 
 	"items"
 | "xiv_item-id-by-name"
 | "xiv_recipe-by-id"
@@ -19,10 +19,10 @@ export type TCDataType =
 | "places"
 | "xiv_nodes-by-item-id";
 
-export default class TeamCraftParser {
-	private files: Map<TCDataType, any> | null = null;
+export default class RecipeProvider {
+	private files: Map<TCFilename, any> | null = null;
 	
-	private readonly dataTypes: TCDataType[] = [
+	private readonly dataTypes: TCFilename[] = [
 		"items", "xiv_item-id-by-name", "xiv_recipe-by-id", "item-level", "item-icons", "job-name",
 		"xiv_gathering-items-by-id", "gathering-search-index", "gathering-types", "xiv_map-entries-by-id",
 		"drop-sources", "mobs", "xiv_monsters-by-id", "places", "xiv_nodes-by-item-id"
@@ -40,8 +40,8 @@ export default class TeamCraftParser {
 		this.files = null;
 	}
 
-	public async init(): Promise<TeamCraftParser> {
-		this.files = new Map<TCDataType, any>();
+	public async init(): Promise<RecipeProvider> {
+		this.files = new Map<TCFilename, any>();
 
     for (const [,dt] of this.dataTypes.entries()) {
 			try { 
@@ -55,13 +55,13 @@ export default class TeamCraftParser {
 		return this;
 	}
 	
-	public initSync(): TeamCraftParser {
-		this.files! = new Map<TCDataType, any>();
+	public initSync(): RecipeProvider {
+		this.files! = new Map<TCFilename, any>();
 
     for (const dt in this.dataTypes) {
 			try { 
 				const data = this.loadDataSync(this.dataTypes[dt]); 
-				this.files!.set(dt as TCDataType, data);
+				this.files!.set(dt as TCFilename, data);
 			} catch(e) { 
 				console.error("Failed to get data for:", this.dataTypes[dt], e);
 			}
@@ -70,7 +70,7 @@ export default class TeamCraftParser {
 		return this;
 	}
 
-	public loadDataSync(dataType: TCDataType): any {
+	public loadDataSync(dataType: TCFilename): any {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
 		}
@@ -89,7 +89,7 @@ export default class TeamCraftParser {
 		return JSON.parse(data.toString());
 	}
 	
-	public async loadData(dataType: TCDataType): Promise<any> {
+	public async loadData(dataType: TCFilename): Promise<any> {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
 		}
