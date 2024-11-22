@@ -5,5 +5,6 @@ interface DBSearchItem {
 
 interface DBSchema {
 	RecentRecipeSearches: DBSearchItem[],
-	Recipes: { [key: string]: TCRecipe }
+	Recipes: { [key: string]: TCRecipe },
+	FavoriteRecipes: string[],
 }

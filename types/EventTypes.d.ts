@@ -37,7 +37,12 @@ type EventType =
 	| "ask:xp"
 	| "ask:level"
 	| "ask:recipe"
+	| "ask:is-favorite"
+	| "ask:favorite-recipes"
 	| "ask:recent-recipe-searches"
+	| "ask:toggle-favorite-recipe"
+
+	| "set:toggle-favorite-recipe"
 
 	// global
 	| "broadcast:renderer-ready"

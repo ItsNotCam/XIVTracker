@@ -1,5 +1,5 @@
 import { it, expect, afterAll, suite, beforeAll, test, assert } from "vitest";
-import TeamCraftParser, { TCDataType } from "../electron/libs/providers/RecipeProvider";
+import RecipeProvider, { TCFilename } from "../electron/libs/providers/RecipeProvider";
 
 // vi.spyOn(console, 'log').mockImplementation(() => {});
 // vi.spyOn(console, 'warn').mockImplementation(() => {});
@@ -144,11 +144,11 @@ const pastoralOakCaneRecipe = {
 	}]
 }
 
-let invalidParser: TeamCraftParser;
-let validParser: TeamCraftParser;
+let invalidParser: RecipeProvider;
+let validParser: RecipeProvider;
 beforeAll(async () => {
-	validParser = await new TeamCraftParser().init();
-	invalidParser = new TeamCraftParser();
+	validParser = await new RecipeProvider().init();
+	invalidParser = new RecipeProvider();
 })
 
 test("Parsers initialized", () => {
@@ -158,17 +158,17 @@ test("Parsers initialized", () => {
 
 suite("Setup parser", async () => {
 	it("Should setup synchronously", () => {
-		const validParser = new TeamCraftParser().initSync();
+		const validParser = new RecipeProvider().initSync();
 		expect(validParser.isSetup()).toBe(true);
 	});
 	
 	it("Should setup asynchronously", async () => {
-		const validParser = await new TeamCraftParser().init();
+		const validParser = await new RecipeProvider().init();
 		expect(validParser.isSetup()).toBe(true);
 	});
 	
 	it("Should not be set up", async () => {
-		const invalidParser = new TeamCraftParser();
+		const invalidParser = new RecipeProvider();
 		expect(invalidParser.isSetup()).toBe(false);
 	});
 });
@@ -176,20 +176,20 @@ suite("Setup parser", async () => {
 suite("Parser Tests", async () => {
 	suite("Open and Close", () => {
 		it("Should be able to open", async () => {
-			const tempValidParser = await new TeamCraftParser().init();
+			const tempValidParser = await new RecipeProvider().init();
 			expect(tempValidParser.isSetup()).toBe(true);
 			tempValidParser.close();
 		});
 
 		it("Should be able to close", async () => {
-			const tempValidParser = await new TeamCraftParser().init();
+			const tempValidParser = await new RecipeProvider().init();
 			expect(tempValidParser.isSetup()).toBe(true);
 			tempValidParser.close();
 			expect(tempValidParser.isSetup()).toBe(false);
 		});
 
 		it("Should be able to reopen", async () => {
-			const tempValidParser = new TeamCraftParser().initSync();
+			const tempValidParser = new RecipeProvider().initSync();
 			expect(tempValidParser.isSetup()).toBe(true);
 			tempValidParser.close();
 			expect(tempValidParser.isSetup()).toBe(false);
@@ -200,7 +200,7 @@ suite("Parser Tests", async () => {
 		});
 		
 		it("Should not be able to close", async () => {
-			const tempValidParser = await new TeamCraftParser();
+			const tempValidParser = await new RecipeProvider();
 			try {
 				tempValidParser.close();
 				assert.fail("Failed")
@@ -212,14 +212,14 @@ suite("Parser Tests", async () => {
 
 	suite("Test with valid parser", async() => {
 		test("Try to open an invalid path async", async() => {
-			const result = await validParser.loadData("haha ok" as TCDataType).catch(() => undefined);
+			const result = await validParser.loadData("haha ok" as TCFilename).catch(() => undefined);
 			expect(result).toBe(undefined);
 		});
 
 		test("Try to open an invalid path sync", async() => {
 			const re: RegExp = new RegExp(/File does not exist: .*/);
 			try {
-				validParser.loadDataSync("haha ok" as TCDataType);
+				validParser.loadDataSync("haha ok" as TCFilename);
 				assert.fail("Failed")
 			} catch(e: any) {
 				expect(e.message).toMatch(re);
@@ -272,7 +272,7 @@ suite("Parser Tests", async () => {
 		});
 
 		test("Should fail to get data synchronously for an invalid file", async() => {
-			const newParser = new TeamCraftParser();
+			const newParser = new RecipeProvider();
 			try {
 				newParser.initSync();
 			} catch (e: any) {
@@ -341,12 +341,12 @@ suite("Parser Tests", async () => {
 		});
 
 		it("Test invalid data loading async", async () => {
-			const failed = await invalidParser.loadData("recipes" as TCDataType).catch(e => e.message);
+			const failed = await invalidParser.loadData("recipes" as TCFilename).catch(e => e.message);
 			expect(failed).toBe("Parser not initialized");
 		});
 
 		it("Test invalid data loading sync", async () => {
-			expect(() => invalidParser.loadDataSync("valid-path" as TCDataType)).toThrow("Parser not initialized");
+			expect(() => invalidParser.loadDataSync("valid-path" as TCFilename)).toThrow("Parser not initialized");
 		});
 
 		it("Test invalid item name retrieval by id", () => {
