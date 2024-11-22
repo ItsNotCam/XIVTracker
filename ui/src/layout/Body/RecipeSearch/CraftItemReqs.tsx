@@ -4,14 +4,12 @@ import { toTitleCase } from '@ui/util/util';
 
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
 export interface CraftingItemReqsProps {
 	recipeData: TCRecipe;
 	craftingRequirements: any[];
 	isFavorite: boolean;
 	toggleFavorite: () => void;
-	toggleGoal: () => void;
 }
 
 const CraftingItemReqs: React.FC<CraftingItemReqsProps> = ({ 
@@ -19,7 +17,6 @@ const CraftingItemReqs: React.FC<CraftingItemReqsProps> = ({
 	craftingRequirements, 
 	isFavorite, 
 	toggleFavorite,
-	toggleGoal
 }) => {
 	return (
 		<div className="flex flex-row gap-2 pl-2 items-center pb-2 border-b-[4px] border-custom-gray-200/50">
@@ -42,7 +39,7 @@ const CraftingItemReqs: React.FC<CraftingItemReqsProps> = ({
 					{recipeData.crafting ? (
 						<img src={JobIconList[recipeData.crafting?.job_name || ""]} className="h-[1.2em] w-[1.2em] inline" />
 					) : null}
-					{recipeData.gathering && recipeData.gathering.types.map((t, i) => (
+					{recipeData.gathering && recipeData.gathering.types.map((t) => (
 						<img src={JobIconList[t.name]} className="h-[1.2em] w-[1.2em] inline" />
 					))}
 					<p>Lvl. {recipeData.crafting?.level}</p>
