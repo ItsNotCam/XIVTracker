@@ -46,7 +46,7 @@
 		"electron", 
 		"ui", 
 		"tests", 
-		"types/**/*.d.ts",  
+		"types/**/*.d.ts", "electron/libs/providers/.RecipeProvider.ts.old",  
 	],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

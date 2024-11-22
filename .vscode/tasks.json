@@ -1,0 +1,14 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+			{
+					"label": "tsc: build - watch",
+					"type": "shell",
+					"command": "npx tsc -w",
+					"isBackground": true,
+					"problemMatcher": [
+							"$tsc-watch"
+					]
+			}
+	]
+}
