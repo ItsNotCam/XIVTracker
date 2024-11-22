@@ -3,6 +3,7 @@ import * as fs from 'fs/promises';
 import {
 	resolve as pathResolve,
 } from 'path';
+import RecipeProvider from './generateRecipes.mjs';
 
 const first = 0;
 const last = 45700;
@@ -84,18 +85,9 @@ generateItems = async(basePath) => {
 }
 
 generateRecipes = async(basePath) => {
-	console.log("[Update TC Data] Generating recipes...");
-	const recipesData = JSON.parse(await fs.readFile(
-		pathResolve(basePath, `recipes.json`), 'utf8')
-	);
-
-	let outData = {};
-	recipesData.forEach(entry => {
-		const result = entry["result"];
-		outData[result] = entry;
-	});
-	console.log("[Update TC Data] Recipes generated.");
-	return outData;
+	const ok = new RecipeProvider(basePath);
+	await ok.init();
+	ok.generateRecipes();
 }
 
 generateGatheringItems = async(basePath) => {
