@@ -139,18 +139,18 @@ export default class EventRegister {
 			return null;
 		}
 
-		const existingRecipe: TCRecipe | undefined = await this.app.getDB().tryGetRecipe(itemName);
-		if(existingRecipe){
-			console.log("Recipe already exists in the database.");
-			this.app.getDB().addRecentSearch(itemName);
-			return existingRecipe;
-		}
+		// const existingRecipe: TCRecipe | undefined = await this.app.getDB().tryGetRecipe(itemName);
+		// if(existingRecipe){
+		// 	console.log("Recipe already exists in the database.");
+		// 	this.app.getDB().addRecentSearch(itemName);
+		// 	return existingRecipe;
+		// }
 
 		const recipe = this.parser.getRecipeByItemIdentifier(itemName);
 		if(recipe) {
 			console.log("Recipe found for item:", itemName);
 			await this.app.getDB().addRecentSearch(itemName);
-			await this.app.getDB().addRecipe(recipe);
+			// await this.app.getDB().addRecipe(recipe);
 		}
 
 		return recipe;

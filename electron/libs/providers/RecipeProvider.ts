@@ -2,7 +2,7 @@ import path from "path";
 import * as fs from "node:fs/promises";
 import * as fsSync from "node:fs";
 
-export type TCFilename = 
+export type TCDataType = 
 	"items"
 | "xiv_item-id-by-name"
 | "xiv_recipe-by-id"
@@ -19,10 +19,12 @@ export type TCFilename =
 | "places"
 | "xiv_nodes-by-item-id";
 
-export default class RecipeProvider {
-	private files: Map<TCFilename, any> | null = null;
+console.log("test");
+
+export default class TeamCraftParser {
+	private files: Map<TCDataType, any> | null = null;
 	
-	private readonly dataTypes: TCFilename[] = [
+	private readonly dataTypes: TCDataType[] = [
 		"items", "xiv_item-id-by-name", "xiv_recipe-by-id", "item-level", "item-icons", "job-name",
 		"xiv_gathering-items-by-id", "gathering-search-index", "gathering-types", "xiv_map-entries-by-id",
 		"drop-sources", "mobs", "xiv_monsters-by-id", "places", "xiv_nodes-by-item-id"
@@ -40,8 +42,8 @@ export default class RecipeProvider {
 		this.files = null;
 	}
 
-	public async init(): Promise<RecipeProvider> {
-		this.files = new Map<TCFilename, any>();
+	public async init(): Promise<TeamCraftParser> {
+		this.files = new Map<TCDataType, any>();
 
     for (const [,dt] of this.dataTypes.entries()) {
 			try { 
@@ -55,13 +57,13 @@ export default class RecipeProvider {
 		return this;
 	}
 	
-	public initSync(): RecipeProvider {
-		this.files! = new Map<TCFilename, any>();
+	public initSync(): TeamCraftParser {
+		this.files! = new Map<TCDataType, any>();
 
     for (const dt in this.dataTypes) {
 			try { 
 				const data = this.loadDataSync(this.dataTypes[dt]); 
-				this.files!.set(dt as TCFilename, data);
+				this.files!.set(dt as TCDataType, data);
 			} catch(e) { 
 				console.error("Failed to get data for:", this.dataTypes[dt], e);
 			}
@@ -70,7 +72,7 @@ export default class RecipeProvider {
 		return this;
 	}
 
-	public loadDataSync(dataType: TCFilename): any {
+	public loadDataSync(dataType: TCDataType): any {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
 		}
@@ -89,7 +91,7 @@ export default class RecipeProvider {
 		return JSON.parse(data.toString());
 	}
 	
-	public async loadData(dataType: TCFilename): Promise<any> {
+	public async loadData(dataType: TCDataType): Promise<any> {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
 		}
@@ -364,7 +366,7 @@ export default class RecipeProvider {
 		return outData;
 	}
 
-	public getRecipeRecursive(itemIdentifier: string | number): TCRecipe | null {
+	public getRecipeRecursive(itemIdentifier: string | number, parentAmount: number = 1): TCRecipe | null {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
 		}
@@ -380,14 +382,14 @@ export default class RecipeProvider {
 			itemId = itemIdentifier;
 		}
 	
-		const recipeData = this.getRootRecipe(itemId);
-		if(!recipeData) {
+		const rootRecipe = this.getRootRecipe(itemId);
+		if(!rootRecipe) {
 			return null;
 		}
 	
 		const itemName = this.getItemNameFromId(itemId);
 		const iconPath = this.getIconPathOfItemId(itemId);
-		const jobName = this.getJobNameById(recipeData.job);
+		const jobName = this.getJobNameById(rootRecipe.job);
 		
 		const gatheringLevel = this.getGatheringLevelById(itemId);
 		let gathering: TCGathering | null = null;
@@ -408,21 +410,21 @@ export default class RecipeProvider {
 
 		let newRecipe: TCRecipe = {
 			id: itemId,
-			amount: recipeData.yields,
+			amount: parentAmount,
 			name: itemName || "",
 			icon_path: iconPath || "",
 			gathering: gathering,
 			drop_sources: dropSources,
 			crafting: {
-				job: recipeData.job,
+				job: rootRecipe.job,
 				job_name: jobName || "",
-				level: recipeData.lvl
+				level: rootRecipe.lvl
 			},
 			ingredients: []
 		}
 	
-		if(recipeData.ingredients.length > 0) {
-			for(const ingredient of recipeData.ingredients) {
+		if(rootRecipe.ingredients.length > 0) {
+			for(const ingredient of rootRecipe.ingredients) {
 				const rId = ingredient.id;
 				const ingredientName = this.getItemNameFromId(rId) || "???";
 				const iconPath = this.getIconPathOfItemId(rId) || undefined;
@@ -441,7 +443,7 @@ export default class RecipeProvider {
 				const dropSources: TCDropSource[] | null = this.getDropSourceById(rId);
 
 				let newIngredient: TCRecipe = {
-					amount: ingredient.amount,
+					amount: ingredient.amount * parentAmount,
 					id: rId,
 					name: ingredientName,
 					gathering: gathering,
@@ -451,7 +453,7 @@ export default class RecipeProvider {
 					ingredients: []
 				}
 	
-				const result = this.getRecipeRecursive(rId);
+				const result = this.getRecipeRecursive(rId, ingredient.amount || 1);
 				if(result !== null) {
 					newIngredient.crafting = result.crafting;
 					newIngredient.ingredients = result.ingredients;

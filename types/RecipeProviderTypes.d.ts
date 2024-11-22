@@ -71,5 +71,8 @@ interface TCGatheringNode {
 	y: number;
 	z: number;
 	map: number;
-	hiddenItems: number[]
+	hiddenItems: number[];
+	map_name: string;
+	job_name: string;
+	zone_name: string;
 }

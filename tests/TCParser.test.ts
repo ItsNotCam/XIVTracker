@@ -1,5 +1,5 @@
 import { it, expect, afterAll, suite, beforeAll, test, assert } from "vitest";
-import RecipeProvider, { TCFilename } from "../electron/libs/providers/RecipeProvider";
+import RecipeProvider, { TCDataType } from "../electron/libs/providers/RecipeProvider";
 
 // vi.spyOn(console, 'log').mockImplementation(() => {});
 // vi.spyOn(console, 'warn').mockImplementation(() => {});
@@ -212,14 +212,14 @@ suite("Parser Tests", async () => {
 
 	suite("Test with valid parser", async() => {
 		test("Try to open an invalid path async", async() => {
-			const result = await validParser.loadData("haha ok" as TCFilename).catch(() => undefined);
+			const result = await validParser.loadData("haha ok" as TCDataType).catch(() => undefined);
 			expect(result).toBe(undefined);
 		});
 
 		test("Try to open an invalid path sync", async() => {
 			const re: RegExp = new RegExp(/File does not exist: .*/);
 			try {
-				validParser.loadDataSync("haha ok" as TCFilename);
+				validParser.loadDataSync("haha ok" as TCDataType);
 				assert.fail("Failed")
 			} catch(e: any) {
 				expect(e.message).toMatch(re);
@@ -341,12 +341,12 @@ suite("Parser Tests", async () => {
 		});
 
 		it("Test invalid data loading async", async () => {
-			const failed = await invalidParser.loadData("recipes" as TCFilename).catch(e => e.message);
+			const failed = await invalidParser.loadData("recipes" as TCDataType).catch(e => e.message);
 			expect(failed).toBe("Parser not initialized");
 		});
 
 		it("Test invalid data loading sync", async () => {
-			expect(() => invalidParser.loadDataSync("valid-path" as TCFilename)).toThrow("Parser not initialized");
+			expect(() => invalidParser.loadDataSync("valid-path" as TCDataType)).toThrow("Parser not initialized");
 		});
 
 		it("Test invalid item name retrieval by id", () => {
