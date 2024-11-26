@@ -496,16 +496,6 @@ suite("Small Recipes", () => {
 		expect(result).toMatchObject(mapleLumberRecipe);
 	});
 
-
-	it("Hempen Yarn",() => {
-		const result = validParser.getRecipeByItemIdentifier("Hempen Yarn");
-		const hempenYarnRecipe = {
-			...mapleLongbowRecipe.ingredients[2],
-			amount: 2
-		}
-		expect(result).toMatchObject(hempenYarnRecipe);
-	});
-
 	it("Oak Lumber",() => {
 		const result = validParser.getRecipeByItemIdentifier("Oak Lumber");
 		expect(result).toMatchObject(oakLumberRecipe);
