@@ -36,6 +36,7 @@ export enum EzFlag {
 	TIME = 0x30,
 	NAME = 0x31,
 	CURRENCY = 0x32,
+	
 }
 
 export default class EzWs {
@@ -55,7 +56,7 @@ export default class EzWs {
 
 	public connect = (): EzWs => {
 		try {
-			console.log("Connecting to ws://localhost:" + this.PORT);
+			console.log(`Attempting to connect to ws://localhost: ${this.PORT}`);
 			this.socket = new WebSocket(`ws://localhost:${this.PORT}`, undefined);
 		} catch (e: any) {
 			this.setConnected(false);
@@ -67,11 +68,10 @@ export default class EzWs {
 			throw new Error("Error creating websocket connection - failed to create WebSocket");
 		}
 
-		console.log("Connected");
-		this.socket.on("message", this.handleMessage);
 		this.socket.on("open", this.handleOpen);
-		this.socket.on("error", this.handleError);
 		this.socket.on("close", this.handleClose);
+		this.socket.on("message", this.handleMessage);
+		this.socket.on("error", this.handleError);
 
 		return this;
 	}
@@ -156,15 +156,11 @@ export default class EzWs {
 	}
 
 	public isConnected = (): boolean => {
-		if(this.socket === null) {
+		if(this.socket === null || this.socket === undefined || this.socket.readyState === undefined) {
 			return false;
 		}
 
-		if(this.socket.readyState !== WebSocket.OPEN) {
-			return false;
-		}
-		
-		return true;
+		return this.socket.readyState === WebSocket.OPEN;
 	};
 
 	public close = (reconnect: boolean = true, force: boolean = false): void => {
@@ -186,8 +182,9 @@ export default class EzWs {
 		}
 	}
 
-	private handleOpen = () => {
+	private handleOpen = (socket: WebSocket) => {
 		console.log("Connection opened");
+
 		this.setConnected(true);
 	}
 

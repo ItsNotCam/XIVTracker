@@ -35,7 +35,7 @@ const RecipeSearch: React.FC = () => {
 	}
 
 	const updateAllJobs = async() => {
-		const jobs = await invoke("ask:all-jobs") || [];
+		const jobs = await invoke("ask:job-all") || [];
 		setPlayerJobs(jobs);
 	}
 
@@ -116,11 +116,9 @@ const RecipeSearch: React.FC = () => {
 
 	const onSearchComplete = async (result: TCRecipe | null) => {
 		if (result !== null && result.name === fullRecipe?.name) {
-			console.log("invalid");
 			return;
 		}
 
-		console.log("valid", result);
 		if (result) {
 			craftReqsRef.current = [{ 
 				job: result.crafting?.job_name, 
@@ -152,7 +150,6 @@ const RecipeSearch: React.FC = () => {
 	const getAllCraftingRequirements = async (recipeData: TCRecipe): Promise<any[]> => {
 		let result: any = [];
 
-		console.log("starting with", recipeData.name, ":", recipeData.ingredients);
 		await recipeData.ingredients.forEach(async (ingredient: TCRecipe) => {
 			const level = recipeData.crafting?.level;
 			const crafting = ingredient.crafting;

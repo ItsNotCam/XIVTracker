@@ -18,14 +18,14 @@ export default class EventRegister {
 		this.initWindowControls(this.app.getWindow());
 		this.parser!.init();
 
-		listen("update:gil", this.handleUpdateGil);
-
 		handle("ask:tcp-connected", this.handleAskTcpConnected.bind(this));
+
 		handle("ask:job-main", this.handleAskJobMain.bind(this));
+		handle("ask:job-all", this.handleAskJobAll.bind(this));
 		handle("ask:location-all", this.handleAskGetLocationAll.bind(this));
 		handle("ask:recipe", this.handleAskForRecipe.bind(this));
 		handle("ask:recent-recipe-searches", this.handleAskRecentRecipeSearches.bind(this));
-		handle("ask:time", this.handleAskGameTime.bind(this));
+		handle("ask:time", this.handleAskTime.bind(this));
 		handle("ask:favorite-recipes", this.handleAskFavoriteRecipes.bind(this));
 		handle("ask:is-favorite", this.handleAskIsFavoriteRecipe.bind(this));
 		handle("ask:name", this.handleAskName.bind(this));
@@ -36,7 +36,18 @@ export default class EventRegister {
 	}
 
 	private async handleAskName() {
-		return await this.app.GetWebSocketClient().ask(EzFlag.NAME);
+		if(this.app.GetWebSocketClient().isConnected() === false) {
+			return undefined;
+		}
+
+		var response;
+		try {
+			response = await this.app.GetWebSocketClient().ask(EzFlag.NAME);
+		} catch(e) {
+			console.error("Error getting name:", (e as any).message);
+			return undefined;
+		}
+		return response;
 	}
 
 	private handleAskIsFavoriteRecipe(_: any, name: string) {
@@ -56,10 +67,7 @@ export default class EventRegister {
 	}
 
 	private handleAskTcpConnected() {
-		if (!this.app) {
-			console.error("XIVTrackerApp instance is not valid.");
-		}
-		return this.app.GetWebSocketClient().isConnected() || false;
+		return this.app?.GetWebSocketClient().isConnected() || false;
 	}
 
 	private handleUpdateGil(_: any, gil: number) {
@@ -67,6 +75,10 @@ export default class EventRegister {
 	}
 
 	private async handleAskJobMain(): Promise<JobState | undefined> {
+		if (this.app.GetWebSocketClient().isConnected() === false) {
+			return undefined;
+		}
+
 		let response: string | undefined;
 		try {
 			response = await this.app.GetWebSocketClient().ask(EzFlag.JOB_MAIN);
@@ -75,12 +87,30 @@ export default class EventRegister {
 			return undefined;
 		}
 
-		if (response === undefined) {
+		try {
+			return JobState.fromJson(response!);
+		} catch (e) {
+			console.log("Error parsing job data:", (e as any).message);
+		}
+
+		return undefined;
+	}
+
+	private async handleAskJobAll(): Promise<JobState | undefined> {
+		if (this.app.GetWebSocketClient().isConnected() === false) {
+			return undefined;
+		}
+
+		let response: string | undefined;
+		try {
+			response = await this.app.GetWebSocketClient().ask(EzFlag.JOB_ALL);
+		} catch (e: any) {
+			console.log("Error getting all jobs:", e.message);
 			return undefined;
 		}
 
 		try {
-			return JobState.fromJson(response);
+			return JobState.fromJson(response!);
 		} catch (e) {
 			console.log("Error parsing job data:", (e as any).message);
 		}
@@ -124,13 +154,20 @@ export default class EventRegister {
 	}
 
 	private async handleAskGetLocationAll(): Promise<Location | undefined> {
-		const response = await this.app.GetWebSocketClient().ask(EzFlag.LOCATION_ALL);
-		if (response === undefined) {
+		if(this.app.GetWebSocketClient().isConnected() === false) {
+			return undefined;
+		}
+
+		var response;
+		try {
+			response = await this.app.GetWebSocketClient().ask(EzFlag.LOCATION_ALL);
+		} catch (e) {
+			console.error("Error getting location data:", (e as any).message);
 			return undefined;
 		}
 
 		try {
-			return JSON.parse(response);
+			return JSON.parse(response!);
 		} catch (e) {
 			console.log("Error parsing location data:", (e as any).message);
 		}
@@ -179,9 +216,12 @@ export default class EventRegister {
 		return r;
 	}
 
-	private async handleAskGameTime(): Promise<string | undefined> {
-		const time = await this.app.GetWebSocketClient().ask(EzFlag.TIME);
-		return time;
+	private async handleAskTime(): Promise<string | undefined> {
+		if (this.app.GetWebSocketClient().isConnected() === false) {
+			return undefined;
+		}
+
+		return await this.app.GetWebSocketClient().ask(EzFlag.TIME);
 	}
 
 	public close() {
@@ -193,6 +233,7 @@ export default class EventRegister {
 
 		ipcMain.removeHandler("ask:tcp-connected");
 		ipcMain.removeHandler("ask:job-main");
+		ipcMain.removeHandler("ask:job-all");
 		ipcMain.removeHandler("ask:location-all");
 		ipcMain.removeHandler("ask:recipe");
 		ipcMain.removeHandler("ask:recent-recipe-searches");

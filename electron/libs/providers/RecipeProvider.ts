@@ -382,7 +382,7 @@ export default class TeamCraftParser {
 	
 		const rootRecipe = this.getRootRecipe(itemId);
 		if(!rootRecipe) {
-			console.log("  ".repeat(depth*2), this.files?.get("items")[itemId].en,":", parentAmount);
+			// console.log("  ".repeat(depth*2), this.files?.get("items")[itemId].en,":", parentAmount);
 			return null;
 		}
 
