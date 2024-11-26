@@ -22,6 +22,48 @@ const copperRecipe = {
 	}]
 }
 
+const velveteenRobeRecipe = {
+	name: "Velveteen Robe",
+	ingredients: [{
+		amount: 3,
+		name: "Undyed Velveteen",
+		yields: 1,
+		ingredients: [{
+			amount: 1,
+			name: "Cotton Yarn",
+			yields: 2,
+			ingredients: [{
+				amount: 4,
+				name: "Cotton Boll",
+			}]
+		},{
+			amount: 1,
+			name: "Dew Thread",
+			yields: 2,
+			ingredients: [{
+				amount: 2,
+				name: "Derimite Web"
+			}]
+		}]
+	},{
+		amount: 2,
+		name: "Dew Thread",
+		yields: 2,
+		ingredients: [{
+			amount: 4,
+			name: "Derimite Web"
+		}]
+	},{
+		amount: 1,
+		name: "Silver Ingot",
+		yields: 1,
+		ingredients: [{
+			amount: 3,
+			name: "Silver Ore",
+		}]
+	}]
+}
+
 const mapleLongbowRecipe = {
 	name: "Maple Longbow",
 	ingredients: [{

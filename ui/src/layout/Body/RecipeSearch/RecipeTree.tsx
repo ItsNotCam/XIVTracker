@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import RecipeItem from './RecipeItem';
 
 export interface RecipeTreeProps {
@@ -7,19 +7,23 @@ export interface RecipeTreeProps {
 }
 
 const RecipeTree: React.FC<RecipeTreeProps> = ({ RecipeData, IsFirst }) => {
-	const [droppedDown, setDroppedDown] = useState<boolean>(IsFirst || false);
+	const [droppedDown, setDroppedDown] = useState<boolean>(false);
 	const hasChildren = RecipeData.ingredients && RecipeData.ingredients.length > 0;
 
 	const toggleDroppedDown = () => {
 		setDroppedDown(!droppedDown);
 	}
 
+	useEffect(() => {
+		setDroppedDown(false);
+	}, [RecipeData])
+
 	return (
 		<div style={{ 
 				marginLeft: IsFirst ? 0 : "1rem",
 				borderColor: IsFirst ? "transparent" : "gray"
 			}} 
-			className="flex flex-col border-l-2 pl-2 transition-[max-height] pt-1 relative"
+			className={`border-l-2 transition-[max-height] pt-1 relative ${IsFirst ? "" : "pl-2"}`}
 		>
 			<RecipeItem 
 				RecipeData={RecipeData} 
@@ -33,7 +37,7 @@ const RecipeTree: React.FC<RecipeTreeProps> = ({ RecipeData, IsFirst }) => {
 					maxHeight: droppedDown ? '1000px' : '0px',
 					overflow: droppedDown ? "visible" : "hidden" 
 				}} className="transition-[max-height] flex flex-col">
-					{RecipeData.ingredients.map((ingredient) => (
+					{RecipeData.ingredients.filter(i => !i.name.includes("shard")).map((ingredient) => (
 						<RecipeTree RecipeData={ingredient} />
 					))}
 				</div>

@@ -19,8 +19,6 @@ export type TCDataType =
 | "places"
 | "xiv_nodes-by-item-id";
 
-console.log("test");
-
 export default class TeamCraftParser {
 	private files: Map<TCDataType, any> | null = null;
 	
@@ -366,7 +364,7 @@ export default class TeamCraftParser {
 		return outData;
 	}
 
-	public getRecipeRecursive(itemIdentifier: string | number, parentAmount: number = 1): TCRecipe | null {
+	public getRecipeRecursive(itemIdentifier: string | number, parentAmount: number = 1, depth: number = 0): TCRecipe | null {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
 		}
@@ -384,9 +382,24 @@ export default class TeamCraftParser {
 	
 		const rootRecipe = this.getRootRecipe(itemId);
 		if(!rootRecipe) {
+			console.log("  ".repeat(depth*2), this.files?.get("items")[itemId].en,":", parentAmount);
 			return null;
 		}
-	
+
+		console.log(
+			"  ".repeat(depth * 2),
+			this.files?.get("items")[rootRecipe.result].en, 
+			// ":", 
+			// parentAmount, 
+			// rootRecipe.yields, 
+			// `${rootRecipe.yields}x=${parentAmount}`,
+			// `${parentAmount / (rootRecipe.yields || 1)}`,
+			// `${Math.ceil(parentAmount / (rootRecipe.yields || 1))}`,
+			// `=> ${Math.ceil(parentAmount / (rootRecipe.yields || 1)) * (rootRecipe.yields || 1)}`,
+			`=> ${Math.ceil(parentAmount / (rootRecipe.yields || 1))}`,
+			// Math.ceil(parentAmount / (rootRecipe.yields || 1))
+		);
+		const amountNeeded = Math.ceil(parentAmount / (rootRecipe.yields || 1));
 		const itemName = this.getItemNameFromId(itemId);
 		const iconPath = this.getIconPathOfItemId(itemId);
 		const jobName = this.getJobNameById(rootRecipe.job);
@@ -410,7 +423,7 @@ export default class TeamCraftParser {
 
 		let newRecipe: TCRecipe = {
 			id: itemId,
-			amount: parentAmount,
+			amount: amountNeeded,
 			name: itemName || "",
 			icon_path: iconPath || "",
 			gathering: gathering,
@@ -432,10 +445,9 @@ export default class TeamCraftParser {
 				const gatheringLevel = this.getGatheringLevelById(rId);
 				let gathering: TCGathering | null = null;
 				if(gatheringLevel) {
-					const gatheringTypes: TCGatheringType[] | null = this.getGatheringTypesById(rId);
 					gathering = {
 						level: gatheringLevel,
-						types: gatheringTypes || [],
+						types: this.getGatheringTypesById(rId) || [],
 						locations: this.getGatheringLocationsById(rId) || []
 					}
 				}
@@ -443,8 +455,8 @@ export default class TeamCraftParser {
 				const dropSources: TCDropSource[] | null = this.getDropSourceById(rId);
 
 				let newIngredient: TCRecipe = {
-					amount: ingredient.amount * parentAmount,
 					id: rId,
+					amount: amountNeeded * ingredient.amount,
 					name: ingredientName,
 					gathering: gathering,
 					drop_sources: dropSources,
@@ -453,7 +465,7 @@ export default class TeamCraftParser {
 					ingredients: []
 				}
 	
-				const result = this.getRecipeRecursive(rId, ingredient.amount || 1);
+				const result = this.getRecipeRecursive(rId, newIngredient.amount, depth + 1);
 				if(result !== null) {
 					newIngredient.crafting = result.crafting;
 					newIngredient.ingredients = result.ingredients;

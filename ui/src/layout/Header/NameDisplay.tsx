@@ -1,9 +1,33 @@
-import { FC } from "react"
+import { FC, useEffect, useState } from "react";
+import { invoke, onReceive } from '@ui/util/util';
 
-const NameDisplay: FC<{ initialName: string }> = ({ initialName }) => {
+const NameDisplay: FC = () => {
+	const [name, setName] = useState<string>("???");
+
+	const updateName = (_event: any, newName: string) => {	
+		setName(newName);
+	}
+
+	const askName = async () => {
+		const name = await invoke("ask:name");
+		setName(name);
+	}
+
+	useEffect(() => {
+		askName();
+
+		onReceive(("broadcast:tcp-connected"), askName);
+		window.ipcRenderer.on("update:name", updateName);
+		
+		return () => {
+			window.ipcRenderer.removeListener("update:name", updateName);
+			window.ipcRenderer.removeListener("broadcast:tcp-connected", askName);
+		}
+	}, []);
+
 	return (
 		<h1 className="text-3xl text-custom-text-secondary-300 uppercase">
-			{initialName}
+			{name}
 		</h1>
 	)
 };

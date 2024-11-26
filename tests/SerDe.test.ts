@@ -39,6 +39,13 @@ describe("Serialize", async () => {
 });
 
 describe('Deserialize', () => { 
+	// it.concurrent("haha", () => {
+	// 	const b = Buffer.from([120,65,46,225,140,60,106,238,172,67,109,69,205,15,125,60,150,234,67,109,38,13,14,253,39,151,57,178,168,54,195,3,78,102,206,238,57,12,208,232,235,125,234,207,153,125,212,54,216,81,117,81,52,60,166,246,95,117,13,180,146,81,20,81,144]);
+	// 	const result = EzSerDe.deserialize(b);
+	// 	const payload = result.payload.toString();
+	// 	console.log(result.flag, result.id, payload);
+	// });
+
 	it.concurrent('Invalid', () => {
 		throws(() => { 
 			EzSerDe.deserialize(Buffer.from([0x00, 0x00, 0x00, 0x00])) 

@@ -15,12 +15,15 @@ type EventType =
 	| "update:job-current"
 	| "update:xp"
 	| "update:level"
+	| "update:name"
 
 	// ask general
 	| "ask:tcp-connected"
 	| "ask:all"
 
+	
 	// ask specific
+	| "ask:name"
 	| "ask:gil"
 	| "ask:location-*"
 	| "ask:location-all"

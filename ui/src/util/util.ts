@@ -21,3 +21,5 @@ export const onReceive = (events: string | string[], listener: (event: any, args
 		window.ipcRenderer.on(events, listener);
 	}
 }
+
+export const locAxisString = (loc: number) => loc.toFixed(2).toString().padStart(5,"0");

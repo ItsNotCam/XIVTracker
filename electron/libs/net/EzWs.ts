@@ -11,6 +11,8 @@ export enum EzFlag {
 	NULL = 0x01,
 	HEARTBEAT = 0x02,
 	EZ = 0x1D,
+	ECHO = 0x3FF,
+
 	OK = 0x03,
 	MALFORMED = 0x04,
 	NOT_IMPLEMENTED = 0x05,
@@ -18,6 +20,7 @@ export enum EzFlag {
 	INTERNAL_ERROR = 0x07,
 	NOT_AVAILABLE = 0x08,
 	TOO_MANY_REQUESTS = 0x09,
+
 	LOCATION_ALL = 0x10,
 	LOCATION_POSITION = 0x11,
 	LOCATION_ROTATION = 0x12,
@@ -25,19 +28,14 @@ export enum EzFlag {
 	LOCATION_TERRITORY = 0x14,
 	LOCATION_REGION = 0x15,
 	LOCATION_SUB_AREA = 0x16,
-	LOCATION_RESERVED1 = 0x17,
-	LOCATION_RESERVED2 = 0x18,
-	LOCATION_RESERVED3 = 0x19,
-	LOCATION_RESERVED4 = 0x1A,
-	LOCATION_RESERVED5 = 0x1B,
-	LOCATION_RESERVED6 = 0x1C,
-	LOCATION_RESERVED7 = 0x1D,
-	LOCATION_LAST = 0x1F,
+	
 	JOB_ALL = 0x20,
 	JOB_MAIN = 0x21,
-	TIME = 0x22,
-	NAME = 0x23,
-	ECHO = 0x3FF,
+	JOB_CURRENT = 0x22,
+
+	TIME = 0x30,
+	NAME = 0x31,
+	CURRENCY = 0x32,
 }
 
 export default class EzWs {
@@ -57,7 +55,8 @@ export default class EzWs {
 
 	public connect = (): EzWs => {
 		try {
-			this.socket = new WebSocket(`ws://localhost:${this.PORT}`);
+			console.log("Connecting to ws://localhost:" + this.PORT);
+			this.socket = new WebSocket(`ws://localhost:${this.PORT}`, undefined);
 		} catch (e: any) {
 			this.setConnected(false);
 			this.scheduleReconnect();
@@ -68,6 +67,7 @@ export default class EzWs {
 			throw new Error("Error creating websocket connection - failed to create WebSocket");
 		}
 
+		console.log("Connected");
 		this.socket.on("message", this.handleMessage);
 		this.socket.on("open", this.handleOpen);
 		this.socket.on("error", this.handleError);
@@ -83,7 +83,7 @@ export default class EzWs {
 
 		this.reconnectTimeout = setTimeout(() => {
 			this.connect();
-		}, 2000);
+		}, this.reconnectTimeout ? 2 * 2000 : 2000);
 	}
 
 	public reconnect() {
@@ -106,6 +106,7 @@ export default class EzWs {
 			handler.resolve(deserializedMsg.payload.toString());
 			this.requests.delete(deserializedMsg.id);
 		} else {
+			console.log("Unregistered message:", deserializedMsg);
 			this.handle(deserializedMsg);
 		}
 	}

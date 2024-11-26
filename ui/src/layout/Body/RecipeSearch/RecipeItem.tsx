@@ -1,7 +1,7 @@
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { toTitleCase } from '@ui/util/util';
 import { RecipeTreeProps } from './RecipeTree';
-import GatheringData from './GatheringData';
+import GatheringSources from './GatheringSources';
 import DropSources from './DropSources';
 
 type RecipeItemProps = RecipeTreeProps & {
@@ -35,10 +35,11 @@ const RecipeItem: React.FC<RecipeItemProps> = ({ RecipeData, IsFirst, toggleDrop
 			<div className='flex flex-row gap-2 items-center cursor-pointer'>
 				<img src={RecipeData.icon_path} className="h-[32px]"/>
 				<h1>
-					{IsFirst ? null : ( 
+					{/* {IsFirst ? null : (  */}
 					<span className='text-custom-text-secondary-300 bloom'>
 						{`${RecipeData.amount}x `}
-					</span>)}
+					</span>
+					{/*)} </span>)} */}
 					<span title={tcLink} onClick={() => { navigator.clipboard.writeText(tcLink) }}>
 						{recipeName}
 					</span>
@@ -64,7 +65,7 @@ const RecipeItem: React.FC<RecipeItemProps> = ({ RecipeData, IsFirst, toggleDrop
 					maxHeight: droppedDown ? '1000px' : '0px',
 					overflow: droppedDown ? "visible" : "hidden" 
 				}} className="transition-[max-height] flex flex-col">
-					<GatheringData data={RecipeData.gathering} />
+					<GatheringSources data={RecipeData.gathering} />
 				</div>
 			) : null}
 			{RecipeData.drop_sources ? (

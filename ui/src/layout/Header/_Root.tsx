@@ -5,14 +5,6 @@ import NameDisplay from '@ui/layout/Header/NameDisplay';
 import JobDisplay from '@ui/components/JobDisplay';
 
 const Header: React.FC = () => {
-	const initialLocation: any = {
-		territory: { id: "1", name: "La Noscea" },
-		area: { id: "2", name: "Limsa Lominsa Lower Docks" },
-		sub_area: { id: "3", name: "East Hakwers' Alley" },
-		region: undefined,
-		housing_ward: undefined,
-		position: undefined
-	};
 
 	const initialJob: Job = {
 		level: 0,
@@ -23,17 +15,15 @@ const Header: React.FC = () => {
 
 	const initialTime: string = "00:00 PM";
 
-	const initialName: string = "Cam Quat";
-
 	return (
-		<div className="grid grid-cols-[auto,1fr,auto]">
+		<section className="grid grid-cols-[auto,1fr,auto]">
 			<JobDisplay type="main" initialJob={initialJob}/>
-			<LocationDisplay initialLocation={initialLocation}/>
+			<LocationDisplay />
 			<div className="flex flex-col justify-center items-center ml-auto">
 				<Clock initialTime={initialTime} />
-				<NameDisplay initialName={initialName} />
+				<NameDisplay />
 			</div>
-		</div>
+		</section>
 	);
 };
 

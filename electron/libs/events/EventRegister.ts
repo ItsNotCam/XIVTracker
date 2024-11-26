@@ -28,17 +28,22 @@ export default class EventRegister {
 		handle("ask:time", this.handleAskGameTime.bind(this));
 		handle("ask:favorite-recipes", this.handleAskFavoriteRecipes.bind(this));
 		handle("ask:is-favorite", this.handleAskIsFavoriteRecipe.bind(this));
+		handle("ask:name", this.handleAskName.bind(this));
 
 		handle("set:toggle-favorite-recipe", this.toggleFavoriteRecipes.bind(this));
 
 		return this;
 	}
 
+	private async handleAskName() {
+		return await this.app.GetWebSocketClient().ask(EzFlag.NAME);
+	}
+
 	private handleAskIsFavoriteRecipe(_: any, name: string) {
 		return this.app.getDB().isFavoriteRecipe(name);
 	}
 
-	private toggleFavoriteRecipes(_: any,name: string) {
+	private toggleFavoriteRecipes(_: any, name: string) {
 		return this.app.getDB().toggleFavoriteRecipe(name);
 	}
 
@@ -51,7 +56,7 @@ export default class EventRegister {
 	}
 
 	private handleAskTcpConnected() {
-		if(!this.app) {
+		if (!this.app) {
 			console.error("XIVTrackerApp instance is not valid.");
 		}
 		return this.app.GetWebSocketClient().isConnected() || false;
@@ -133,24 +138,24 @@ export default class EventRegister {
 		return undefined;
 	}
 
-	private async handleAskForRecipe(_:any, itemName: string): Promise<TCRecipe | null> {
-		if(!this.parser) {
+	private async handleAskForRecipe(_: any, itemName: string): Promise<TCRecipe | null> {
+		if (!this.parser) {
 			console.error("TeamCraftParser instance is not valid.");
 			return null;
 		}
 
-		// const existingRecipe: TCRecipe | undefined = await this.app.getDB().tryGetRecipe(itemName);
-		// if(existingRecipe){
-		// 	console.log("Recipe already exists in the database.");
-		// 	this.app.getDB().addRecentSearch(itemName);
-		// 	return existingRecipe;
-		// }
+		const existingRecipe: TCRecipe | undefined = await this.app.getDB().tryGetRecipe(itemName);
+		if (existingRecipe) {
+			console.log("Recipe already exists in the database.");
+			this.app.getDB().addRecentSearch(itemName);
+			// return existingRecipe;
+		}
 
 		const recipe = this.parser.getRecipeByItemIdentifier(itemName);
-		if(recipe) {
+		if (recipe) {
 			console.log("Recipe found for item:", itemName);
 			await this.app.getDB().addRecentSearch(itemName);
-			// await this.app.getDB().addRecipe(recipe);
+			await this.app.getDB().addRecipe(recipe);
 		}
 
 		return recipe;
@@ -159,9 +164,9 @@ export default class EventRegister {
 	private async handleAskRecentRecipeSearches(): Promise<any> {
 		const recentSearches = this.app.getDB().getRecentSearches();
 
-		const r = await new Promise(async(resolve, _) => {
+		const r = await new Promise(async (resolve, _) => {
 			const result = await Promise.all(recentSearches.map(async (search: DBSearchItem) => {
-				const recipe = await this.app.getDB().tryGetRecipe(search.name).catch((e) => {console.log(e)});	
+				const recipe = await this.app.getDB().tryGetRecipe(search.name).catch((e) => { console.log(e) });
 				return {
 					name: search.name,
 					date: search.date,

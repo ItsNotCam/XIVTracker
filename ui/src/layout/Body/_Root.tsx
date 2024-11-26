@@ -13,7 +13,9 @@ const Body: React.FC = () => {
 
 	return (
 		<section className="h-[calc(100vh-180px)] flex flex-row">
-			<Sidebar currentTab={currentTab} setCurrentTab={setCurrentTab}/>
+			<nav>
+				<Sidebar currentTab={currentTab} setCurrentTab={setCurrentTab}/>
+			</nav>
 			{pages.map((page: any,i) => (
 				<div className="bg-custom-gray-500 flex-grow" style={{ display: currentTab === i ? 'block' : 'none' }}>
 					{page}
