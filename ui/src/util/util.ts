@@ -1,5 +1,5 @@
 export const withCommas = (num: number) => {
-	return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	return num?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") || "0";
 }
 
 export const toTitleCase = (str: string) => {
@@ -12,7 +12,7 @@ export const invoke = async(event: string, ...args: any[]): Promise<any> => {
 	return await window.ipcRenderer.invoke(event, ...args);
 }
 
-export const onReceive = (events: string | string[], listener: (event: any, args: any[] | any) => void) => {
+export const onReceive = (events: EventType | EventType[], listener: (event: any, args: any[] | any) => void) => {
 	if(Array.isArray(events)) {
 		events.forEach((eventName: string) => {
 			window.ipcRenderer.on(eventName, listener);
