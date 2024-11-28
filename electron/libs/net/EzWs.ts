@@ -57,16 +57,16 @@ export default class EzWs {
 
 	public connect = (): EzWs => {
 		try {
-			console.log(`Attempting to connect to ws://localhost: ${this.PORT}`);
+			console.log(`[${this.constructor.name}] Attempting to connect to ws://localhost:${this.PORT}`);
 			this.socket = new WebSocket(`ws://localhost:${this.PORT}`, undefined);
 		} catch (e: any) {
 			this.setConnected(false);
 			this.scheduleReconnect();
-			throw(new Error("Error creating websocket connection: " + e.message));
+			throw(new Error(`[${this.constructor.name}] Error creating websocket connection: ${e.message}`));
 		}
 
 		if (!this.socket) {
-			throw new Error("Error creating websocket connection - failed to create WebSocket");
+			throw new Error(`[${this.constructor.name}] Error creating websocket connection - failed to create WebSocket`);
 		}
 
 		this.socket.on("open", this.handleOpen);
@@ -97,27 +97,28 @@ export default class EzWs {
 		try {
 			deserializedMsg = EzSerDe.deserialize(data);
 		} catch (e) {
-			console.error("Error deserializing message:", e);
+			console.error(`[${this.constructor.name}] Error deserializing message:`, e);
 			return;
 		}
 
-		console.log(`Received ${EzFlag[deserializedMsg.flag]}: ${deserializedMsg.payload.toString()}`);
+		this.printMessage(deserializedMsg);
 		if (this.requests.has(deserializedMsg.id)) {
 			const handler: WsHandler = this.requests.get(deserializedMsg.id)!;
 			handler.resolve(deserializedMsg.payload.toString());
 			this.requests.delete(deserializedMsg.id);
 		} else {
-			// console.log("Unregistered message:", JSON.stringify({
-			// 	flag: EzFlag[deserializedMsg.flag],
-			// 	payload: deserializedMsg.payload.toString()
-			// }, null, 2));
 			this.handle(deserializedMsg);
 		}
 	}
 
+	private printMessage = (msg: DeserializedPacket) => {
+		const deserializedMsgPayload: string = msg.payload.toString();
+		console.log(`[${this.constructor.name}] Received 0x${msg.flag.toString(16)} ${EzFlag[msg.flag]}: ${deserializedMsgPayload.substring(0, 32)}${deserializedMsgPayload.length>32 ? "..." : ""}`);
+	}
+
 	public send(routeFlag: EzFlag, data: string | Buffer, id?: number): void {
 		if (!this.isConnected()) {
-			throw(new Error("Not connected"));
+			throw(new Error(`[${this.constructor.name}] Not connected`));
 		}
 		const payload = (typeof data === "string") ? Buffer.from(data) : data;
 		const serializedMsg = EzSerDe.serialize(routeFlag, payload, id);
@@ -126,7 +127,7 @@ export default class EzWs {
 
 	public async ask(routeFlag: EzFlag, data?: string | Buffer): Promise<string | undefined> {
 		if (!this.isConnected()) {
-			throw(new Error("Not connected"));
+			throw(new Error(`[${this.constructor.name}] Not connected`));
 		}
 
 		let id: number = 0;
@@ -140,7 +141,7 @@ export default class EzWs {
 					return;
 
 				this.requests.delete(id);
-				reject("Request timed out");
+				reject(`[${this.constructor.name}] Request timed out`);
 			}, 5000);
 
 			this.requests.set(id, {
@@ -170,7 +171,7 @@ export default class EzWs {
 	public close = (reconnect: boolean = true, force: boolean = false): void => {
 		if(this.socket === null || !this.isConnected()) {
 			if(!force) {
-				throw(new Error("Not connected"));
+				throw(new Error(`[${this.constructor.name}] Not connected`));
 			}
 		}
 
@@ -187,13 +188,13 @@ export default class EzWs {
 	}
 
 	private handleOpen = (socket: WebSocket) => {
-		console.log("Connection opened");
+		console.log(`[${this.constructor.name}] Connection opened`);
 
 		this.setConnected(true);
 	}
 
 	private handleClose = () => {
-		console.log("Connection closed");
+		console.log(`[${this.constructor.name}] Connection closed`);
 		this.setConnected(false);
 		this.scheduleReconnect();
 	}

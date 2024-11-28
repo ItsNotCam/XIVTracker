@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import XPBar from '@ui/components/XPBar';
 import { JobIconList } from '@assets/images/jobs';
 import { invoke, onReceive } from '@ui/util/util';
-import { Job } from 'CommonTypes';
+import { Job } from 'common';
 
 interface JobDisplayProps {
 	type: "current" | "main",

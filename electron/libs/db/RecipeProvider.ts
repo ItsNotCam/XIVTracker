@@ -19,7 +19,7 @@ export type TCDataType =
 | "places"
 | "xiv_nodes-by-item-id";
 
-export default class TeamCraftParser {
+export default class TeamCraftParser implements IDisposable {
 	private files: Map<TCDataType, any> | null = null;
 	
 	private readonly dataTypes: TCDataType[] = [
@@ -28,11 +28,9 @@ export default class TeamCraftParser {
 		"drop-sources", "mobs", "xiv_monsters-by-id", "places", "xiv_nodes-by-item-id"
 	]
 
-	constructor() {	}
-
 	public isSetup = (): boolean => this.files !== null;
 
-	public close() {
+	public dispose() {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
 		}

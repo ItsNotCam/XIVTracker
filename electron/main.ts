@@ -16,7 +16,7 @@ export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist')
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 'public') : RENDERER_DIST
 
 let win: BrowserWindow | null;
-let App: XIVTrackerApp | null;
+let TrackerApp: XIVTrackerApp | null;
 
 async function createWindow() {
 	win = new BrowserWindow({
@@ -32,33 +32,38 @@ async function createWindow() {
 	if (VITE_DEV_SERVER_URL) {
 		win.loadURL(VITE_DEV_SERVER_URL)
 	} else {
-		// win.loadFile('dist/index.html')
 		win.loadFile(path.join(RENDERER_DIST, 'index.html'))
 	}
+
+	return win;
 }
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
-	if (process.platform !== 'darwin') {
-		app.quit()
-		win = null
+	if(process.platform == 'darwin') {
+		return;
 	}
+
+	if(TrackerApp) {
+		TrackerApp.dispose();
+	}
+
+	app.quit();
+	win = null;
 })
 
-app.on('activate', () => {
-	if (BrowserWindow.getAllWindows().length === 0) {
-		createWindow()
-	}
+app.on('activate', async () => {
+	console.log("activate")
 })
 
 app.whenReady().then(async() => {
 	await UpdateTCData();
-	await createWindow();
 
-	if(win) {
-		App = new XIVTrackerApp(win);
-		App.init();
+	let win: BrowserWindow;
+	if(BrowserWindow.getAllWindows().length === 0) {
+		win = await createWindow();
+	} else {
+		win = BrowserWindow.getAllWindows()[0];
 	}
+
+	TrackerApp = await new XIVTrackerApp(win).init();
 });

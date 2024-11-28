@@ -2,7 +2,7 @@ import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import path from 'path';
 
-export default class EzDb {
+export default class EzDb implements IDisposable {
 	public static readonly DEFAULT_DB_PATH = path.resolve(path.join(`electron/data/db/db.db`));
 
 	private static readonly DB_NOT_CONNECTED = new Error("DB not connected");
@@ -52,10 +52,6 @@ export default class EzDb {
 
 	public isConnected = (): boolean => this.db !== null;
 
-	public async close(): Promise<void> {
-		await this.db?.write();
-		this.db = null;
-	}
 
 	public isFavoriteRecipe(recipeName: string): boolean {
 		if(this.db === null) {
@@ -277,5 +273,10 @@ export default class EzDb {
 		if(this.autocommit) {
 			await this.db.write();
 		}
+	}
+	
+	public async dispose(): Promise<void> {
+		await this.db?.write();
+		this.db = null;
 	}
 }

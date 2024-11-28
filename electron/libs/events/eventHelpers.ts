@@ -1,55 +1,5 @@
 import { BrowserWindow, ipcMain } from "electron";
 
-export const EventTypes: string[] = [
-	// recv
-	"update:gil",
-	"update:location-*",
-	"update:location-all",
-	"update:location-position",
-	"update:location-area",
-	"update:location-subarea",
-	"update:location-territory",
-	"update:time",
-	"update:inventory",
-	"update:job-*",
-	"update:job-all",
-	"update:job-main",
-	"update:job-current",
-	"update:xp",
-	"update:level",
-
-	// ask general
-	"ask:tcp-connected",
-	"ask:all",
-
-	// ask specific
-	"ask:gil",
-	"ask:location-*",
-	"ask:location-all",
-	"ask:location-position",
-	"ask:location-area",
-	"ask:location-subarea",
-	"ask:location-territory",
-	"ask:time",
-	"ask:inventory",
-	"ask:job-*",
-	"ask:job-all",
-	"ask:job-main",
-	"ask:job-current",
-	"ask:xp",
-	"ask:level",
-	"ask:recipe", 
-	"ask:recent-recipe-searches",
-
-	// global
-	"broadcast:renderer-ready",
-	"broadcast:tcp-connected",
-	"renderer-ready",
-	"setup-complete"
-]
-
-
-
 export function onReceive(events: EventType[] | EventType, listener: (event: Electron.IpcRendererEvent, args: any[] | any) => void) {
 	if (Array.isArray(events)) {
 		events.forEach((eventName: EventType) => {
@@ -64,13 +14,33 @@ export function listen(eventName: EventType, listener: (event: Electron.IpcMainI
 	ipcMain.addListener(eventName, listener);
 }
 
-export function handle(events: EventType[] | EventType, listener: (event: Electron.IpcMainInvokeEvent, ...args: any[]) => any) {
+export function addHandler(events: EventType[] | EventType, listener: (event: Electron.IpcMainInvokeEvent, ...args: any[]) => any) {
 	if (Array.isArray(events)) {
 		events.forEach((eventName: EventType) => {
 			ipcMain.handle(eventName, listener);
 		});
 	} else {
 		ipcMain.handle(events, listener);
+	}
+}
+
+export function removeHandler(event: EventType) {
+	ipcMain.removeHandler(event);
+}
+
+export function removeHandlers(events: EventType[]) {
+	events.forEach((eventName: EventType) => {
+		ipcMain.removeHandler(eventName);
+	});
+}
+
+export function removeListener(events: EventType[] | EventType, listener: (event: Electron.IpcRendererEvent, args: any[] | any) => void) {
+	if (Array.isArray(events)) {
+		events.forEach((eventName: EventType) => {
+			ipcMain.removeListener(eventName, listener);
+		});
+	} else {
+		ipcMain.removeListener(events, listener);
 	}
 }
 

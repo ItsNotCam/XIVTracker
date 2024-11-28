@@ -1,244 +1,48 @@
-import { BrowserWindow, ipcMain } from "electron";
-import { EventTypes, handle } from "./EventHelpers";
-import RecipeProvider from "../db/RecipeProvider";
 import XIVTrackerApp from "../../app";
-import JobState from "../JobState";
-import { EzFlag } from "../net/EzWs";
 
-export default class EventRegister {
+import JobEvents from "./ask-events/AskJobEvents";
+import CurrencyEvents from "./ask-events/AskCurrencyEvents"; // Corrected import
+import ConnectionEvents from "./ask-events/AskConnectionEvents";
+import LocationEvents from "./ask-events/AskLocationEvents";
+import RecipeEvents from "./ask-events/AskRecipeEvents";
+import TimeEvents from "./ask-events/AskTimeEvents";
+import WindowEvents from "./recv-events/WindowEvents";
+import NameEvents from "./ask-events/AskNameEvents";
+import EventBase from "./EventBase";
+
+export default class EventRegister implements IDisposable {
 	private readonly app: XIVTrackerApp;
-	private readonly parser: RecipeProvider | null = null;
+
+	// ask events
+	private Events: EventBase[];
 
 	constructor(app: XIVTrackerApp) {
+		if(app === undefined) {
+			throw new Error("App is undefined");
+		}
+
 		this.app = app;
-		this.parser = new RecipeProvider();
+
+		this.Events = [
+			new JobEvents(app),
+			new CurrencyEvents(app),
+			new ConnectionEvents(app),
+			new LocationEvents(app),
+			new RecipeEvents(app),
+			new TimeEvents(app),
+			new NameEvents(app),
+			new WindowEvents(this.app.getWindow())
+		];
 	}
 
-	public async init(): Promise<EventRegister> {
-		this.initWindowControls(this.app.getWindow());
-		this.parser!.init();
-
-		handle("ask:tcp-connected", this.handleAskTcpConnected.bind(this));
-		handle("ask:job-main", this.handleAskJobMain.bind(this));
-		handle("ask:job-all", this.handleAskJobAll.bind(this));
-		handle("ask:location-all", this.handleAskGetLocationAll.bind(this));
-		handle("ask:recipe", this.handleAskForRecipe.bind(this));
-		handle("ask:recent-recipe-searches", this.handleAskRecentRecipeSearches.bind(this));
-		handle("ask:time", this.handleAskTime.bind(this));
-		handle("ask:favorite-recipes", this.handleAskFavoriteRecipes.bind(this));
-		handle("ask:is-favorite", this.handleAskIsFavoriteRecipe.bind(this));
-		handle("ask:name", this.handleAskName.bind(this));
-
-		handle("set:toggle-favorite-recipe", this.toggleFavoriteRecipes.bind(this));
-		return this;
+	public init() {
+		this.Events.forEach((event) => event.init());
 	}
 
-	private async handleAskName() {
-		if(this.app.GetWebSocketClient().isConnected() === false) {
-			return undefined;
-		}
-
-		var response;
-		try {
-			response = await this.app.GetWebSocketClient().ask(EzFlag.NAME);
-		} catch(e) {
-			console.error("Error getting name:", (e as any).message);
-			return undefined;
-		}
-		return response;
-	}
-
-	private handleAskIsFavoriteRecipe(_: any, name: string) {
-		return this.app.getDB().isFavoriteRecipe(name);
-	}
-
-	private toggleFavoriteRecipes(_: any, name: string) {
-		return this.app.getDB().toggleFavoriteRecipe(name);
-	}
-
-	private handleAskFavoriteRecipes() {
-		return this.app.getDB().getFavoriteRecipes();
-	}
-
-	private sendToClient(event: EventType, data: any) {
-		this.app.getWindow().webContents.send(event, data);
-	}
-
-	private handleAskTcpConnected() {
-		return this.app?.GetWebSocketClient().isConnected() || false;
-	}
-
-	private handleUpdateGil(_: any, gil: number) {
-		this.sendToClient("update:gil", gil);
-	}
-
-	private async handleAskJobMain(): Promise<JobState | undefined> {
-		if (this.app.GetWebSocketClient().isConnected() === false) {
-			return undefined;
-		}
-
-		let response: string | undefined;
-		try {
-			response = await this.app.GetWebSocketClient().ask(EzFlag.JOB_MAIN);
-		} catch (e: any) {
-			console.log("Error getting main job:", e.message);
-			return undefined;
-		}
-
-		try {
-			return JobState.fromJson(response!);
-		} catch (e) {
-			console.log("Error parsing job data:", (e as any).message);
-		}
-
-		return undefined;
-	}
-
-	private async handleAskJobAll(): Promise<JobState | undefined> {
-		if (this.app.GetWebSocketClient().isConnected() === false) {
-			return undefined;
-		}
-
-		let response: string | undefined;
-		try {
-			response = await this.app.GetWebSocketClient().ask(EzFlag.JOB_ALL);
-		} catch (e: any) {
-			console.log("Error getting all jobs:", e.message);
-			return undefined;
-		}
-
-		if(response === undefined) {
-			return undefined;
-		}
-
-		try {
-			return JSON.parse(response);
-		} catch (e) {
-			console.log("Error parsing job data:", (e as any).message);
-		}
-
-		return undefined;
-	}
-
-	private initWindowControls(win: BrowserWindow) {
-		// Ensure the window object is valid
-		if (!win) {
-			console.error("BrowserWindow instance is not valid.");
-			return;
-		}
-
-		ipcMain.on('exit', () => {
-			console.log("exit event received");
-			if (win) {
-				win.close();
-			} else {
-				console.error("BrowserWindow instance is not valid.");
-			}
+	public dispose(): void {
+		this.Events.forEach((event) => {
+			console.log(`[${this.constructor.name}] -= ${event.constructor.name}`);
+			event.dispose()
 		});
-
-		ipcMain.on('minimize', () => {
-			console.log("minimize event received");
-			if (win) {
-				win.isMinimized() ? win.restore() : win.minimize();
-			} else {
-				console.error("BrowserWindow instance is not valid.");
-			}
-		});
-
-		ipcMain.on('maximize', () => {
-			console.log("maximize event received");
-			if (win) {
-				win.isMaximized() ? win.unmaximize() : win.maximize();
-			} else {
-				console.error("BrowserWindow instance is not valid.");
-			}
-		});
-	}
-
-	private async handleAskGetLocationAll(): Promise<Location | undefined> {
-		if(this.app.GetWebSocketClient().isConnected() === false) {
-			return undefined;
-		}
-
-		var response;
-		try {
-			response = await this.app.GetWebSocketClient().ask(EzFlag.LOCATION_ALL);
-		} catch (e) {
-			console.error("Error getting location data:", (e as any).message);
-			return undefined;
-		}
-
-		try {
-			return JSON.parse(response!);
-		} catch (e) {
-			console.log("Error parsing location data:", (e as any).message);
-		}
-
-		return undefined;
-	}
-
-	private async handleAskForRecipe(_: any, itemName: string): Promise<TCRecipe | null> {
-		if (!this.parser) {
-			console.error("TeamCraftParser instance is not valid.");
-			return null;
-		}
-
-		const existingRecipe: TCRecipe | undefined = await this.app.getDB().tryGetRecipe(itemName);
-		if (existingRecipe) {
-			console.log("Recipe already exists in the database.");
-			this.app.getDB().addRecentSearch(itemName);
-			// return existingRecipe;
-		}
-
-		const recipe = this.parser.getRecipeByItemIdentifier(itemName);
-		if (recipe) {
-			console.log("Recipe found for item:", itemName);
-			await this.app.getDB().addRecentSearch(itemName);
-			await this.app.getDB().addRecipe(recipe);
-		}
-
-		return recipe;
-	}
-
-	private async handleAskRecentRecipeSearches(): Promise<any> {
-		const recentSearches = this.app.getDB().getRecentSearches();
-
-		const r = await new Promise(async (resolve, _) => {
-			const result = await Promise.all(recentSearches.map(async (search: DBSearchItem) => {
-				const recipe = await this.app.getDB().tryGetRecipe(search.name).catch((e) => { console.log(e) });
-				return {
-					name: search.name,
-					date: search.date,
-					recipe: recipe
-				}
-			}));
-			resolve(result);
-		});
-
-		return r;
-	}
-
-	private async handleAskTime(): Promise<string | undefined> {
-		if (this.app.GetWebSocketClient().isConnected() === false) {
-			return undefined;
-		}
-
-		return await this.app.GetWebSocketClient().ask(EzFlag.TIME);
-	}
-
-	public close() {
-		ipcMain.removeListener("update:gil", this.handleUpdateGil);
-
-		EventTypes.forEach((event: string) => {
-			ipcMain.removeHandler(event);
-		});
-
-		ipcMain.removeHandler("ask:tcp-connected");
-		ipcMain.removeHandler("ask:job-main");
-		ipcMain.removeHandler("ask:job-all");
-		ipcMain.removeHandler("ask:location-all");
-		ipcMain.removeHandler("ask:recipe");
-		ipcMain.removeHandler("ask:recent-recipe-searches");
-		ipcMain.removeHandler("ask:time");
 	}
 }

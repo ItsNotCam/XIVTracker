@@ -4,38 +4,37 @@ import EzWs from './libs/net/EzWs';
 import ezRoute from '../electron/libs/net/EzRouter';
 import EzDb from '../electron/libs/db/EzDb';
 
-export default class XIVTrackerApp {
+export default class XIVTrackerApp implements IDisposable {
 	private win: BrowserWindow;
 	private wsClient: EzWs;
 	private db: EzDb;
-	private eventRegister: EventRegister | null = null;
+	private eventRegister: EventRegister;
 
 	constructor(win: BrowserWindow) {
 		this.win = win;
 
-		try {
-			this.wsClient = new EzWs(
-				50085, 
-				this.handleUnregisteredMessage,
-				this.handleWsConnected.bind(this)
-			);
-		} catch (e) {
-			throw e;
-		}
+		console.log("[App Init] Creating WebSocket client");
+		this.wsClient = new EzWs(
+			50085, 
+			this.handleUnregisteredMessage,
+			this.handleWsConnected.bind(this)
+		);
 		
+		console.log("[App Init] Creating DB");
 		this.db = new EzDb();
+
+		console.log("[App Init] Creating event register");
 		this.eventRegister = new EventRegister(this);
+
+		console.log("[App Init] Completed initialization");
 	}
 
-	public async init() {
+	public async init(): Promise<XIVTrackerApp> {
 		await this.db.init();
-		this.wsClient.connect();
-
-		if(this.eventRegister) {
-			this.eventRegister.init();
-		}
-
-		this.initWindowControls();
+		await this.wsClient.connect();
+		
+		this.eventRegister.init();
+		return this;
 	}
 	
 	public getDB = () => this.db;
@@ -43,12 +42,6 @@ export default class XIVTrackerApp {
 	public getIpcMain = () => ipcMain;
 	public GetWebSocketClient = () => this.wsClient;
 
-	public close() {
-		this.wsClient.close();
-		this.db.close();
-		this.eventRegister!.close();
-	}
-	
 	private handleUnregisteredMessage = (data: DeserializedPacket) => {
 		ezRoute(this.win, data as DeserializedPacket);
 	}
@@ -57,32 +50,9 @@ export default class XIVTrackerApp {
 		this.win.webContents.send("broadcast:tcp-connected", isConnected);
 	}
 
-	private initWindowControls() {
-		ipcMain.on("exit", () => {
-			console.log("exit event received");
-			if (this.win) {
-				this.win.close();
-			} else {
-				console.error("BrowserWindow instance is not valid.");
-			}
-		});
-
-		ipcMain.on("minimize", () => {
-			console.log("minimize event received");
-			if (this.win) {
-				this.win.isMinimized() ? this.win.restore() : this.win.minimize();
-			} else {
-				console.error("BrowserWindow instance is not valid.");
-			}
-		});
-
-		ipcMain.on("maximize", () => {
-			console.log("maximize event received");
-			if (this.win) {
-				this.win.isMaximized() ? this.win.unmaximize() : this.win.maximize();
-			} else {
-				console.error("BrowserWindow instance is not valid.");
-			}
-		});
+	public dispose() {
+		this.wsClient.close();
+		this.db.dispose();
+		this.eventRegister.dispose();
 	}
 }

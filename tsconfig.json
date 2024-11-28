@@ -8,7 +8,7 @@
 		"allowJs": true,
 
 		/* types */
-		"typeRoots": ["./node_modules/@types", "./types"],
+		"typeRoots": ["./node_modules/@types", "@types"],
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -27,10 +27,9 @@
 		/* Custom @app directory */
 		"baseUrl": ".",
 		"paths": { 
-			"*": ["types/*"],
+			"*": ["@types/*"],
 			"@electron-lib/*": ["electron/libs/*"],
 			"@electron/*": ["electron/*"],
-			"@xiv-types/*": ["electron/@types/*"],
 
 			// ui
 			"@ui/*": ["ui/src/*"],
@@ -46,7 +45,7 @@
 		"electron", 
 		"ui", 
 		"tests", 
-		"types/**/*.d.ts", "electron/libs/providers/.RecipeProvider.ts.old",  
+		"@types/**/*.d.ts", "electron/libs/providers/.RecipeProvider.ts.old", "@types/idisposable.d.ts", "@types/db.ts", "@types/recipe.ts", "@types/ez-net.ts", "@types/event-base.d.ts", "@types/disposable.d.ts",  
 	],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
