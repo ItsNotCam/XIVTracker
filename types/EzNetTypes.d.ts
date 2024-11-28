@@ -1,3 +1,21 @@
+// Positional data 0x01 -> 0x0F
+
+type uint16 = number;
+type uint10 = number;
+type uint8 = number;
+type uint6 = number;
+
+interface PacketResponse {
+	status: uint8;
+	data: any | null;
+}
+
+interface DeserializedPacket {
+	id: uint10;
+	flag: uint6;
+	payload: Buffer;
+}
+
 type EventType =
 	// recv
 	| "update:gil"
@@ -17,12 +35,9 @@ type EventType =
 	| "update:level"
 	| "update:name"
 
-	// ask general
 	| "ask:tcp-connected"
 	| "ask:all"
 
-	
-	// ask specific
 	| "ask:name"
 	| "ask:gil"
 	| "ask:location-*"
@@ -44,11 +59,11 @@ type EventType =
 	| "ask:favorite-recipes"
 	| "ask:recent-recipe-searches"
 	| "ask:toggle-favorite-recipe"
-
+	
 	| "set:toggle-favorite-recipe"
 
-	// global
+	| "broadcast:login"
 	| "broadcast:renderer-ready"
 	| "broadcast:tcp-connected"
-	| "renderer-ready"
-	| "setup-complete";
+	| "set:renderer-ready"
+	| "set:setup-complete";

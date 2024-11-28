@@ -1,5 +1,5 @@
 import { it, expect, afterAll, suite, beforeAll, test, assert } from "vitest";
-import RecipeProvider, { TCDataType } from "../electron/libs/providers/RecipeProvider";
+import RecipeProvider, { TCDataType } from "../electron/libs/db/RecipeProvider";
 
 // vi.spyOn(console, 'log').mockImplementation(() => {});
 // vi.spyOn(console, 'warn').mockImplementation(() => {});

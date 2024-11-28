@@ -1,3 +1,5 @@
+import { SheetObject } from "RecipeTypes";
+
 enum DataTypes {
 	position, rotation
 }
@@ -18,23 +20,6 @@ interface Job {
 	max_xp: number;
 }
 
-interface MaterialJob {
-	name: string;
-	id: number;
-	level: number;
-}
-
-interface Experience {
-	xp_current: number,
-	xp_max: number,
-	level: number
-}
-
-interface SheetObject {
-	name: string;
-	id: string;
-}
-
 interface Location {
 	region?: SheetObject;
 	territory?: SheetObject;
@@ -45,20 +30,4 @@ interface Location {
 	radius?: number;
 }
 
-interface Material {
-	name: string;
-	id: number;
-	icon: string;
-	jobs: MaterialJob[];
-	materials: Material[];
-	location: Location;
-}
 
-type Recipe = {
-	id: number;
-	amount: number;
-	quality: number;
-	name?: string;
-	icon_path?: string;
-	ingredients?: Recipe[];
-}
