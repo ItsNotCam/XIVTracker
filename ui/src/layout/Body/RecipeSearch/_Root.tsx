@@ -36,21 +36,27 @@ const RecipeSearch: React.FC = () => {
 
 	const updateAllJobs = async() => {
 		const jobs = await invoke("ask:job-all") || [];
+		console.log("AHSSFASJFSDFSDAFSDFDS\n",jobs);
 		setPlayerJobs(jobs);
 	}
 
-	const handleUpdateAllJobs = async(_: any, jobs: JobState[]) => {
+	const handleUpdateAllJobs = (_: any, jobs: JobState[]) => {
 		setPlayerJobs(jobs);
 	}
+
+	const handleLogin = () => updateAllJobs();
 
 	useEffect(() => {
 		getFavoriteRecipes();
 		updateAllJobs();
 
+		onReceive("broadcast:login", handleLogin);
 		onReceive("update:job-all", handleUpdateAllJobs);
 		onReceive("broadcast:tcp-connected", updateAllJobs);
+
 		return () => {
 			setFavoriteRecipes([]);
+			window.ipcRenderer.removeListener("update:login", handleLogin);
 			window.ipcRenderer.removeListener("update:job-all", handleUpdateAllJobs);
 			window.ipcRenderer.removeListener("broadcast:tcp-connected", updateAllJobs);
 		}
@@ -58,9 +64,9 @@ const RecipeSearch: React.FC = () => {
 
 	useEffect(() => {
 		const getRecentSearches = async () => {
-			const searches = await sortRecentSearches();
-			console.log(searches);
-			setRecentSearches(searches);
+			setRecentSearches(
+				await sortRecentSearches()
+			);
 		}
 		getRecentSearches();
 	}, [recipeHeader])

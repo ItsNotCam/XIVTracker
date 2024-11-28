@@ -40,13 +40,16 @@ const LocationDisplay: FC = () => {
 			}));
 		};
 
+		onReceive("broadcast:login", askLocation);
 		onReceive("broadcast:tcp-connected", askLocation);
 		onReceive("update:location-*", handleLocationChangeRef);
 		onReceive("update:location-all", handleLocationChangeRef);
+
 		return () => {
 			window.ipcRenderer.removeListener("update:location-*", handleLocationChangeRef);
 			window.ipcRenderer.removeListener("update:location-all", handleLocationChangeRef);
 			window.ipcRenderer.removeListener("broadcast:tcp-connected", askLocation);
+			window.ipcRenderer.removeListener("broadcast:login", askLocation);
 		};
 	}, []);
 

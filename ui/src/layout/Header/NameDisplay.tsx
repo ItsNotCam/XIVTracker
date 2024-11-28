@@ -16,12 +16,14 @@ const NameDisplay: FC = () => {
 	useEffect(() => {
 		askName();
 
-		onReceive(("broadcast:tcp-connected"), askName);
-		window.ipcRenderer.on("update:name", updateName);
+		onReceive("broadcast:login", askName);
+		onReceive("broadcast:tcp-connected", askName);
+		onReceive("update:name", updateName);
 		
 		return () => {
 			window.ipcRenderer.removeListener("update:name", updateName);
 			window.ipcRenderer.removeListener("broadcast:tcp-connected", askName);
+			window.ipcRenderer.removeListener("broadcast:login", askName);
 		}
 	}, []);
 

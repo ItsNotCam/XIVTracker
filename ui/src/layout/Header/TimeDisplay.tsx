@@ -56,6 +56,7 @@ const Clock: FC<{ initialTime: string }> = ({ initialTime }) => {
 
 		onReceive("update:time", worldTimeRef);
 		onReceive("broadcast:tcp-connected", onConnectionChangeRef);
+		onReceive("broadcast:login", worldTimeRef);
 
 		return () => {
 			if(realTimeTimeout.current) {
@@ -65,6 +66,7 @@ const Clock: FC<{ initialTime: string }> = ({ initialTime }) => {
 			
 			window.ipcRenderer.removeListener("update:time", worldTimeRef);
 			window.ipcRenderer.removeListener("broadcast:tcp-connected", onConnectionChangeRef);
+			window.ipcRenderer.removeListener("broadcast:login", onConnectionChangeRef);
 		};
 	}, []);
 

@@ -39,10 +39,10 @@ const CraftingHeader: React.FC<CraftingHeaderProps> = ({
 	toggleFavorite
 }) => {
 
-	const playerJobMap = playerJobs.reduce((acc, job) => {
+	const playerJobMap = playerJobs?.reduce((acc, job) => {
 		acc[job.job_name] = job;
 		return acc;
-	}, {} as Record<string, JobState>);
+	}, {} as Record<string, JobState>) || [];
 
 	return (
 		<div className="flex flex-row gap-2 pl-2 items-center pb-2 border-b-[4px] border-custom-gray-200/50">
@@ -52,15 +52,14 @@ const CraftingHeader: React.FC<CraftingHeaderProps> = ({
 				<h1 className='text-2xl'>{recipeData.name}</h1>
 				<div className="text-xl forum flex flex-row gap-2">
 					{recipeData.crafting ? (
-						<img src={JobIconList[recipeData.crafting?.job_name || ""]} className="h-[1.2em] w-[1.2em] inline" />
+						<img src={JobIconList[recipeData.crafting.job_name || ""]} className="h-[1.2em] w-[1.2em] inline" />
 					) : null}
-					{recipeData.gathering && recipeData.gathering.types.map((t) => (
+					{recipeData.gathering ? recipeData.gathering.types.map((t) => (
 						<img src={JobIconList[t.name]} className="h-[1.2em] w-[1.2em] inline" />
-					))}
-					<p>Lvl. {recipeData.crafting?.level}</p>
+					)) : null}
+					<p>Lvl. {recipeData.crafting?.level || -1}</p>
 				</div>
 			</div>
-			{/* <div className="crafting-requirement-container flex flex-row gap-[0.25rem] overflow-x-visible overflow-y-visible z-10"> */}
 			<div className="flex flex-row gap-[0.25rem] overflow-x-visible overflow-y-visible z-10">
 				{craftingRequirements?.map((req) => (
 					<div 
@@ -69,10 +68,9 @@ const CraftingHeader: React.FC<CraftingHeaderProps> = ({
 						title={toTitleCase(req.job)}
 					>
 						<img src={req.icon_path} className="grid-centered h-[50px] w-[50px]" />
-						<div className="h-[80%] w-[80%] bg-black/40 group-hover:bg-black/0 grid place-items-center grid-centered rounded-lg transition-colors duration-100">
-							{/* <h1 className="absolute -bottom-6 text-xl pointer-events-none group-hover:opacity-0 opacity-100 transition-opacity" style={{ */}
-							<h1 className="text-xl pointer-events-none" style={{
-								color: playerJobMap[req.job] && playerJobMap[req.job].level >= req.level ? "green" : "red"
+						<div className="h-[80%] w-[80%] bg-black/20 group-hover:bg-black/0 grid place-items-center grid-centered rounded-lg transition-colors duration-100">
+							<h1 className="absolute -bottom-6 text-lg pointer-events-none" style={{
+								color: playerJobMap[req.job] && playerJobMap[req.job].level >= req.level ? "lime" : "red"
 							}}>{req.level}</h1>
 						</div>
 					</div>
