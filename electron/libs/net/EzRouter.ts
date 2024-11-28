@@ -4,6 +4,9 @@ import { EzFlag } from "./EzWs";
 
 export default function ezRoute(win: BrowserWindow, msg: DeserializedPacket) {
 	switch (msg.flag) {
+		case EzFlag.LOGIN:
+			sendToClient("broadcast:login", win, []);
+			break;
 		case EzFlag.JOB_ALL:
 			try {
 				const jobs = JSON.parse(msg.payload.toString());

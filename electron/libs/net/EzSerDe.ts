@@ -42,9 +42,9 @@ export const deserialize = (msg: Buffer): DeserializedPacket => {
 // Build an EzPacket.
 export const serialize = (routeFlag: EzFlag, data: Buffer, id: uint10 = 0): Buffer => {
 	const bHeader = EzFlag.EZ;												// 6b 		- Fixed header "ez" where: bHeader === alphabet.indexOf("e") + alphabet.indexOf("z")
-	const bId = id & 0x3FF; 											// 10b 		- ID
+	const bId = id & 0x3FF; 													// 10b 		- ID
 	const bPayload = truncate1024B(asUtf8(data));			// 1024B 	- Payload truncated to 1024 bytes
-	const bPacketLength = (0x24 + bPayload.length) & 0x3FF; // 10b 		- Packet length
+	const bPacketLength = (0x24 + bPayload.length) & 0x3FF; // 10b  - Packet length
 
 	let controlHeader: Uint8Array = new Uint8Array(4);
 	{

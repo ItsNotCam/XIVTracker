@@ -100,6 +100,10 @@ export async function send(eventName: EventType): Promise<any> {
 	window.ipcRenderer.send(eventName);
 }
 
-export function sendToClient(eventName: EventType, win: BrowserWindow, args: any[] | any): void {
-	win.webContents.send(eventName, args);
+export function sendToClient(eventName: EventType, win: BrowserWindow, args?: any[] | any): void {
+	if(args) {
+		win.webContents.send(eventName, args);
+	} else {
+		win.webContents.send(eventName);
+	}
 }

@@ -6,7 +6,6 @@ type WsHandler = {
 	reject: (reason?: any) => void;
 }
 
-
 export enum EzFlag {
 	NULL = 0x01,
 	HEARTBEAT = 0x02,
@@ -36,8 +35,10 @@ export enum EzFlag {
 	TIME = 0x30,
 	NAME = 0x31,
 	CURRENCY = 0x32,
-	
+	LOGIN = 0x33,
+	LOGOUT = 0x33
 }
+
 
 export default class EzWs {
 	private readonly PORT: number;
@@ -106,7 +107,10 @@ export default class EzWs {
 			handler.resolve(deserializedMsg.payload.toString());
 			this.requests.delete(deserializedMsg.id);
 		} else {
-			console.log("Unregistered message:", deserializedMsg);
+			// console.log("Unregistered message:", JSON.stringify({
+			// 	flag: EzFlag[deserializedMsg.flag],
+			// 	payload: deserializedMsg.payload.toString()
+			// }, null, 2));
 			this.handle(deserializedMsg);
 		}
 	}

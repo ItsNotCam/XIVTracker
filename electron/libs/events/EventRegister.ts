@@ -1,9 +1,9 @@
 import { BrowserWindow, ipcMain } from "electron";
-import { EventTypes, handle, listen } from "./EventHelpers";
-import RecipeProvider from "../providers/RecipeProvider";
+import { EventTypes, handle } from "./EventHelpers";
+import RecipeProvider from "../db/RecipeProvider";
 import XIVTrackerApp from "../../app";
-import { EzFlag } from "../net/EzWs";
 import JobState from "../JobState";
+import { EzFlag } from "../net/EzWs";
 
 export default class EventRegister {
 	private readonly app: XIVTrackerApp;
@@ -19,7 +19,6 @@ export default class EventRegister {
 		this.parser!.init();
 
 		handle("ask:tcp-connected", this.handleAskTcpConnected.bind(this));
-
 		handle("ask:job-main", this.handleAskJobMain.bind(this));
 		handle("ask:job-all", this.handleAskJobAll.bind(this));
 		handle("ask:location-all", this.handleAskGetLocationAll.bind(this));
@@ -31,7 +30,6 @@ export default class EventRegister {
 		handle("ask:name", this.handleAskName.bind(this));
 
 		handle("set:toggle-favorite-recipe", this.toggleFavoriteRecipes.bind(this));
-
 		return this;
 	}
 
@@ -109,8 +107,12 @@ export default class EventRegister {
 			return undefined;
 		}
 
+		if(response === undefined) {
+			return undefined;
+		}
+
 		try {
-			return JobState.fromJson(response!);
+			return JSON.parse(response);
 		} catch (e) {
 			console.log("Error parsing job data:", (e as any).message);
 		}
