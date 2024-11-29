@@ -16,7 +16,5 @@ export default class JobState {
 		return new JobState(state.level, state.job_name, state.current_xp, state.max_xp);
 	}
 
-	static createInstance(): JobState {
-		return new JobState(0, "", 0, 0);
-	}
+	static createInstance = (): JobState => new JobState(0, "", 0, 0);
 }
