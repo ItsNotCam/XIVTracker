@@ -1,45 +1,49 @@
 import EventManager from './libs/events/EventManager';
-import { BrowserWindow, ipcMain } from 'electron'
+import { BrowserWindow } from 'electron'
 import EzWs from './libs/net/EzWs';
 import EzDb from '../electron/libs/db/EzDb';
 
 export default class XIVTrackerApp implements IDisposable {
-	private win: BrowserWindow;
-	private wsClient: EzWs;
-	private db: EzDb;
-	private eventRegister: EventManager;
+	private _win: BrowserWindow;
+	private _wsClient: EzWs;
+	private _db: EzDb;
+	private _eventRegister: EventManager;
 
 	constructor(win: BrowserWindow) {
-		this.win = win;
+		this._win = win;
 
 		console.log("[App Init] Creating WebSocket client");
-		this.wsClient = new EzWs(
-			50085, 
-			this.receiveMessage,
-			this.handleWsConnected.bind(this)
-		);
+		this._wsClient = new EzWs(50085, this.receiveMessage, this.handleWsConnected.bind(this));
 		
 		console.log("[App Init] Creating DB");
-		this.db = new EzDb();
+		this._db = new EzDb();
 
 		console.log("[App Init] Creating event register");
-		this.eventRegister = new EventManager(this);
+		this._eventRegister = new EventManager(this);
 
 		console.log("[App Init] Completed initialization");
 	}
 
+	// Getters and setters
+	public get win(): BrowserWindow { return this._win }
+	private set win(value: BrowserWindow) { this._win = value; }
+
+	public get db(): EzDb { return this._db; }
+	private set db(value: EzDb) { this._db = value; }
+
+	public get eventRegister(): EventManager { return this._eventRegister; } 
+	private set eventRegister(value: EventManager) { this._eventRegister = value; }
+
+	public get wsClient(): EzWs { return this._wsClient; } 
+	private set wsClient(value: EzWs) { this._wsClient = value; }
+
 	public async init(): Promise<XIVTrackerApp> {
 		await this.db.init();
 		await this.wsClient.connect();
-		
 		this.eventRegister.init();
+		
 		return this;
 	}
-	
-	public getDB = () => this.db;
-	public getWindow = () => this.win;
-	public getIpcMain = () => ipcMain;
-	public GetWebSocketClient = () => this.wsClient;
 
 	private receiveMessage = (data: DeserializedPacket) => {
 		this.eventRegister.ReceiveEvent(data.flag, data.payload);
@@ -50,7 +54,7 @@ export default class XIVTrackerApp implements IDisposable {
 	}
 
 	public dispose() {
-		this.wsClient.close();
+		this.wsClient.dispose();
 		this.db.dispose();
 		this.eventRegister.dispose();
 	}

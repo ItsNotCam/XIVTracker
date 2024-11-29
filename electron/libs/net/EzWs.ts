@@ -40,7 +40,7 @@ export enum EzFlag {
 }
 
 
-export default class EzWs {
+export default class EzWs implements IDisposable{
 	private readonly PORT: number;
 	private socket: WebSocket | null = null;
 	private requests: Map<uint6, WsHandler>;
@@ -172,6 +172,18 @@ export default class EzWs {
 		return this.socket.readyState === WebSocket.OPEN;
 	};
 
+	private handleOpen() {
+		console.log(`[${this.constructor.name}] Connection opened`);
+
+		this.setConnected(true);
+	}
+
+	private handleClose() {
+		console.log(`[${this.constructor.name}] Connection closed`);
+		this.setConnected(false);
+		this.scheduleReconnect();
+	}
+
 	public close(reconnect: boolean = true, force: boolean = false): void {
 		if(this.socket === null || !this.isConnected()) {
 			if(!force) {
@@ -191,15 +203,7 @@ export default class EzWs {
 		}
 	}
 
-	private handleOpen() {
-		console.log(`[${this.constructor.name}] Connection opened`);
-
-		this.setConnected(true);
-	}
-
-	private handleClose() {
-		console.log(`[${this.constructor.name}] Connection closed`);
-		this.setConnected(false);
-		this.scheduleReconnect();
+	public dispose() {
+		this.close(false, true);
 	}
 }

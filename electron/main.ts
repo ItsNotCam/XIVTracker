@@ -51,10 +51,6 @@ app.on('window-all-closed', () => {
 	win = null;
 })
 
-app.on('activate', async () => {
-	console.log("activate")
-})
-
 app.whenReady().then(async() => {
 	await UpdateTCData();
 

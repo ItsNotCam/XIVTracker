@@ -16,13 +16,13 @@ export default class NameEvents extends AskEventBase {
 	}
 
 	private async handleAskName() {
-		if(this.app.GetWebSocketClient().isConnected() === false) {
+		if(this.app.wsClient.isConnected() === false) {
 			return undefined;
 		}
 
 		var response;
 		try {
-			response = await this.app.GetWebSocketClient().ask(EzFlag.NAME);
+			response = await this.app.wsClient.ask(EzFlag.NAME);
 		} catch(e: any) {
 			console.error("Error getting name:", e.message);
 			return undefined;

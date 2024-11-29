@@ -44,7 +44,7 @@ export default class EventManager implements IDisposable {
 		}
 
 		this.app = app;
-		const win: BrowserWindow = this.app.getWindow();
+		const win: BrowserWindow = this.app.win;
 
 		this.AskEvents = [
 			new JobEvents(app),

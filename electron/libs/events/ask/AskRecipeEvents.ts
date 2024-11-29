@@ -28,38 +28,38 @@ export default class RecipeEvents extends AskEventBase {
 			return null;
 		}
 
-		const existingRecipe: TCRecipe | undefined = await this.app.getDB().tryGetRecipe(itemName);
+		const existingRecipe: TCRecipe | undefined = await this.app.db.tryGetRecipe(itemName);
 		if (existingRecipe) {
-			this.app.getDB().addRecentSearch(itemName);
+			this.app.db.addRecentSearch(itemName);
 		}
 
 		const recipe = this.parser.getRecipeByItemIdentifier(itemName);
 		if (recipe) {
-			await this.app.getDB().addRecentSearch(itemName);
-			await this.app.getDB().addRecipe(recipe);
+			await this.app.db.addRecentSearch(itemName);
+			await this.app.db.addRecipe(recipe);
 		}
 
 		return recipe;
 	}
 
 	private handleAskIsFavoriteRecipe(_: any, name: string) {
-		return this.app.getDB().isFavoriteRecipe(name);
+		return this.app.db.isFavoriteRecipe(name);
 	}
 
 	private toggleFavoriteRecipes(_: any, name: string) {
-		return this.app.getDB().toggleFavoriteRecipe(name);
+		return this.app.db.toggleFavoriteRecipe(name);
 	}
 
 	private handleAskFavoriteRecipes() {
-		return this.app.getDB().getFavoriteRecipes();
+		return this.app.db.getFavoriteRecipes();
 	}
 
 	private async handleAskRecentRecipeSearches(): Promise<any> {
-		const recentSearches = this.app.getDB().getRecentSearches();
+		const recentSearches = this.app.db.getRecentSearches();
 
 		const r = await new Promise(async (resolve, _) => {
 			const result = await Promise.all(recentSearches.map(async (search: DBSearchItem) => {
-				const recipe = await this.app.getDB().tryGetRecipe(search.name).catch((e) => { console.log(e) });
+				const recipe = await this.app.db.tryGetRecipe(search.name).catch((e) => { console.log(e) });
 				return {
 					name: search.name,
 					date: search.date,
