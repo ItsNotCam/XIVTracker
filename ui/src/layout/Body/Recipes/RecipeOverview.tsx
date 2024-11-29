@@ -6,6 +6,8 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import JobState from '@electron-lib/JobState';
 
+import { v4 as uuidv4 } from 'uuid';
+
 interface CraftingHeaderProps {
 	recipeData: TCRecipe;
 	craftingRequirements: any[];
@@ -63,7 +65,7 @@ const CraftingHeader: React.FC<CraftingHeaderProps> = ({
 			<div className="flex flex-row gap-[0.25rem] overflow-x-visible overflow-y-visible z-10">
 				{craftingRequirements?.map((req) => (
 					<div 
-						key={`crafting-req-${req.job}`} 
+						key={uuidv4()} 
 						className="relative grid place-items-center group flex-shrink-0 flex-grow-0 group overflow-visible"
 						title={toTitleCase(req.job)}
 					>

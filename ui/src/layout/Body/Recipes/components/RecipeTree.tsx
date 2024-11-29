@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import RecipeItem from './RecipeItem';
+import { v4 as uuidv4 } from 'uuid';
 
 export interface RecipeTreeProps {
 	RecipeData: TCRecipe;
@@ -38,7 +39,7 @@ const RecipeTree: React.FC<RecipeTreeProps> = ({ RecipeData, IsFirst }) => {
 					overflow: droppedDown ? "visible" : "hidden" 
 				}} className="transition-[max-height] flex flex-col">
 					{RecipeData.ingredients.filter(i => !i.name.includes("shard")).map((ingredient) => (
-						<RecipeTree RecipeData={ingredient} />
+						<RecipeTree key={uuidv4()} RecipeData={ingredient} />
 					))}
 				</div>
 			) : null}

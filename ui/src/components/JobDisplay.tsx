@@ -2,30 +2,29 @@ import React, { useEffect } from 'react';
 import XPBar from '@ui/components/XPBar';
 import { JobIconList } from '@assets/images/jobs';
 import { invoke, onReceive } from '@ui/util/util';
-import { Job } from 'common';
 
-interface JobDisplayProps {
-	type: "current" | "main",
-	initialJob: Job
-}
-
-const JobDisplay: React.FC<JobDisplayProps> = ({ type = "main", initialJob }) => {
-	const [job, setJob] = React.useState<Job>(initialJob);
+const JobDisplay: React.FC = () => {
+	const [job, setJob] = React.useState<XIVJob>({
+		job_name: "???",
+		level: 0,
+		current_xp: 0,
+		max_xp: 0
+	});
 
 	const getJobInfo = async() => {
-		const result: Job = await invoke(`ask:job-${type}`);
+		const result: XIVJob = await invoke(`ask:job-current`);
 		setJob(result);
 	}
 
-	const handleJobChange = (_event: any, newJob: Job) => {
-		setJob((current: Job) => ({
+	const handleJobChange = (_event: any, newJob: XIVJob) => {
+		setJob((current: XIVJob) => ({
 			...current,
 			...newJob
 		}));
 	}
 
-	const handleLevelChange = (_event: any, newLevel: Job) => {
-		setJob((current: Job) => ({
+	const handleLevelChange = (_event: any, newLevel: XIVJob) => {
+		setJob((current: XIVJob) => ({
 			...current,
 			level: newLevel.level,
 			current_xp: newLevel.current_xp,
@@ -34,7 +33,7 @@ const JobDisplay: React.FC<JobDisplayProps> = ({ type = "main", initialJob }) =>
 	}
 
 	const handleXpChange = (_event: any, newXp: number) => {
-		setJob((current: Job) => ({
+		setJob((current: XIVJob) => ({
 			...current,
 			current_xp: newXp
 		}));

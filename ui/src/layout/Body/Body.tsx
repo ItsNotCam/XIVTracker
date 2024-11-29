@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Sidebar from '@ui/layout/Body/Sidebar';
-import RecipeSearch from './RecipeSearch/_Root';
+import RecipeSearch from './Recipes/Recipes';
+import { v4 as uuidv4 } from 'uuid';
 
 const pages: JSX.Element[] = [
 	<RecipeSearch />,
@@ -16,8 +17,12 @@ const Body: React.FC = () => {
 			<nav>
 				<Sidebar currentTab={currentTab} setCurrentTab={setCurrentTab}/>
 			</nav>
-			{pages.map((page: any,i) => (
-				<div className="bg-custom-gray-500 flex-grow" style={{ display: currentTab === i ? 'block' : 'none' }}>
+			{pages.map((page: any, i: number) => (
+				<div 
+					key={uuidv4()} 
+					className="bg-custom-gray-500 flex-grow" 
+					style={{ display: currentTab === i ? 'block' : 'none' }}
+				>
 					{page}
 				</div>
 			))}

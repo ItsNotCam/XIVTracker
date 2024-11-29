@@ -6,16 +6,14 @@ import GilImage from "@assets/images/etc-gil.png";
 const GilDisplay: React.FC = () => {
 	const [amount, setAmount] = React.useState(3250);
 
-	const updateGilAmount = (_event: any, amount: number) => {
+	const updateGilAmount = (_: any, amount: number) => {
 		setAmount(amount);
 	}
 
   useEffect(() => {	
-		const updateGilAmountRef = updateGilAmount;
-
-		onReceive("update:gil", updateGilAmountRef);
+		onReceive("update:gil", updateGilAmount);
 		return () => {
-			window.ipcRenderer.removeListener("update:gil", updateGilAmountRef);
+			window.ipcRenderer.removeListener("update:gil", updateGilAmount);
 		}
 	}, []);
 	

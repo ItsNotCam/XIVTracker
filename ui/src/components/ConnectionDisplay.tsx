@@ -1,30 +1,27 @@
+import { invoke, onReceive } from '@ui/util/util';
 import { useState, useEffect, useRef } from 'react';
 
 const ConnectionStatus: React.FC = () => {
 	const [isConnected, setIsConnected] = useState(false);
-	const connectionTimeout = useRef<NodeJS.Timeout | null>(null);
 
 	const handleTcpConnected = (_event: any, connected: boolean) => {
 		setIsConnected(connected);
 	}
 
+	const updateConnectionStatus = async() => {
+		const connected = await invoke("ask:tcp-connected");
+		setIsConnected(connected);
+	}
+
 	useEffect(() => {
-		const handleTcpConnectedRef = handleTcpConnected;
-		window.ipcRenderer.on("broadcast:tcp-connected", handleTcpConnectedRef);
-		window.ipcRenderer.invoke("ask:tcp-connected").then((connected: boolean) => {
-			setIsConnected(connected);
-		});
+		updateConnectionStatus();
+
+		onReceive("broadcast:tcp-connected", handleTcpConnected);
 		return () => {
-			window.ipcRenderer.removeListener("broadcast:tcp-connected", handleTcpConnectedRef);
+			window.ipcRenderer.removeListener("broadcast:tcp-connected", handleTcpConnected);
 		}
 	}, []);
-
-	useEffect(() => {
-		if(connectionTimeout.current) {
-			clearTimeout(connectionTimeout.current);
-		}
-	}, [isConnected]);
-
+	
 	return (
 		<span title={`TCP ${isConnected ? "Connected" : "Disconnected"}`} className="py-4">
 			<svg 

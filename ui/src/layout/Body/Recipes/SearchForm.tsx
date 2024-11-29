@@ -1,4 +1,3 @@
-// import { TCRecipe } from '@electron/libs/providers/RecipeProviderTypes';
 import React from 'react';
 
 export interface SearchBarProps {

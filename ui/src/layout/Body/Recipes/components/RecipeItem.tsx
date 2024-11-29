@@ -1,8 +1,8 @@
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { toTitleCase } from '@ui/util/util';
+import GatheringSources from '../GatheringSources';
+import DropSources from '../DropSources';
 import { RecipeTreeProps } from './RecipeTree';
-import GatheringSources from './GatheringSources';
-import DropSources from './DropSources';
 
 type RecipeItemProps = RecipeTreeProps & {
 	toggleDropdown: () => void;
@@ -10,7 +10,7 @@ type RecipeItemProps = RecipeTreeProps & {
 	droppedDown: boolean;
 }
 
-const RecipeItem: React.FC<RecipeItemProps> = ({ RecipeData, IsFirst, toggleDropdown, hasChildren, droppedDown }) => {
+const RecipeItem: React.FC<RecipeItemProps> = ({ RecipeData, toggleDropdown, hasChildren, droppedDown }) => {
 	const isShard = RecipeData.name.includes("Shard");
 	const recipeName = toTitleCase(RecipeData.name);
 	const tcLink = `https://ffxivteamcraft.com/db/en/item/${RecipeData.id}`;
@@ -35,11 +35,9 @@ const RecipeItem: React.FC<RecipeItemProps> = ({ RecipeData, IsFirst, toggleDrop
 			<div className='flex flex-row gap-2 items-center cursor-pointer'>
 				<img src={RecipeData.icon_path} className="h-[32px]"/>
 				<h1>
-					{/* {IsFirst ? null : (  */}
 					<span className='text-custom-text-secondary-300 bloom'>
 						{`${RecipeData.amount}x `}
 					</span>
-					{/*)} </span>)} */}
 					<span title={tcLink} onClick={() => { navigator.clipboard.writeText(tcLink) }}>
 						{recipeName}
 					</span>

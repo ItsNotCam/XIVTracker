@@ -1,5 +1,5 @@
-import Header from '@ui/layout/Header/_Root';
-import Body from '@ui/layout/Body/_Root';
+import Header from '@ui/layout/Header/Header';
+import Body from '@ui/layout/Body/Body';
 
 const App: React.FC = () => {
 	return (

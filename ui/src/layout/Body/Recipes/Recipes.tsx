@@ -5,26 +5,28 @@ import SearchBar from './SearchForm';
 
 import { JobIconList } from '@ui/assets/images/jobs';
 import { invoke, onReceive } from '@ui/util/util';
-import CraftingHeader from './CraftingHeader';
-import RecipeTree from './RecipeTree';
+import CraftingHeader from './RecipeOverview';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import DropdownButton from '@ui/components/DropdownButton';
 import JobState from '@electron-lib/JobState';
 
+import { v4 as uuidv4 } from 'uuid';
+import RecipeTree from './components/RecipeTree';
+
 const RecipeSearch: React.FC = () => {
 	const craftReqsRef = useRef<any[]>([])
 	const rawMatReqsRef = useRef<any[]>([])
-	const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+	const searchTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
 	const [recipeDroppedDown, setRecipeDroppedDown] = React.useState<boolean>(false);
 	const [rawMaterialsDroppedDown, setRawMaterialsDroppedDown] = React.useState<boolean>(false);
 	const [isSearching, setIsSearching] = React.useState(false);
 
-	const [fullRecipe, setFullRecipe] = React.useState<TCRecipe | null>(null);
+	const [fullRecipe, setFullRecipe] = React.useState<TCRecipe>();
 	const [recipeHeader, setRecipeHeader] = React.useState<any[]>([]);
 	const [rawMaterials, setRawMaterials] = React.useState<any[]>([]);
 
-	const [recentSearches, setRecentSearches] = React.useState<any>([]);
+	const [recentRecipeSearches, setRecentRecipeSearches] = React.useState<TCRecipe[]>([]);
 	const [favoriteRecipes, setFavoriteRecipes] = React.useState<string[]>([]);
 	
 	const [playerJobs, setPlayerJobs] = React.useState<JobState[]>([]);
@@ -36,7 +38,6 @@ const RecipeSearch: React.FC = () => {
 
 	const updateAllJobs = async() => {
 		const jobs = await invoke("ask:job-all") || [];
-		console.log("AHSSFASJFSDFSDAFSDFDS\n",jobs);
 		setPlayerJobs(jobs);
 	}
 
@@ -64,7 +65,7 @@ const RecipeSearch: React.FC = () => {
 
 	useEffect(() => {
 		const getRecentSearches = async () => {
-			setRecentSearches(
+			setRecentRecipeSearches(
 				await sortRecentSearches()
 			);
 		}
@@ -93,10 +94,10 @@ const RecipeSearch: React.FC = () => {
 			setIsSearching(false);
 		}, 200);
 
-		if(timeoutRef.current) {
-			clearTimeout(timeoutRef.current)
+		if(searchTimeoutRef.current) {
+			clearTimeout(searchTimeoutRef.current)
 		};
-		timeoutRef.current = setTimeout(() => { setIsSearching(false); }, 2000);
+		searchTimeoutRef.current = setTimeout(() => { setIsSearching(false); }, 2000);
 
 		const getRecipe = async () => {
 			setIsSearching(true);
@@ -107,8 +108,8 @@ const RecipeSearch: React.FC = () => {
 			} catch(e: any) {
 				console.error(e);
 			} finally {
-				if(timeoutRef.current) {
-					clearTimeout(timeoutRef.current);
+				if(searchTimeoutRef.current) {
+					clearTimeout(searchTimeoutRef.current);
 				}
 				if(isSearchingTimeout) {
 					clearTimeout(isSearchingTimeout);
@@ -220,7 +221,7 @@ const RecipeSearch: React.FC = () => {
 	}
 	
 	const toggleFavoriteRecipe = async() => {
-		if (fullRecipe === null) {
+		if (fullRecipe === undefined) {
 			return;
 		}
 
@@ -251,8 +252,9 @@ const RecipeSearch: React.FC = () => {
 			</div>
 			<div className='mx-auto overflow-y-auto overflow-x-hidden border-custom-gray-200/50'>
 				<ul>
-					{recentSearches.map((search: any) => (
+					{recentRecipeSearches.map((search: any) => (
 						<li 
+							key={uuidv4()} 
 							title={search}
 							className="relative transition-transform cursor-pointer flex flex-row gap-2 items-center p-2 h-[64px] w-[64px]" 
 							onClick={() => { handleSearch(search.recipe.name) }}
@@ -267,7 +269,7 @@ const RecipeSearch: React.FC = () => {
 					))}
 				</ul>
 			</div>
-			{fullRecipe === null ? (
+			{fullRecipe === undefined ? (
 				<h1 className="3xl text-center mt-8 h-fit">Search for a recipe to get started</h1>
 			) : (
 			<div className="border-l-4 border-custom-gray-200/50 flex flex-col">
@@ -292,7 +294,7 @@ const RecipeSearch: React.FC = () => {
 							<div className="transition-[max-height]" style={{ 
 								maxHeight: calcMaxHeightRawMaterials()
 							}}>
-								{rawMaterials.map((r) => <RecipeTree RecipeData={r} IsFirst={true}/>)}
+								{rawMaterials.map((r) => <RecipeTree key={uuidv4()} RecipeData={r} IsFirst={true}/>)}
 							</div>
 						</div>
 					</div>
@@ -309,7 +311,7 @@ const RecipeSearch: React.FC = () => {
 							}}>
 								{fullRecipe.ingredients 
 									? fullRecipe.ingredients.map((ingredient) => (
-										<RecipeTree RecipeData={ingredient} IsFirst={true}/>
+										<RecipeTree key={uuidv4()} RecipeData={ingredient} IsFirst={true}/>
 									)) : null}
 							</div>
 						</div>

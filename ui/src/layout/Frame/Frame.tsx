@@ -1,21 +1,10 @@
-import ConnectionStatus from "@ui/layout/Frame/ConnectionDisplay";
-import GilDisplay from "@ui/layout/Frame/GilDisplay";
+import ConnectionStatus from "@ui/components/ConnectionDisplay";
+import GilDisplay from "@ui/components/GilDisplay";
 
 const Frame: React.FC = () => {
-	const close = () => {
-		console.log("exit");
-		window.ipcRenderer.send("exit");
-	}
-
-	const minimize = () => {
-		console.log("minimize");
-		window.ipcRenderer.send("minimize");
-	}
-
-	const maximize = () => {
-		console.log("maximize");
-		window.ipcRenderer.send("maximize");
-	}
+	const close = () => window.ipcRenderer.send("exit");
+	const minimize = () => window.ipcRenderer.send("minimize");
+	const maximize = () => window.ipcRenderer.send("maximize");
 
 	return (
 		<div className={`bg-custom-gray-700 w-full shadow-lg flex flex-row justify-between items-center header py-2 h-8 px-3 `}>
