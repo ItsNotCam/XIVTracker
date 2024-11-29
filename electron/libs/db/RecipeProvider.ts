@@ -20,7 +20,7 @@ export type TCDataType =
 | "xiv_nodes-by-item-id";
 
 export default class RecipeProvider implements IDisposable {
-	private files: Map<TCDataType, any> | null = null;
+	private files: Map<TCDataType, any>;
 	
 	private readonly dataTypes: TCDataType[] = [
 		"items", "xiv_item-id-by-name", "xiv_recipe-by-id", "item-level", "item-icons", "job-name",
@@ -28,17 +28,20 @@ export default class RecipeProvider implements IDisposable {
 		"drop-sources", "mobs", "xiv_monsters-by-id", "places", "xiv_nodes-by-item-id"
 	]
 
+	constructor() {
+		this.files = new Map<TCDataType, any>();
+	}
+
 	public isSetup = (): boolean => this.files !== null;
 
-	public dispose() {
+	public dispose = () => {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
 		}
-		this.files!.clear();
-		this.files = null;
+		this.files.clear();
 	}
 
-	public async init(): Promise<RecipeProvider> {
+	public init = async(): Promise<RecipeProvider> => {
 		this.files = new Map<TCDataType, any>();
 
     for (const [,dt] of this.dataTypes.entries()) {
@@ -53,7 +56,7 @@ export default class RecipeProvider implements IDisposable {
 		return this;
 	}
 	
-	public initSync(): RecipeProvider {
+	public initSync = (): RecipeProvider => {
 		this.files! = new Map<TCDataType, any>();
 
     for (const dt in this.dataTypes) {
@@ -68,7 +71,7 @@ export default class RecipeProvider implements IDisposable {
 		return this;
 	}
 
-	public loadDataSync(dataType: TCDataType): any {
+	public loadDataSync = (dataType: TCDataType): any => {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
 		}
@@ -87,7 +90,7 @@ export default class RecipeProvider implements IDisposable {
 		return JSON.parse(data.toString());
 	}
 	
-	public async loadData(dataType: TCDataType): Promise<any> {
+	public loadData = async(dataType: TCDataType): Promise<any> => {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
 		}
@@ -107,7 +110,7 @@ export default class RecipeProvider implements IDisposable {
 		return JSON.parse(data.toString());
 	}
 
-	public getItemNameFromId(itemId: number): string | null {
+	public getItemNameFromId =(itemId: number): string | null => {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
 		}
@@ -120,7 +123,7 @@ export default class RecipeProvider implements IDisposable {
 		return null;
 	}
 
-	public getIdFromItemName(itemName: string): number | null {
+	public getIdFromItemName = (itemName: string): number | null => {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
 		}
@@ -136,7 +139,7 @@ export default class RecipeProvider implements IDisposable {
 		return null;
 	}
 
-	public getRootRecipe(recipeId: number): any | null{
+	public getRootRecipe = (recipeId: number): any | null => {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
 		}
@@ -149,7 +152,7 @@ export default class RecipeProvider implements IDisposable {
 		return null;
 	}
 
-	public getRecipeByItemIdentifier(itemIdentifier: string | number): TCRecipe | null {
+	public getRecipeByItemIdentifier = (itemIdentifier: string | number): TCRecipe | null => {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
 		}
@@ -159,7 +162,7 @@ export default class RecipeProvider implements IDisposable {
 		return finalRecipe;
 	}
 
-	public isCraftable(itemId: number): boolean {
+	public isCraftable = (itemId: number): boolean => {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
 		}
@@ -168,7 +171,7 @@ export default class RecipeProvider implements IDisposable {
 		return recipe !== null;
 	}
 
-	public getIconPathOfItemId(itemId: number): string | null {
+	public getIconPathOfItemId = (itemId: number): string | null => {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
 		}
@@ -181,7 +184,7 @@ export default class RecipeProvider implements IDisposable {
 		return null;
 	}
 
-	public getJobNameById(jobId: number): string | null {
+	public getJobNameById = (jobId: number): string | null => {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
 		}
@@ -194,7 +197,7 @@ export default class RecipeProvider implements IDisposable {
 		return null;
 	}
 
-	public getGatheringLevelById(itemId: number): number | null {
+	public getGatheringLevelById = (itemId: number): number | null => {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
 		}
@@ -207,7 +210,7 @@ export default class RecipeProvider implements IDisposable {
 		return null;
 	}
 
-	public getGatheringNameById(itemId: number): string | null {
+	public getGatheringNameById = (itemId: number): string | null => {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
 		}
@@ -219,7 +222,7 @@ export default class RecipeProvider implements IDisposable {
 		return null;
 	}
 
-	public getGatheringTypesById(itemId: number): TCGatheringType[] | null {
+	public getGatheringTypesById = (itemId: number): TCGatheringType[] | null => {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
 		}
@@ -236,7 +239,7 @@ export default class RecipeProvider implements IDisposable {
 		return null
 	}
 
-	public getAllDropsOfMob(mobId: number): any {
+	public getAllDropsOfMob = (mobId: number): any => {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
 		}
@@ -259,7 +262,7 @@ export default class RecipeProvider implements IDisposable {
 		return sources;
 	}
 
-	public getMobLocationsById(mobId: number): TCDropSource | null {
+	public getMobLocationsById = (mobId: number): TCDropSource | null => {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
 		}
@@ -290,7 +293,7 @@ export default class RecipeProvider implements IDisposable {
 		return data;
 	}
 
-	public getDropSourceById(itemId: number): TCDropSource[] | null {
+	public getDropSourceById = (itemId: number): TCDropSource[] | null => {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
 		}
@@ -319,7 +322,7 @@ export default class RecipeProvider implements IDisposable {
 		return outData;
 	}
 
-	public getGatheringLocationsById(itemId: number): TCGatheringNode[] | null {
+	public getGatheringLocationsById = (itemId: number): TCGatheringNode[] | null => {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
 		}
@@ -362,7 +365,11 @@ export default class RecipeProvider implements IDisposable {
 		return outData;
 	}
 
-	public getRecipeRecursive(itemIdentifier: string | number, parentAmount: number = 1, depth: number = 0): TCRecipe | null {
+	public getRecipeRecursive = (
+		itemIdentifier: string | number, 
+		parentAmount: number = 1, 
+		depth: number = 0
+	): TCRecipe | null => {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
 		}

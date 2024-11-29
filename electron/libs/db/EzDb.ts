@@ -21,7 +21,7 @@ export default class EzDb implements IDisposable {
 		this.autocommit = autocommit;
 	}
 
-	public async init(): Promise<EzDb> {
+	public init = async(): Promise<EzDb> => {
 		if(this.db !== null) {
 			throw new Error("DB already connected");
 		}
@@ -39,7 +39,7 @@ export default class EzDb implements IDisposable {
 		return this;
 	}
 
-	public setMaxRecentSearchCount(count: number) {
+	public setMaxRecentSearchCount = (count: number) => {
 		this.maxRecentSearchCount = count;
 
 		if(this.db !== null && this.db.data.RecentRecipeSearches !== undefined) {
@@ -53,7 +53,7 @@ export default class EzDb implements IDisposable {
 	public isConnected = (): boolean => this.db !== null;
 
 
-	public isFavoriteRecipe(recipeName: string): boolean {
+	public isFavoriteRecipe = (recipeName: string): boolean => {
 		if(this.db === null) {
 			throw EzDb.DB_NOT_CONNECTED;
 		}
@@ -66,7 +66,7 @@ export default class EzDb implements IDisposable {
 		return FavoriteRecipes.find((r: string) => r === recipeName) !== undefined;
 	}
 
-	public getFavoriteRecipes(): string[] {
+	public getFavoriteRecipes = (): string[] => {
 		if(this.db === null) {
 			throw EzDb.DB_NOT_CONNECTED;
 		}
@@ -75,7 +75,7 @@ export default class EzDb implements IDisposable {
 		return FavoriteRecipes || [];
 	}
 
-	public addFavoriteRecipe(recipeName: string) {
+	public addFavoriteRecipe = (recipeName: string) => {
 		if(this.db === null) {
 			throw EzDb.DB_NOT_CONNECTED;
 		}
@@ -94,7 +94,7 @@ export default class EzDb implements IDisposable {
 		}
 	}
 
-	public toggleFavoriteRecipe(recipeName: string): boolean {
+	public toggleFavoriteRecipe = (recipeName: string): boolean => {
 		if(this.db === null) {
 			throw EzDb.DB_NOT_CONNECTED;
 		}
@@ -123,7 +123,7 @@ export default class EzDb implements IDisposable {
 		return isFavorite;
 	}
 
-	public removeFavoriteRecipe(recipe: string) {
+	public removeFavoriteRecipe = (recipe: string) => {
 		if(this.db === null) {
 			throw EzDb.DB_NOT_CONNECTED;
 		}
@@ -138,7 +138,7 @@ export default class EzDb implements IDisposable {
 		}
 	}
 
-	public tryGetFavorite(recipeName: string): string | undefined {
+	public tryGetFavorite = (recipeName: string): string | undefined => {
 		if(this.db === null) {
 			throw EzDb.DB_NOT_CONNECTED;
 		}
@@ -155,7 +155,7 @@ export default class EzDb implements IDisposable {
 		this.autocommit = autocommit;
 	}
 
-	public async tryGetRecipe(recipeName: string): Promise<TCRecipe | undefined> {
+	public tryGetRecipe = async(recipeName: string): Promise<TCRecipe | undefined> => {
 		if(this.db === null) {
 			throw EzDb.DB_NOT_CONNECTED;
 		}
@@ -172,7 +172,7 @@ export default class EzDb implements IDisposable {
 		await this.db?.write();
 	}
 
-	public async addRecentSearch(newSearch: string, date?: Date): Promise<void> {
+	public addRecentSearch = async(newSearch: string, date?: Date): Promise<void> => {
 		if(this.db == null) {
 			throw EzDb.DB_NOT_CONNECTED;
 		}
@@ -198,7 +198,7 @@ export default class EzDb implements IDisposable {
 		}
 	}
 
-	public getRecentSearches(limit?: number): DBSearchItem[] {
+	public getRecentSearches = (limit?: number): DBSearchItem[] => {
 		if(this.db === null) {
 			throw EzDb.DB_NOT_CONNECTED;
 		}
@@ -207,7 +207,7 @@ export default class EzDb implements IDisposable {
 		return limit ? RecentSearches.slice(0,limit) : RecentSearches;
 	}
 
-	public byName(): DBSearchItem[] {
+	public byName = (): DBSearchItem[] => {
 		if(this.db === null) {
 			throw EzDb.DB_NOT_CONNECTED;
 		}
@@ -216,7 +216,7 @@ export default class EzDb implements IDisposable {
 		return RecentSearches.sort((a: DBSearchItem, b: DBSearchItem) => a.name.localeCompare(b.name));
 	}
 
-	public byDate(): DBSearchItem[] {
+	public byDate = (): DBSearchItem[] => {
 		if(this.db === null) {
 			throw EzDb.DB_NOT_CONNECTED;
 		}
@@ -229,7 +229,7 @@ export default class EzDb implements IDisposable {
 		});
 	}
 
-	public async removeRecentSearch(searchToRemove: string): Promise<void> {
+	public removeRecentSearch = async(searchToRemove: string): Promise<void> => {
 		if(this.db === null) {
 			throw EzDb.DB_NOT_CONNECTED;
 		}
@@ -243,7 +243,7 @@ export default class EzDb implements IDisposable {
 		}
 	}
 
-	public async removeOldestRecentSearch(): Promise<void> {
+	public removeOldestRecentSearch = async(): Promise<void> =>  {
 		if(this.db === null) {
 			throw EzDb.DB_NOT_CONNECTED;
 		}
@@ -255,7 +255,7 @@ export default class EzDb implements IDisposable {
 		}
 	}
 
-	public async addRecipe(newRecipe: TCRecipe): Promise<void> {
+	public addRecipe = async (newRecipe: TCRecipe): Promise<void> => {
 		if(this.db === null) {
 			throw EzDb.DB_NOT_CONNECTED;
 		}
@@ -275,7 +275,7 @@ export default class EzDb implements IDisposable {
 		}
 	}
 	
-	public async dispose(): Promise<void> {
+	public dispose = async(): Promise<void> => {
 		await this.db?.write();
 		this.db = null;
 	}
