@@ -8,7 +8,7 @@ export default abstract class RecvEventBase {
 
 	public abstract handle(data: any): void;
 
-	public sendToClient(event: EventType, data?: any): void {
+	protected sendToClient(event: EventType, data?: any): void {
 		if(this.win.isDestroyed()) {
 			throw(`[${this.constructor.name}] Window is destroyed`);
 		}
