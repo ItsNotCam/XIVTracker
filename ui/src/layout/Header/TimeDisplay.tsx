@@ -1,9 +1,9 @@
-import { useState, useEffect, FC, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import ClockImage from '@assets/images/etc-clock.png'
 import { invoke, onReceive } from '@ui/util/util';
 
-const Clock: FC<{ initialTime: string }> = ({ initialTime }) => {
+const Clock: React.FC<{ initialTime: string }> = ({ initialTime }) => {
 	const realTimeTimeout = useRef<NodeJS.Timeout | null>(null);
 
 	const [currentTime, setCurrentTime] = useState<string>("00:00 PM");

@@ -1,7 +1,7 @@
-import { FC, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { invoke, onReceive } from '@ui/util/util';
 
-const NameDisplay: FC = () => {
+const NameDisplay: React.FC = () => {
 	const [name, setName] = useState<string>("???");
 
 	const updateName = (_event: any, newName: string) => {	

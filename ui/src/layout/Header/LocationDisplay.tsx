@@ -1,4 +1,4 @@
-import { useEffect, useState, FC } from "react";
+import { useEffect, useState } from "react";
 import { invoke, onReceive, toTitleCase } from "@ui/util/util";
 
 interface Location {
@@ -10,8 +10,7 @@ interface Location {
 	position?: string;
 }
 
-
-const LocationDisplay: FC = () => {
+const LocationDisplay: React.FC = () => {
 	const [location, setLocation] = useState<Location>({
 			territory: { id: "undefined", name: undefined },
 			area: { id: "undefined", name: undefined },
