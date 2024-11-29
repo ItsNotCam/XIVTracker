@@ -17,9 +17,6 @@ export const deserialize = (msg: Buffer): DeserializedPacket => {
 		if (((short >> 10) & EzFlag.EZ) !== EzFlag.EZ) {
 			throw new Error("Malformed packet");
 		}
-
-		// packet length is the last 10 bits = 0011 1111 1111 = 0x3FF
-		// packetLength = (short & 0x3FF);
 	}
 
 	{
