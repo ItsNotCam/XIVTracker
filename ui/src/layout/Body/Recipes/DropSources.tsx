@@ -1,4 +1,3 @@
-import { locAxisString } from '@ui/util/util';
 import React from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import DropSource from './components/DropSource';
