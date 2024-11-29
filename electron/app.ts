@@ -1,14 +1,13 @@
-import EventRegister from './libs/events/EventRegister';
+import EventManager from './libs/events/EventManager';
 import { BrowserWindow, ipcMain } from 'electron'
 import EzWs from './libs/net/EzWs';
-import ezRoute from '../electron/libs/net/EzRouter';
 import EzDb from '../electron/libs/db/EzDb';
 
 export default class XIVTrackerApp implements IDisposable {
 	private win: BrowserWindow;
 	private wsClient: EzWs;
 	private db: EzDb;
-	private eventRegister: EventRegister;
+	private eventRegister: EventManager;
 
 	constructor(win: BrowserWindow) {
 		this.win = win;
@@ -16,7 +15,7 @@ export default class XIVTrackerApp implements IDisposable {
 		console.log("[App Init] Creating WebSocket client");
 		this.wsClient = new EzWs(
 			50085, 
-			this.handleUnregisteredMessage,
+			this.receiveMessage,
 			this.handleWsConnected.bind(this)
 		);
 		
@@ -24,7 +23,7 @@ export default class XIVTrackerApp implements IDisposable {
 		this.db = new EzDb();
 
 		console.log("[App Init] Creating event register");
-		this.eventRegister = new EventRegister(this);
+		this.eventRegister = new EventManager(this);
 
 		console.log("[App Init] Completed initialization");
 	}
@@ -42,8 +41,8 @@ export default class XIVTrackerApp implements IDisposable {
 	public getIpcMain = () => ipcMain;
 	public GetWebSocketClient = () => this.wsClient;
 
-	private handleUnregisteredMessage = (data: DeserializedPacket) => {
-		ezRoute(this.win, data as DeserializedPacket);
+	private receiveMessage = (data: DeserializedPacket) => {
+		this.eventRegister.ReceiveEvent(data.flag, data.payload);
 	}
 
 	private handleWsConnected = (isConnected: boolean) => {

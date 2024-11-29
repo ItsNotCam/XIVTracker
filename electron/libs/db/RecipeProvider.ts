@@ -19,7 +19,7 @@ export type TCDataType =
 | "places"
 | "xiv_nodes-by-item-id";
 
-export default class TeamCraftParser implements IDisposable {
+export default class RecipeProvider implements IDisposable {
 	private files: Map<TCDataType, any> | null = null;
 	
 	private readonly dataTypes: TCDataType[] = [
@@ -38,7 +38,7 @@ export default class TeamCraftParser implements IDisposable {
 		this.files = null;
 	}
 
-	public async init(): Promise<TeamCraftParser> {
+	public async init(): Promise<RecipeProvider> {
 		this.files = new Map<TCDataType, any>();
 
     for (const [,dt] of this.dataTypes.entries()) {
@@ -53,7 +53,7 @@ export default class TeamCraftParser implements IDisposable {
 		return this;
 	}
 	
-	public initSync(): TeamCraftParser {
+	public initSync(): RecipeProvider {
 		this.files! = new Map<TCDataType, any>();
 
     for (const dt in this.dataTypes) {

@@ -36,7 +36,7 @@ export enum EzFlag {
 	NAME = 0x31,
 	CURRENCY = 0x32,
 	LOGIN = 0x33,
-	LOGOUT = 0x33
+	LOGOUT = 0x34
 }
 
 
@@ -89,7 +89,7 @@ export default class EzWs {
 
 	public reconnect() {
 		this.close();
-		this.connect();
+		setTimeout(() => this.connect(), 2000);
 	}
 
 	private handleMessage = (data: Buffer) => {
@@ -117,12 +117,12 @@ export default class EzWs {
 	}
 
 	public send(routeFlag: EzFlag, data: string | Buffer, id?: number): void {
-		if (!this.isConnected()) {
+		if (!this.isConnected() || !this.socket) {
 			throw(new Error(`[${this.constructor.name}] Not connected`));
 		}
 		const payload = (typeof data === "string") ? Buffer.from(data) : data;
 		const serializedMsg = EzSerDe.serialize(routeFlag, payload, id);
-		this.socket!.send(serializedMsg);
+		this.socket.send(serializedMsg);
 	}
 
 	public async ask(routeFlag: EzFlag, data?: string | Buffer): Promise<string | undefined> {
