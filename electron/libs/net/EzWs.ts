@@ -39,23 +39,30 @@ export enum EzFlag {
 	LOGOUT = 0x34
 }
 
-
-export default class EzWs implements IDisposable{
+export default class EzWs {
 	private readonly PORT: number;
 	private socket: WebSocket | null = null;
-	private requests: Map<uint6, WsHandler>;
+	private requests: Map<uint10, WsHandler>;
 	private handle: (packet: DeserializedPacket) => void;
 	private setConnected: (connected: boolean) => void;
 	private reconnectTimeout: NodeJS.Timeout | null = null;
 
-	constructor(port: number, handleUnregisteredMessage: (msg: DeserializedPacket) => void, setConnected: (connected: boolean) => void) {
+	constructor(
+		port: number, 
+		handleUnregisteredMessage: (msg: DeserializedPacket) => void,
+		setConnected: (connected: boolean) => void
+	) {
 		this.requests = new Map();
 		this.PORT = port;
 		this.handle = handleUnregisteredMessage;
 		this.setConnected = setConnected;
 	}
 
-	public connect(): EzWs {
+	public isConnected = (): boolean => {
+		return this.socket !== null && this.socket !== undefined && this.socket.readyState === WebSocket.OPEN;
+	}
+
+	public connect = (): EzWs => {
 		try {
 			console.log(`[${this.constructor.name}] Attempting to connect to ws://localhost:${this.PORT}`);
 			this.socket = new WebSocket(`ws://localhost:${this.PORT}`, undefined);
@@ -77,7 +84,12 @@ export default class EzWs implements IDisposable{
 		return this;
 	}
 
-	private scheduleReconnect() {
+	public reconnect = () => {
+		this.close();
+		setTimeout(() => this.connect(), 2000);
+	}
+
+	private scheduleReconnect = () => {
 		if(this.reconnectTimeout) {
 			clearTimeout(this.reconnectTimeout);
 		}
@@ -87,12 +99,7 @@ export default class EzWs implements IDisposable{
 		}, this.reconnectTimeout ? 2 * 2000 : 2000);
 	}
 
-	public reconnect() {
-		this.close();
-		setTimeout(() => this.connect(), 2000);
-	}
-
-	private handleMessage(data: Buffer) {
+	private handleMessage = (data: Buffer) => {
 		// deserialize the message
 		let deserializedMsg: DeserializedPacket;
 		try {
@@ -116,12 +123,12 @@ export default class EzWs implements IDisposable{
 		}
 	}
 
-	private printMessage(msg: DeserializedPacket) {
+	private printMessage = (msg: DeserializedPacket) => {
 		const deserializedMsgPayload: string = msg.payload.toString();
 		console.log(`[${this.constructor.name}] Received 0x${msg.flag.toString(16)} ${EzFlag[msg.flag]}: ${deserializedMsgPayload.substring(0, 32)}${deserializedMsgPayload.length>32 ? "..." : ""}`);
 	}
 
-	public send(routeFlag: EzFlag, data?: string | Buffer, id?: number): void {
+	public send = (routeFlag: EzFlag, data?: string | Buffer, id?: number): void => {
 		if (!this.isConnected() || !this.socket) {
 			throw(new Error(`[${this.constructor.name}] Not connected`));
 		}
@@ -137,7 +144,7 @@ export default class EzWs implements IDisposable{
 		this.socket.send(serializedMsg);
 	}
 
-	public async ask(routeFlag: EzFlag, data?: string | Buffer): Promise<string | undefined> {
+	public ask = async(routeFlag: EzFlag, data?: string | Buffer): Promise<string | undefined> => {
 		if (!this.isConnected()) {
 			throw(new Error(`[${this.constructor.name}] Not connected`));
 		}
@@ -164,21 +171,12 @@ export default class EzWs implements IDisposable{
 		return promisedResult;
 	}
 
-	public isConnected = (): boolean => {
-		if(this.socket === null || this.socket === undefined || this.socket.readyState === undefined) {
-			return false;
-		}
-
-		return this.socket.readyState === WebSocket.OPEN;
-	};
-
-	private handleOpen() {
+	private handleOpen = () => {
 		console.log(`[${this.constructor.name}] Connection opened`);
-
 		this.setConnected(true);
 	}
 
-	private handleClose() {
+	private handleClose = () => {
 		console.log(`[${this.constructor.name}] Connection closed`);
 		this.setConnected(false);
 		this.scheduleReconnect();
@@ -197,13 +195,13 @@ export default class EzWs implements IDisposable{
 		}
 	};
 
-	private handleError() {
+	private handleError = () => {
 		if (!this.isConnected()) {
 			this.scheduleReconnect();
 		}
 	}
 
-	public dispose() {
+	public dispose = () => {
 		this.close(false, true);
 	}
 }

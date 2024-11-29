@@ -1,21 +1,13 @@
-import XIVTrackerApp from "../../../app";
 import { EzFlag } from "../../net/EzWs";
 import AskEventBase from "./@AskEventBase";
 
 export default class NameEvents extends AskEventBase {
-	app: XIVTrackerApp;
-
-	constructor(app: XIVTrackerApp) {
-		super();
-		this.app = app;
-	}
-	
 	public override init() {
 		super.init();
-		super.addHandler("ask:name", this.handleAskName.bind(this));
+		super.addHandler("ask:name", this.handleAskName);
 	}
 
-	private async handleAskName() {
+	private handleAskName = async() => {
 		if(this.app.wsClient.isConnected() === false) {
 			return undefined;
 		}
@@ -24,7 +16,7 @@ export default class NameEvents extends AskEventBase {
 		try {
 			response = await this.app.wsClient.ask(EzFlag.NAME);
 		} catch(e: any) {
-			console.error("Error getting name:", e.message);
+			console.log(`[${this.constructor.name}] Error getting name: ${e.message}`);
 			return undefined;
 		}
 		return response;

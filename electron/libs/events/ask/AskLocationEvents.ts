@@ -1,21 +1,13 @@
 import { EzFlag } from "../../net/EzWs";
-import XIVTrackerApp from "../../../app";
 import AskEventBase from "./@AskEventBase";
 
 export default class LocationEvents extends AskEventBase {
-	app: XIVTrackerApp;
-
-	constructor(app: XIVTrackerApp) {
-		super();
-		this.app = app;
-	}
-
 	public override init() {
 		super.init();
-		super.addHandler("ask:location-all", this.handleGetLocationAll.bind(this));
+		super.addHandler("ask:location-all", this.handleGetLocationAll);
 	}
 
-	private async handleGetLocationAll(): Promise<Location | undefined> {
+	private handleGetLocationAll = async(): Promise<Location | undefined> => {
 		if (this.app.wsClient.isConnected() === false) {
 			return undefined;
 		}
@@ -24,7 +16,7 @@ export default class LocationEvents extends AskEventBase {
 		try {
 			response = await this.app.wsClient.ask(EzFlag.LOCATION_ALL);
 		} catch (e: any) {
-			console.log("Error getting location:", e.message);
+			console.log(`[${this.constructor.name}] Error getting location: ${e.message}`);
 			return undefined;
 		}
 
@@ -33,9 +25,9 @@ export default class LocationEvents extends AskEventBase {
 		}
 
 		try {
-			return JSON.parse(response);
-		} catch (e) {
-			console.log("Error parsing location data:", (e as any).message);
+			return JSON.parse(response) as Location;
+		} catch (e: any) {
+			console.log(`[${this.constructor.name}] Error getting location: ${e.message}`);
 		}
 
 		return undefined;

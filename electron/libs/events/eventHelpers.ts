@@ -1,6 +1,6 @@
 import { BrowserWindow, ipcMain } from "electron";
 
-export function onReceive(events: EventType[] | EventType, listener: (event: Electron.IpcRendererEvent, args: any[] | any) => void) {
+export const onReceive = (events: EventType[] | EventType, listener: (event: Electron.IpcRendererEvent, args: any[] | any) => void) => {
 	if (Array.isArray(events)) {
 		events.forEach((eventName: EventType) => {
 			window.ipcRenderer.on(eventName, listener);
@@ -10,11 +10,11 @@ export function onReceive(events: EventType[] | EventType, listener: (event: Ele
 	}
 }
 
-export function listen(eventName: EventType, listener: (event: Electron.IpcMainInvokeEvent, ...args: any[]) => any) {
+export const listen = (eventName: EventType, listener: (event: Electron.IpcMainInvokeEvent, ...args: any[]) => any) => {
 	ipcMain.addListener(eventName, listener);
 }
 
-export function addHandler(events: EventType[] | EventType, listener: (event: Electron.IpcMainInvokeEvent, ...args: any[]) => any) {
+export const addHandler = (events: EventType[] | EventType, listener: (event: Electron.IpcMainInvokeEvent, ...args: any[]) => any) => {
 	if (Array.isArray(events)) {
 		events.forEach((eventName: EventType) => {
 			ipcMain.handle(eventName, listener);
@@ -24,17 +24,17 @@ export function addHandler(events: EventType[] | EventType, listener: (event: El
 	}
 }
 
-export function removeHandler(event: EventType) {
+export const removeHandler = (event: EventType) => {
 	ipcMain.removeHandler(event);
 }
 
-export function removeHandlers(events: EventType[]) {
+export const removeHandlers = (events: EventType[]) => {
 	events.forEach((eventName: EventType) => {
 		ipcMain.removeHandler(eventName);
 	});
 }
 
-export function removeListener(events: EventType[] | EventType, listener: (event: Electron.IpcRendererEvent, args: any[] | any) => void) {
+export const removeListener = (events: EventType[] | EventType, listener: (event: Electron.IpcRendererEvent, args: any[] | any) => void) => {
 	if (Array.isArray(events)) {
 		events.forEach((eventName: EventType) => {
 			ipcMain.removeListener(eventName, listener);
@@ -44,7 +44,7 @@ export function removeListener(events: EventType[] | EventType, listener: (event
 	}
 }
 
-export function emit(eventName: EventType, listener: (event: Electron.IpcRendererEvent, args: any[] | any) => void) {
+export const emit = (eventName: EventType, listener: (event: Electron.IpcRendererEvent, args: any[] | any) => void) => {
 	if (!window || !window.ipcRenderer) {
 		throw new Error("ipcRenderer is not available on the window object");
 	}
@@ -70,7 +70,7 @@ export async function send(eventName: EventType): Promise<any> {
 	window.ipcRenderer.send(eventName);
 }
 
-export function sendToClient(eventName: EventType, win: BrowserWindow, args?: any[] | any): void {
+export const sendToClient = (eventName: EventType, win: BrowserWindow, args?: any[] | any): void => {
 	if(args) {
 		win.webContents.send(eventName, args);
 	} else {

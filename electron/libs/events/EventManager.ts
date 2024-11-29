@@ -77,18 +77,18 @@ export default class EventManager implements IDisposable {
 		]);
 	}
 
-	public ReceiveEvent(flag: EzFlag, data?: any): void {
+	public ReceiveEvent = (flag: EzFlag, data?: any): void => {
 		const event = this.RecvEvents.get(flag);
 		if (event) {
 			event.handle(data);
 		}
 	}
 
-	public init() {
+	public init = () => {
 		this.AskEvents.forEach((event) => event.init());
 	}
 
-	public dispose(): void {
+	public dispose = () => {
 		this.AskEvents.forEach((event) => {
 			console.log(`[${this.constructor.name}] -= ${event.constructor.name}`);
 			event.dispose()

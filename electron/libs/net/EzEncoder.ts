@@ -15,7 +15,7 @@ class EzEncoder {
 		this.buffer = Buffer.alloc(bufferSize);
 	}
 
-	pack(value: number): void {
+	pack = (value: number): void => {
 		this.word = (this.word << this.bitSize) | (value & ((1 << this.bitSize) - 1));
 		this.bitsUsed += this.bitSize;
 
@@ -25,7 +25,7 @@ class EzEncoder {
 		}
 	}
 
-	finalize(): Buffer {
+	finalize = (): Buffer => {
 		if (this.bitsUsed !== 0) {
 			this.buffer[this.bufferIndex] = (this.word << (8 - this.bitsUsed)) & 0xFF;
 		}
@@ -43,7 +43,7 @@ class EzDecoder {
 		this.buffer = buffer;
 	}
 
-	unpack(): number {
+	unpack = (): number => {
 		if (this.bitsUsed < this.bitSize) {
 			this.word = this.word << 8 | (this.buffer[this.bufferIndex++] & 0xFF);
 			this.bitsUsed += 8;

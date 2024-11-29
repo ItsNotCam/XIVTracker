@@ -1,15 +1,17 @@
 import { ipcMain } from "electron";
+import XIVTrackerApp from "@electron/app";
 import EventBase from "../EventBase";
 
-export default abstract class AskEventBase extends EventBase {
+export default abstract class AskEventBase implements EventBase {
 	private handlers: EventType[];
+	protected app: XIVTrackerApp;
 
-	constructor() {
-		super();
+	constructor(app: XIVTrackerApp) {
 		this.handlers = new Array<EventType>();
+		this.app = app;
 	}
 
-	public override init(): void {
+	public init(): void {
 		console.log(`[${this.constructor.name}] init`);
 		this.dispose();
 	}
@@ -20,7 +22,7 @@ export default abstract class AskEventBase extends EventBase {
 		ipcMain.handle(event, handler);
 	}
 
-	public override dispose(): void {
+	public dispose = (): void => {
 		this.handlers.forEach((event: EventType ) => {
 			ipcMain.removeHandler(event);
 		});
