@@ -1,5 +1,3 @@
-import { SheetObject } from "RecipeTypes";
-
 enum DataTypes {
 	position, rotation
 }
@@ -13,21 +11,19 @@ interface Rotation {
 	rot: number;
 }
 
-interface Job {
+interface XIVJob {
 	level: number;
 	job_name: string;
 	current_xp: number;
 	max_xp: number;
 }
 
-interface Location {
+interface XIVLocation {
 	region?: SheetObject;
 	territory?: SheetObject;
 	area?: SheetObject;
-	sub_area?: SheetObject;
-	housing_ward?: SheetObject;
+	subarea?: SheetObject;
+	ward?: SheetObject;
 	position?: Position;
 	radius?: number;
 }
-
-

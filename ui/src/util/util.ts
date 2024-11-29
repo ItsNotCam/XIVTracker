@@ -15,10 +15,10 @@ export const invoke = async(event: string, ...args: any[]): Promise<any> => {
 export const onReceive = (events: EventType | EventType[], listener: (event: any, args: any[] | any) => void) => {
 	if(Array.isArray(events)) {
 		events.forEach((eventName: string) => {
-			window.ipcRenderer.addListener(eventName, listener);
+			window.ipcRenderer.on(eventName, listener);
 		});
 	} else {
-		window.ipcRenderer.addListener(events, listener);
+		window.ipcRenderer.on(events, listener);
 	}
 }
 
