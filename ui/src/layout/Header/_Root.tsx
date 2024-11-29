@@ -3,9 +3,9 @@ import Clock from '@ui/layout/Header/TimeDisplay';
 import LocationDisplay from '@ui/layout/Header/LocationDisplay';
 import NameDisplay from '@ui/layout/Header/NameDisplay';
 import JobDisplay from '@ui/components/JobDisplay';
+import { Job } from 'common';
 
 const Header: React.FC = () => {
-
 	const initialJob: Job = {
 		level: 0,
 		job_name: 'conjurer',
@@ -19,7 +19,7 @@ const Header: React.FC = () => {
 		<section className="grid grid-cols-[auto,1fr,auto]">
 			<JobDisplay type="main" initialJob={initialJob}/>
 			<LocationDisplay />
-			<div className="flex flex-col justify-center items-center ml-auto">
+			<div className="flex flex-col justify-center items-end ml-auto">
 				<Clock initialTime={initialTime} />
 				<NameDisplay />
 			</div>

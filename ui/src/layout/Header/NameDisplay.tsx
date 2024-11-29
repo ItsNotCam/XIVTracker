@@ -9,7 +9,7 @@ const NameDisplay: FC = () => {
 	}
 
 	const askName = async () => {
-		const name = await invoke("ask:name");
+		let name = await invoke("ask:name");
 		setName(name);
 	}
 
@@ -28,8 +28,8 @@ const NameDisplay: FC = () => {
 	}, []);
 
 	return (
-		<h1 className="text-3xl text-custom-text-secondary-300 uppercase">
-			{name}
+		<h1 className="text-3xl text-custom-text-secondary-300 uppercase mr-6">
+			{(name && name.length > 0) ? name : "???"}
 		</h1>
 	)
 };
