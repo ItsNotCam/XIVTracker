@@ -19,6 +19,6 @@ export default class ConnectionEvents extends AskEventBase {
 			return false;
 		}
 
-		return this.app.GetWebSocketClient().isConnected();
+		return this.app.wsClient.isConnected();
 	}
 }

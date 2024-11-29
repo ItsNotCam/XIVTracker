@@ -16,13 +16,13 @@ export default class LocationEvents extends AskEventBase {
 	}
 
 	private async handleGetLocationAll(): Promise<Location | undefined> {
-		if (this.app.GetWebSocketClient().isConnected() === false) {
+		if (this.app.wsClient.isConnected() === false) {
 			return undefined;
 		}
 
 		let response: string | undefined;
 		try {
-			response = await this.app.GetWebSocketClient().ask(EzFlag.LOCATION_ALL);
+			response = await this.app.wsClient.ask(EzFlag.LOCATION_ALL);
 		} catch (e: any) {
 			console.log("Error getting location:", e.message);
 			return undefined;

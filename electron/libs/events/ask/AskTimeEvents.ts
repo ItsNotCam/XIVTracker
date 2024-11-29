@@ -16,10 +16,10 @@ export default class TimeEvents extends AskEventBase {
 	}
 
 	private async handleAskTime(): Promise<string | undefined> {
-		if (this.app.GetWebSocketClient().isConnected() === false) {
+		if (this.app.wsClient.isConnected() === false) {
 			return undefined;
 		}
 
-		return await this.app.GetWebSocketClient().ask(EzFlag.TIME);
+		return await this.app.wsClient.ask(EzFlag.TIME);
 	}
 }

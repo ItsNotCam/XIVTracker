@@ -16,13 +16,13 @@ export default class CurrencyEvents extends AskEventBase {
 	}
 
 	private async handleAskGil(_: any): Promise<number | undefined> {
-		if (this.app.GetWebSocketClient().isConnected() === false) {
+		if (this.app.wsClient.isConnected() === false) {
 			return undefined;
 		}
 
 		let gil: number | undefined = undefined;
 		try {
-			const response = await this.app.GetWebSocketClient().ask(EzFlag.CURRENCY);
+			const response = await this.app.wsClient.ask(EzFlag.CURRENCY);
 			gil = parseInt(response!);
 		} catch (e: any) {
 			console.log("Error getting gil:", e.message);

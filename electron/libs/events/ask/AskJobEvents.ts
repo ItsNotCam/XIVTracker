@@ -18,13 +18,13 @@ export default class JobEvents extends AskEventBase {
 	}
 
 	private async handleAskJobMain(): Promise<JobState | undefined> {
-		if (this.app.GetWebSocketClient().isConnected() === false) {
+		if (this.app.wsClient.isConnected() === false) {
 			return undefined;
 		}
 
 		let response: string | undefined;
 		try {
-			response = await this.app.GetWebSocketClient().ask(EzFlag.JOB_MAIN);
+			response = await this.app.wsClient.ask(EzFlag.JOB_MAIN);
 		} catch (e: any) {
 			console.log(`[${this.constructor.name}] Error getting main job: ${e.message}`);
 			return undefined;
@@ -40,13 +40,13 @@ export default class JobEvents extends AskEventBase {
 	}
 
 	private async handleAskJobAll(): Promise<JobState | undefined> {
-		if (this.app.GetWebSocketClient().isConnected() === false) {
+		if (this.app.wsClient.isConnected() === false) {
 			return undefined;
 		}
 
 		let response: string | undefined;
 		try {
-			response = await this.app.GetWebSocketClient().ask(EzFlag.JOB_ALL);
+			response = await this.app.wsClient.ask(EzFlag.JOB_ALL);
 		} catch (e: any) {
 			console.log(`[${this.constructor.name}] Error getting all jobs: ${e.message}`);
 			return undefined;
