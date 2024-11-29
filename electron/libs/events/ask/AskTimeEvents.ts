@@ -1,6 +1,6 @@
 import XIVTrackerApp from "../../../app";
 import { EzFlag } from "../../net/EzWs";
-import AskEventBase from "./AskEventBase";
+import AskEventBase from "./@AskEventBase";
 
 export default class TimeEvents extends AskEventBase {
 	app: XIVTrackerApp;

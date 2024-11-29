@@ -1,5 +1,5 @@
 import XIVTrackerApp from "@electron/app";
-import AskEventBase from "./AskEventBase";
+import AskEventBase from "./@AskEventBase";
 
 export default class ConnectionEvents extends AskEventBase {
 	app: XIVTrackerApp;

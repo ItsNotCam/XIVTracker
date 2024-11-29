@@ -1,6 +1,6 @@
 import XIVTrackerApp from "../../../app";
 import RecipeProvider from "../../db/RecipeProvider";
-import AskEventBase from "./AskEventBase";
+import AskEventBase from "./@AskEventBase";
 
 export default class RecipeEvents extends AskEventBase {
 	private readonly app: XIVTrackerApp;

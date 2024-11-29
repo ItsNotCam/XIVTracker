@@ -1,4 +1,4 @@
-import RecvLocationEventBase from "./RecvLocationEventBase";
+import RecvLocationEventBase from "./@RecvLocationEventBase";
 
 export default class RecvLocationEventTerritory extends RecvLocationEventBase {
 	public override handle(data: any): void {

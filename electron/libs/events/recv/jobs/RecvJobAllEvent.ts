@@ -1,4 +1,4 @@
-import RecvJobEventBase from "./RecvJobEventBase";
+import RecvJobEventBase from "./@RecvJobEventBase";
 
 export default class RecvJobAllEvent extends RecvJobEventBase {
 	public override handle(data: any): void {
