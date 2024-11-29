@@ -1,5 +1,4 @@
 type EventType =
-	// recv
 	| "update:gil"
 
 	| "update:location-*"
@@ -10,9 +9,6 @@ type EventType =
 	| "update:location-subarea"
 	| "update:location-territory"
 
-	| "update:time"
-	| "update:inventory"
-
 	| "update:job-*"
 	| "update:job-all"
 	| "update:job-main"
@@ -21,10 +17,11 @@ type EventType =
 	| "update:xp"
 	| "update:level"
 	| "update:name"
+	| "update:time"
+	| "update:inventory"
 
 	| "ask:tcp-connected"
 	| "ask:all"
-
 	| "ask:name"
 	| "ask:gil"
 
@@ -58,5 +55,6 @@ type EventType =
 	| "broadcast:logout"
 	| "broadcast:renderer-ready"
 	| "broadcast:tcp-connected"
-	| "set:renderer-ready"
-	| "set:setup-complete";
+	| "broadcast:setup-complete"
+
+	| "set:renderer-ready";

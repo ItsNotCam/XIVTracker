@@ -25,19 +25,16 @@ export default class RecipeEvents extends AskEventBase {
 	
 	private async handleAskForRecipe(_: any, itemName: string): Promise<TCRecipe | null> {
 		if (!this.parser) {
-			console.error("TeamCraftParser instance is not valid.");
 			return null;
 		}
 
 		const existingRecipe: TCRecipe | undefined = await this.app.getDB().tryGetRecipe(itemName);
 		if (existingRecipe) {
-			console.log("Recipe already exists in the database.");
 			this.app.getDB().addRecentSearch(itemName);
 		}
 
 		const recipe = this.parser.getRecipeByItemIdentifier(itemName);
 		if (recipe) {
-			console.log("Recipe found for item:", itemName);
 			await this.app.getDB().addRecentSearch(itemName);
 			await this.app.getDB().addRecipe(recipe);
 		}

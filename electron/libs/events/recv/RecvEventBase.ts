@@ -13,10 +13,6 @@ export default abstract class RecvEventBase {
 			throw(`[${this.constructor.name}] Window is destroyed`);
 		}
 
-		if(data) {
-			this.win.webContents.send(event, data);
-		} else {
-			this.win.webContents.send(event);
-		}
+		this.win.webContents.send(event, data);
 	}
 }
