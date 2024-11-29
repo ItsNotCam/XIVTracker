@@ -187,7 +187,7 @@ export default class EzWs {
 		}
 	}
 
-	private handleOpen = (socket: WebSocket) => {
+	private handleOpen = () => {
 		console.log(`[${this.constructor.name}] Connection opened`);
 
 		this.setConnected(true);
