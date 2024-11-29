@@ -4,7 +4,7 @@ import React, { useEffect, useRef } from 'react';
 import SearchBar from './SearchForm';
 
 import { JobIconList } from '@ui/assets/images/jobs';
-import { invoke, onReceive } from '@ui/util/util';
+import { invoke, onReceive, removeListener } from '@ui/util/util';
 import CraftingHeader from './RecipeOverview';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import DropdownButton from '@ui/components/DropdownButton';
@@ -57,9 +57,9 @@ const RecipeSearch: React.FC = () => {
 
 		return () => {
 			setFavoriteRecipes([]);
-			window.ipcRenderer.removeListener("update:login", handleLogin);
-			window.ipcRenderer.removeListener("update:job-all", handleUpdateAllJobs);
-			window.ipcRenderer.removeListener("broadcast:tcp-connected", updateAllJobs);
+			removeListener("update:job-all", handleUpdateAllJobs);
+			removeListener("broadcast:tcp-connected", updateAllJobs);
+			removeListener("broadcast:login", handleLogin);
 		}
 	}, []);
 

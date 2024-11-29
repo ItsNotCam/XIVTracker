@@ -1,5 +1,5 @@
-import { invoke, onReceive } from '@ui/util/util';
-import { useState, useEffect, useRef } from 'react';
+import { invoke, onReceive, removeListener } from '@ui/util/util';
+import { useState, useEffect } from 'react';
 
 const ConnectionStatus: React.FC = () => {
 	const [isConnected, setIsConnected] = useState(false);
@@ -18,7 +18,7 @@ const ConnectionStatus: React.FC = () => {
 
 		onReceive("broadcast:tcp-connected", handleTcpConnected);
 		return () => {
-			window.ipcRenderer.removeListener("broadcast:tcp-connected", handleTcpConnected);
+			removeListener("broadcast:tcp-connected", handleTcpConnected);
 		}
 	}, []);
 	

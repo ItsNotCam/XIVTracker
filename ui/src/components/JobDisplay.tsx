@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import XPBar from '@ui/components/XPBar';
 import { JobIconList } from '@assets/images/jobs';
-import { invoke, onReceive } from '@ui/util/util';
+import { invoke, onReceive, removeListener } from '@ui/util/util';
 
 const JobDisplay: React.FC = () => {
 	const [job, setJob] = React.useState<XIVJob>({
@@ -50,12 +50,12 @@ const JobDisplay: React.FC = () => {
 		onReceive("broadcast:login", getJobInfo);
 
 		return () => {
-			window.ipcRenderer.removeListener(`update:job-current`, handleJobChange)
-			window.ipcRenderer.removeListener(`update:job-main`, handleJobChange)
-			window.ipcRenderer.removeListener("update:level", handleLevelChange);
-			window.ipcRenderer.removeListener("update:xp", handleXpChange);
-			window.ipcRenderer.removeListener("broadcast:tcp-connected", getJobInfo);
-			window.ipcRenderer.removeListener("broadcast:login", getJobInfo);
+			removeListener(`update:job-current`, handleJobChange)
+			removeListener(`update:job-main`, handleJobChange)
+			removeListener("update:level", handleLevelChange);
+			removeListener("update:xp", handleXpChange);
+			removeListener("broadcast:tcp-connected", getJobInfo);
+			removeListener("broadcast:login", getJobInfo);
 		};
 	}, []);
 

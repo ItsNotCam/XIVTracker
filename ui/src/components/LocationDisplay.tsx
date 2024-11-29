@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { invoke, onReceive, toTitleCase } from "@ui/util/util";
+import { invoke, onReceive, removeListener, toTitleCase } from "@ui/util/util";
 
 const LocationDisplay: React.FC = () => {
 	const [location, setLocation] = useState<XIVLocation>({
@@ -31,9 +31,9 @@ const LocationDisplay: React.FC = () => {
 		onReceive("update:location-*", handleLocationChange);
 
 		return () => {
-			window.ipcRenderer.removeListener("update:location-*", handleLocationChange);
-			window.ipcRenderer.removeListener("broadcast:tcp-connected", askLocation);
-			window.ipcRenderer.removeListener("broadcast:login", askLocation);
+			removeListener("update:location-*", handleLocationChange);
+			removeListener("broadcast:tcp-connected", askLocation);
+			removeListener("broadcast:login", askLocation);
 		};
 	}, []);
 

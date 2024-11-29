@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { invoke, onReceive } from '@ui/util/util';
+import { invoke, onReceive, removeListener } from '@ui/util/util';
 
 const NameDisplay: React.FC = () => {
 	const [name, setName] = useState<string>("???");
@@ -21,9 +21,9 @@ const NameDisplay: React.FC = () => {
 		onReceive("update:name", updateName);
 		
 		return () => {
-			window.ipcRenderer.removeListener("update:name", updateName);
-			window.ipcRenderer.removeListener("broadcast:tcp-connected", askName);
-			window.ipcRenderer.removeListener("broadcast:login", askName);
+			removeListener("update:name", updateName);
+			removeListener("broadcast:tcp-connected", askName);
+			removeListener("broadcast:login", askName);
 		}
 	}, []);
 

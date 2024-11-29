@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { invoke, onReceive, withCommas } from '@ui/util/util';
+import { invoke, onReceive, removeListener, withCommas } from '@ui/util/util';
 
 import GilImage from "@assets/images/etc-gil.png";
 
@@ -25,9 +25,9 @@ const GilDisplay: React.FC = () => {
 		onReceive("broadcast:tcp-connected", askCurrencies);
 
 		return () => {
-			window.ipcRenderer.removeListener("update:currency-gil", updateGilAmount);
-			window.ipcRenderer.removeListener("broadcast:login", askCurrencies);
-			window.ipcRenderer.removeListener("broadcast:tcp-connected", askCurrencies);
+			removeListener("update:currency-gil", updateGilAmount);
+			removeListener("broadcast:login", askCurrencies);
+			removeListener("broadcast:tcp-connected", askCurrencies);
 		}
 	}, []);
 	

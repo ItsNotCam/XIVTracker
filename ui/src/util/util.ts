@@ -22,4 +22,14 @@ export const onReceive = (events: EventType | EventType[], listener: (event: any
 	}
 }
 
+export const removeListener = (events: EventType | EventType[], listener: (event: any, args: any[] | any) => void) => {
+	if(Array.isArray(events)) {
+		events.forEach((eventName: string) => {
+			window.ipcRenderer.off(eventName, listener);
+		});
+	} else {
+		window.ipcRenderer.off(events, listener);
+	}
+}
+
 export const locAxisString = (loc: number) => loc.toFixed(2).toString().padStart(5,"0");

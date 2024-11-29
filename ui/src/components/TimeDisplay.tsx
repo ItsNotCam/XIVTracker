@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { invoke, onReceive } from '@ui/util/util';
+import { invoke, onReceive, removeListener } from '@ui/util/util';
 
 import ClockImage from '@assets/images/etc-clock.png';
 
@@ -52,9 +52,9 @@ const Clock: React.FC = () => {
 				clearTimeout(realTimeInterval.current);
 			}
 			
-			window.ipcRenderer.removeListener("update:time", updateWorldTime);
-			window.ipcRenderer.removeListener("broadcast:tcp-connected", handleConnectionChange);
-			window.ipcRenderer.removeListener("broadcast:login", handleConnectionChange);
+			removeListener("update:time", updateWorldTime);
+			removeListener("broadcast:tcp-connected", handleConnectionChange);
+			removeListener("broadcast:login", handleConnectionChange);
 		};
 	}, []);
 
