@@ -30,6 +30,7 @@ import RecvLocationEventTerritory from "./recv/location/RecvLocationEventTerrito
 
 import RecvTimeEvent from "./recv/time/RecvTimeEvent";
 import RecvNameEvent from "./recv/name/RecvName";
+import RecvCurrencyEvent from "./recv/currency/RecvCurrencyEvent";
 
 export default class EventManager implements IDisposable {
 	private readonly app: XIVTrackerApp;
@@ -73,7 +74,9 @@ export default class EventManager implements IDisposable {
 			[EzFlag.LOCATION_TERRITORY, new RecvLocationEventTerritory(win)],
 
 			[EzFlag.TIME, new RecvTimeEvent(win)],
-			[EzFlag.NAME, new RecvNameEvent(win)]
+			[EzFlag.NAME, new RecvNameEvent(win)],
+
+			[EzFlag.CURRENCY, new RecvCurrencyEvent(win)]
 		]);
 	}
 

@@ -8,7 +8,7 @@ export const toTitleCase = (str: string) => {
 	});
 }
 
-export const invoke = async(event: string, ...args: any[]): Promise<any> => {
+export const invoke = async(event: EventType, ...args: any[]): Promise<any> => {
 	return await window.ipcRenderer.invoke(event, ...args);
 }
 

@@ -1,5 +1,5 @@
 type EventType =
-	| "update:gil"
+	| "update:currency-gil"
 
 	| "update:location-*"
 	| "update:location-all"
@@ -23,7 +23,7 @@ type EventType =
 	| "ask:tcp-connected"
 	| "ask:all"
 	| "ask:name"
-	| "ask:gil"
+	| "ask:currency-gil"
 
 	| "ask:location-*"
 	| "ask:location-all"
