@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { invoke, onReceive, removeListener } from '@ui/util/util';
+import { invoke, addListener, removeListener } from '@ui/util/util';
 
 import ClockImage from '@assets/images/etc-clock.png';
 
@@ -43,9 +43,9 @@ const Clock: React.FC = () => {
 
 		realTimeInterval.current = setInterval(updateRealTime, 1000);
 
-		onReceive("update:time", updateWorldTime);
-		onReceive("broadcast:tcp-connected", handleConnectionChange);
-		onReceive("broadcast:login", updateWorldTime);
+		addListener("update:time", updateWorldTime);
+		addListener("broadcast:tcp-connected", handleConnectionChange);
+		addListener("broadcast:login", updateWorldTime);
 
 		return () => {
 			if(realTimeInterval.current) {

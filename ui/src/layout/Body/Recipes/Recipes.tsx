@@ -4,14 +4,14 @@ import React, { useEffect, useRef } from 'react';
 import SearchBar from './SearchForm';
 
 import { JobIconList } from '@ui/assets/images/jobs';
-import { invoke, onReceive, removeListener } from '@ui/util/util';
+import { invoke, addListener, removeListener } from '@ui/util/util';
 import CraftingHeader from './RecipeOverview';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import DropdownButton from '@ui/components/DropdownButton';
 import JobState from '@electron-lib/JobState';
 
 import { v4 as uuidv4 } from 'uuid';
-import RecipeTree from './components/RecipeTree';
+import RecipeTree from '../../../components/recipes/RecipeTree';
 
 const RecipeSearch: React.FC = () => {
 	const craftReqsRef = useRef<any[]>([])
@@ -51,9 +51,9 @@ const RecipeSearch: React.FC = () => {
 		getFavoriteRecipes();
 		updateAllJobs();
 
-		onReceive("broadcast:login", handleLogin);
-		onReceive("update:job-all", handleUpdateAllJobs);
-		onReceive("broadcast:tcp-connected", updateAllJobs);
+		addListener("broadcast:login", handleLogin);
+		addListener("update:job-all", handleUpdateAllJobs);
+		addListener("broadcast:tcp-connected", updateAllJobs);
 
 		return () => {
 			setFavoriteRecipes([]);

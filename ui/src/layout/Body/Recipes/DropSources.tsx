@@ -1,6 +1,6 @@
 import React from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import DropSource from './components/DropSource';
+import DropSource from '../../../components/recipes/DropSource';
 
 interface DropSourcesProps {
 	data: TCDropSource[];

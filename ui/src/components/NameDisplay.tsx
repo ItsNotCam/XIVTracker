@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { invoke, onReceive, removeListener } from '@ui/util/util';
+import { invoke, addListener, removeListener } from '@ui/util/util';
 
 const NameDisplay: React.FC = () => {
 	const [name, setName] = useState<string>("???");
@@ -16,9 +16,9 @@ const NameDisplay: React.FC = () => {
 	useEffect(() => {
 		askName();
 
-		onReceive("broadcast:login", askName);
-		onReceive("broadcast:tcp-connected", askName);
-		onReceive("update:name", updateName);
+		addListener("broadcast:login", askName);
+		addListener("broadcast:tcp-connected", askName);
+		addListener("update:name", updateName);
 		
 		return () => {
 			removeListener("update:name", updateName);
@@ -29,7 +29,7 @@ const NameDisplay: React.FC = () => {
 
 	return (
 		<h1 className="text-3xl text-custom-text-secondary-300 uppercase mr-6">
-			{(name && name.length > 0) ? name : "???"}
+			{name ?? "???"}
 		</h1>
 	)
 };

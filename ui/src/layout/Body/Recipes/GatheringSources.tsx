@@ -1,6 +1,6 @@
 import React from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import GatheringSource from './components/GatheringSource';
+import GatheringSource from '../../../components/recipes/GatheringSource';
 
 const GatheringSources: React.FC<{ data: TCGathering }> = ({ data }) => {
 	data.locations = data.locations

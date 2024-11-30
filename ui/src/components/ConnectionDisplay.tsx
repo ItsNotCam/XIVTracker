@@ -1,4 +1,4 @@
-import { invoke, onReceive, removeListener } from '@ui/util/util';
+import { invoke, addListener, removeListener } from '@ui/util/util';
 import { useState, useEffect } from 'react';
 
 const ConnectionStatus: React.FC = () => {
@@ -16,7 +16,7 @@ const ConnectionStatus: React.FC = () => {
 	useEffect(() => {
 		updateConnectionStatus();
 
-		onReceive("broadcast:tcp-connected", handleTcpConnected);
+		addListener("broadcast:tcp-connected", handleTcpConnected);
 		return () => {
 			removeListener("broadcast:tcp-connected", handleTcpConnected);
 		}

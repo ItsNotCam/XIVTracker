@@ -27,3 +27,6 @@ interface XIVLocation {
 	position?: Position;
 	radius?: number;
 }
+interface IDisposable {
+	public abstract dispose(): void;
+}

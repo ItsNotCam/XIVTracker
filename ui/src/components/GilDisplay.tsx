@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { invoke, onReceive, removeListener, withCommas } from '@ui/util/util';
+import { invoke, addListener, removeListener, withCommas } from '@ui/util/util';
 
 import GilImage from "@assets/images/etc-gil.png";
 
@@ -7,6 +7,7 @@ const GilDisplay: React.FC = () => {
 	const [amount, setAmount] = React.useState<string>("-");
 
 	const updateGilAmount = (_: any, amount: number) => {
+		console.log("Updating Gil amount to", amount);
 		setAmount(withCommas(amount));
 	}
 
@@ -20,9 +21,9 @@ const GilDisplay: React.FC = () => {
   useEffect(() => {	
 		askCurrencies();
 
-		onReceive("update:currency-gil", updateGilAmount);
-		onReceive("broadcast:login", askCurrencies);
-		onReceive("broadcast:tcp-connected", askCurrencies);
+		addListener("update:currency-gil", updateGilAmount);
+		addListener("broadcast:login", askCurrencies);
+		addListener("broadcast:tcp-connected", askCurrencies);
 
 		return () => {
 			removeListener("update:currency-gil", updateGilAmount);

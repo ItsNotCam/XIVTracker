@@ -1,7 +1,7 @@
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { toTitleCase } from '@ui/util/util';
-import GatheringSources from '../GatheringSources';
-import DropSources from '../DropSources';
+import GatheringSources from '../../layout/Body/Recipes/GatheringSources';
+import DropSources from '../../layout/Body/Recipes/DropSources';
 import { RecipeTreeProps } from './RecipeTree';
 
 type RecipeItemProps = RecipeTreeProps & {

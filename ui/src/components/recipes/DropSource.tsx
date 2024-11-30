@@ -1,4 +1,4 @@
-import Position from '@ui/layout/Body/Recipes/components/Position';
+import Position from '@ui/components/recipes/Position';
 import { toTitleCase } from '@ui/util/util';
 import React from 'react';
 import { v4 as uuidv4 } from 'uuid';
