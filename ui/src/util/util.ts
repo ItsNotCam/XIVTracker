@@ -1,5 +1,5 @@
 export const withCommas = (num: number) => {
-	return num ? "" : num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") || "0";
+	return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") || "0";
 }
 
 export const toTitleCase = (str: string) => {
