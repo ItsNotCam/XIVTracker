@@ -34,16 +34,11 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({ isFavorite, toggleFavor
 }
 
 const CraftingHeader: React.FC<CraftingHeaderProps> = ({ 
-	recipeData, 
 	craftingRequirements, 
 	isFavorite, 
 	playerJobs,
 	toggleFavorite
 }) => {
-	const recipeNameTruncated = recipeData.name.length > 20 
-		? recipeData.name.slice(0, 20) + "..." 
-		: recipeData.name;
-
 	const playerJobMap = playerJobs?.reduce((acc, job) => {
 		acc[job.job_name] = job;
 		return acc;
