@@ -46,7 +46,14 @@
 		"electron", 
 		"ui", 
 		"tests", 
-		"@types/**/*.d.ts", "electron/libs/providers/.RecipeProvider.ts.old", "@types/idisposable.d.ts", "@types/db.ts", "@types/recipe.ts", "@types/ez-net.ts", "@types/event-base.d.ts", "@types/disposable.d.ts",  
+		"@types/**/*.d.ts", 
+		// "@types/idisposable.d.ts", 
+		// "@types/db.ts",
+		// "@types/recipe.ts",
+		// "@types/ez-net.ts",
+		// "@types/event-base.d.ts",
+		// "@types/disposable.d.ts",  
+		"electron/libs/providers/.RecipeProvider.ts.old", 
 	],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

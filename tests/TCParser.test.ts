@@ -22,47 +22,47 @@ const copperRecipe = {
 	}]
 }
 
-const velveteenRobeRecipe = {
-	name: "Velveteen Robe",
-	ingredients: [{
-		amount: 3,
-		name: "Undyed Velveteen",
-		yields: 1,
-		ingredients: [{
-			amount: 1,
-			name: "Cotton Yarn",
-			yields: 2,
-			ingredients: [{
-				amount: 4,
-				name: "Cotton Boll",
-			}]
-		},{
-			amount: 1,
-			name: "Dew Thread",
-			yields: 2,
-			ingredients: [{
-				amount: 2,
-				name: "Derimite Web"
-			}]
-		}]
-	},{
-		amount: 2,
-		name: "Dew Thread",
-		yields: 2,
-		ingredients: [{
-			amount: 4,
-			name: "Derimite Web"
-		}]
-	},{
-		amount: 1,
-		name: "Silver Ingot",
-		yields: 1,
-		ingredients: [{
-			amount: 3,
-			name: "Silver Ore",
-		}]
-	}]
-}
+// const velveteenRobeRecipe = {
+// 	name: "Velveteen Robe",
+// 	ingredients: [{
+// 		amount: 3,
+// 		name: "Undyed Velveteen",
+// 		yields: 1,
+// 		ingredients: [{
+// 			amount: 1,
+// 			name: "Cotton Yarn",
+// 			yields: 2,
+// 			ingredients: [{
+// 				amount: 4,
+// 				name: "Cotton Boll",
+// 			}]
+// 		},{
+// 			amount: 1,
+// 			name: "Dew Thread",
+// 			yields: 2,
+// 			ingredients: [{
+// 				amount: 2,
+// 				name: "Derimite Web"
+// 			}]
+// 		}]
+// 	},{
+// 		amount: 2,
+// 		name: "Dew Thread",
+// 		yields: 2,
+// 		ingredients: [{
+// 			amount: 4,
+// 			name: "Derimite Web"
+// 		}]
+// 	},{
+// 		amount: 1,
+// 		name: "Silver Ingot",
+// 		yields: 1,
+// 		ingredients: [{
+// 			amount: 3,
+// 			name: "Silver Ore",
+// 		}]
+// 	}]
+// }
 
 const mapleLongbowRecipe = {
 	name: "Maple Longbow",
@@ -220,31 +220,31 @@ suite("Parser Tests", async () => {
 		it("Should be able to open", async () => {
 			const tempValidParser = await new RecipeProvider().init();
 			expect(tempValidParser.isSetup()).toBe(true);
-			tempValidParser.close();
+			tempValidParser.dispose();
 		});
 
 		it("Should be able to close", async () => {
 			const tempValidParser = await new RecipeProvider().init();
 			expect(tempValidParser.isSetup()).toBe(true);
-			tempValidParser.close();
+			tempValidParser.dispose();
 			expect(tempValidParser.isSetup()).toBe(false);
 		});
 
 		it("Should be able to reopen", async () => {
 			const tempValidParser = new RecipeProvider().initSync();
 			expect(tempValidParser.isSetup()).toBe(true);
-			tempValidParser.close();
+			tempValidParser.dispose();
 			expect(tempValidParser.isSetup()).toBe(false);
 			tempValidParser.initSync();
 			expect(tempValidParser.isSetup()).toBe(true);
-			tempValidParser.close();
+			tempValidParser.dispose();
 			expect(tempValidParser.isSetup()).toBe(false);
 		});
 		
 		it("Should not be able to close", async () => {
 			const tempValidParser = await new RecipeProvider();
 			try {
-				tempValidParser.close();
+				tempValidParser.dispose();
 				assert.fail("Failed")
 			} catch(e: any) {
 				expect(e.message).toBe("Parser not initialized");
@@ -319,7 +319,7 @@ suite("Parser Tests", async () => {
 				newParser.initSync();
 			} catch (e: any) {
 				if (/Failed to get data for: .*/.test(e.message)) {
-					newParser.close();
+					newParser.dispose();
 				}
 				throw e;
 			}
@@ -562,5 +562,5 @@ suite("AI Generated Tests", () => {
 });
 
 afterAll(async () => {
-	await validParser.close();
+	await validParser.dispose();
 });

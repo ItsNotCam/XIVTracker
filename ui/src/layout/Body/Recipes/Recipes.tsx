@@ -157,6 +157,11 @@ const RecipeSearch: React.FC = () => {
 			if (crafting && level && level > 1) {
 				let changed = false;
 				craftReqsRef.current.forEach((curJob) => {
+					console.log(curJob.job, crafting?.job_name);
+					if(curJob.job === "quarrying") {
+						curJob.job = "mining";
+					}
+
 					if (curJob.job === crafting?.job_name) {
 						curJob = {
 							...curJob,

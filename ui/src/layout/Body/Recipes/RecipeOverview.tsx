@@ -79,11 +79,17 @@ const CraftingHeader: React.FC<CraftingHeaderProps> = ({
 				{craftingRequirements?.map((req) => (
 					<div 
 						key={uuidv4()} 
-						className="relative grid place-items-center group flex-shrink-0 flex-grow-0 group overflow-visible"
 						title={toTitleCase(req.job)}
-					>
+						className="
+							relative grid place-items-center 
+							group flex-shrink-0 flex-grow-0 group overflow-visible
+					">
 						<img src={req.icon_path} className="grid-centered h-[50px] w-[50px]" />
-						<div className="h-[80%] w-[80%] bg-black/50 group-hover:bg-black/0 grid place-items-center grid-centered rounded-lg transition-colors duration-100">
+						<div className="
+							h-[80%] w-[80%] bg-black/50 group-hover:bg-black/0 
+							grid place-items-center grid-centered rounded-lg 
+							transition-colors duration-100
+						">
 							<h1 className="text-lg pointer-events-none font-bold" style={{
 								color: canCraftItem(req) ? "lime" : "red"
 							}}>{req.level}</h1>
