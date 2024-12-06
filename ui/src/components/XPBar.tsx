@@ -6,8 +6,7 @@ interface XPBarProps {
 	maxXP: number;
 }
 
-const XPBar: React.FC<XPBarProps> = ({ currentXP, maxXP }) => {
-	return (
+const XPBar: React.FC<XPBarProps> = ({ currentXP, maxXP }) => (
 	<div className="flex flex-col gap-[0.4rem] ml-[0.4rem]">
 		<div className="bg-custom-gray-200 rounded-full">
 			<div style={{
@@ -17,7 +16,7 @@ const XPBar: React.FC<XPBarProps> = ({ currentXP, maxXP }) => {
 		<h1 className='text-custom-text-secondary-100 bloom'>
 			EXP {withCommas(currentXP)} / {withCommas(maxXP)}
 		</h1>
-	</div>);
-};
+	</div>
+)
 
 export default XPBar;

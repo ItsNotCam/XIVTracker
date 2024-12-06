@@ -11,20 +11,19 @@ const RecipeTree: React.FC<RecipeTreeProps> = ({ RecipeData, IsFirst }) => {
 	const [droppedDown, setDroppedDown] = useState<boolean>(false);
 	const hasChildren = RecipeData.ingredients && RecipeData.ingredients.length > 0;
 
-	const toggleDroppedDown = () => {
-		setDroppedDown(!droppedDown);
-	}
-
-	useEffect(() => {
-		setDroppedDown(false);
-	}, [RecipeData])
+	const toggleDroppedDown = () => setDroppedDown(!droppedDown);
 
 	return (
-		<div style={{ 
+		<div 
+			key={uuidv4()}
+			style={{ 
 				marginLeft: IsFirst ? 0 : "1rem",
 				borderColor: IsFirst ? "transparent" : "gray"
 			}} 
-			className={`border-l-2 transition-[max-height] pt-1 relative ${IsFirst ? "" : "pl-2"}`}
+			className={`
+				border-l-2 transition-[max-height] pt-1 
+				relative ${IsFirst ? "" : "pl-2"}
+			`}
 		>
 			<RecipeItem 
 				RecipeData={RecipeData} 
@@ -34,10 +33,13 @@ const RecipeTree: React.FC<RecipeTreeProps> = ({ RecipeData, IsFirst }) => {
 				droppedDown={droppedDown}
 			/>
 			{hasChildren ? (
-				<div style={{ 
-					maxHeight: droppedDown ? '1000px' : '0px',
-					overflow: droppedDown ? "visible" : "hidden" 
-				}} className="transition-[max-height] flex flex-col">
+				<div 
+					style={{ 
+						maxHeight: droppedDown ? '1000px'  : '0px',
+						overflow:  droppedDown ? "visible" : "hidden" 
+					}}
+					className="transition-[max-height] flex flex-col"
+				>
 					{RecipeData.ingredients.filter(i => !i.name.includes("shard")).map((ingredient) => (
 						<RecipeTree key={uuidv4()} RecipeData={ingredient} />
 					))}

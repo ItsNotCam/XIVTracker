@@ -4,8 +4,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 const tabs = [
 	{ name: "Crafting", src: CraftingImage },
-	{ name: "Goals", src: GoalsImage },
 	{ name: "Jobs", src: JobsImage },
+	{ name: "Goals", src: GoalsImage },
 ]
 
 interface SidebarProps {
@@ -14,23 +14,21 @@ interface SidebarProps {
 	className?: string;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ setCurrentTab, currentTab, className }) => {
-	return (
-		<ul className={`w-[80px] flex-shrink-0 ${className || ""}`}>
-			{tabs.map((tab, index) => (
-				<li  
-					key={uuidv4()} 
-					onClick={() => setCurrentTab(index)}
-					className={`
-						outline-none focus:outline-none cursor-pointer py-2 px-4 transition-colors 
-						duration-100 hover:bg-custom-gray-500 ${currentTab === index && " bg-custom-gray-500"}
-					`}
-				>
-					<img className="w-[56px] mx-auto" src={tab.src}/>
-				</li>
-			))}
-		</ul>
-	);
-};
+const Sidebar: React.FC<SidebarProps> = ({ setCurrentTab, currentTab, className }) => (
+	<ul className={`w-[80px] flex-shrink-0 ${className || ""}`}>
+		{tabs.map((tab, index) => (
+			<li
+				key={uuidv4()} 
+				onClick={() => setCurrentTab(index)}
+				className={`
+					outline-none focus:outline-none cursor-pointer py-2 px-4 transition-colors 
+					duration-100 hover:bg-custom-gray-500 ${currentTab === index && " bg-custom-gray-500"}
+				`}
+			>
+				<img className="w-[56px] mx-auto" src={tab.src}/>
+			</li>
+		))}
+	</ul>
+);
 
 export default Sidebar;

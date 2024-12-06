@@ -28,7 +28,7 @@ const RecipeSearch: React.FC = () => {
 
 	const [recentRecipeSearches, setRecentRecipeSearches] = React.useState<TCRecipe[]>([]);
 	const [favoriteRecipes, setFavoriteRecipes] = React.useState<string[]>([]);
-	
+
 	const [playerJobs, setPlayerJobs] = React.useState<JobState[]>([]);
 
 	const getFavoriteRecipes = async () => {
@@ -36,57 +36,50 @@ const RecipeSearch: React.FC = () => {
 		setFavoriteRecipes(favoriteRecipes);
 	}
 
-	const updateAllJobs = async() => {
+	const updateAllJobs = async () => {
 		const jobs = await invoke("ask:job-all") || [];
 		setPlayerJobs(jobs);
 	}
 
-	const handleUpdateAllJobs = (_: any, jobs: JobState[]) => {
-		setPlayerJobs(jobs);
-	}
-
-	const handleLogin = () => updateAllJobs();
+	const handleUpdateAllJobs = (_: any, jobs: JobState[]) => setPlayerJobs(jobs);
 
 	useEffect(() => {
 		getFavoriteRecipes();
 		updateAllJobs();
 
-		addListener("broadcast:login", handleLogin);
 		addListener("update:job-all", handleUpdateAllJobs);
+		addListener("broadcast:login", updateAllJobs);
 		addListener("broadcast:tcp-connected", updateAllJobs);
 
 		return () => {
 			setFavoriteRecipes([]);
 			removeListener("update:job-all", handleUpdateAllJobs);
 			removeListener("broadcast:tcp-connected", updateAllJobs);
-			removeListener("broadcast:login", handleLogin);
+			removeListener("broadcast:login", updateAllJobs);
 		}
 	}, []);
 
 	useEffect(() => {
 		const getRecentSearches = async () => {
-			setRecentRecipeSearches(
-				await sortRecentSearches()
-			);
+			const recentSearches = await sortRecentSearches();
+			setRecentRecipeSearches(recentSearches);
 		}
 		getRecentSearches();
 	}, [recipeHeader])
 
 	const sortRecentSearches = async (): Promise<any[]> => {
-		const recentSearches = await invoke("ask:recent-recipe-searches").then((r) => 
+		const recentSearches = await invoke("ask:recent-recipe-searches").then((r) =>
 			r.sort((a: any, b: any) => {
-				// if(favoriteRecipes.includes(a)) return 1;
-
 				if (a.name < b.name) return -1;
 				if (a.name > b.name) return 1;
-				new Date(b.date).getTime() - new Date(a.date).getTime()
+				return new Date(b.date).getTime() - new Date(a.date).getTime()
 			})
 		);
 		return recentSearches;
 	}
 
 	const handleSearch = (recipeName: string) => {
-		if(isSearching) {
+		if (isSearching) {
 			return;
 		}
 
@@ -94,7 +87,7 @@ const RecipeSearch: React.FC = () => {
 			setIsSearching(false);
 		}, 200);
 
-		if(searchTimeoutRef.current) {
+		if (searchTimeoutRef.current) {
 			clearTimeout(searchTimeoutRef.current)
 		};
 		searchTimeoutRef.current = setTimeout(() => { setIsSearching(false); }, 2000);
@@ -105,13 +98,13 @@ const RecipeSearch: React.FC = () => {
 			try {
 				const result = await window.ipcRenderer.invoke('ask:recipe', recipeName);
 				onSearchComplete(result);
-			} catch(e: any) {
+			} catch (e: any) {
 				console.error(e);
 			} finally {
-				if(searchTimeoutRef.current) {
+				if (searchTimeoutRef.current) {
 					clearTimeout(searchTimeoutRef.current);
 				}
-				if(isSearchingTimeout) {
+				if (isSearchingTimeout) {
 					clearTimeout(isSearchingTimeout);
 				}
 				setIsSearching(false);
@@ -127,9 +120,9 @@ const RecipeSearch: React.FC = () => {
 		}
 
 		if (result) {
-			craftReqsRef.current = [{ 
-				job: result.crafting?.job_name, 
-				level: result.crafting?.level, 
+			craftReqsRef.current = [{
+				job: result.crafting?.job_name,
+				level: result.crafting?.level,
 				icon_path: JobIconList[result.crafting?.job_name || ""],
 			}]
 			rawMatReqsRef.current = [];
@@ -141,9 +134,9 @@ const RecipeSearch: React.FC = () => {
 	}
 
 	const combineRawMaterials = (copyTo: any[], copyFrom: any[]): any[] => {
-		for(const mat of copyFrom) {
+		for (const mat of copyFrom) {
 			const idx = copyTo.findIndex((m) => m.id === mat.id);
-			if(idx >= 0) {
+			if (idx >= 0) {
 				const amount = copyTo[idx].amount + mat.amount;
 				copyTo[idx] = { ...mat, amount };
 			} else {
@@ -212,15 +205,15 @@ const RecipeSearch: React.FC = () => {
 			if (ingredient.ingredients && ingredient.ingredients.length > 0) {
 				newResults = await getAllCraftingRequirements(ingredient);
 			}
-			
+
 			combineRawMaterials(result, newResults);
 		});
 
 		setRawMaterials((_) => result);
 		return result;
 	}
-	
-	const toggleFavoriteRecipe = async() => {
+
+	const toggleFavoriteRecipe = async () => {
 		if (fullRecipe === undefined) {
 			return;
 		}
@@ -246,36 +239,36 @@ const RecipeSearch: React.FC = () => {
 	}
 
 	return (<div className={`grid grid-rows-[72px] grid-cols-[75px,1fr] h-[calc(100vh-180px)] `}>
-			<div className="flex flex-row justify-between items-center p-4 col-span-2">
-				<h1 className="text-content-header">CRAFTING</h1>
-				<SearchBar handleSearch={handleSearch} isSearching={isSearching} />
-			</div>
-			<div className='mx-auto overflow-y-auto overflow-x-hidden border-custom-gray-200/50'>
-				<ul>
-					{recentRecipeSearches.map((search: any) => (
-						<li 
-							key={uuidv4()} 
-							title={search}
-							className="relative transition-transform cursor-pointer flex flex-row gap-2 items-center p-2 h-[64px] w-[64px]" 
-							onClick={() => { handleSearch(search.recipe.name) }}
-						>
-							<div className="absolute left-0 top-0" style={{ 
-								display: favoriteRecipes.includes(search?.recipe?.name) ? "block" : "none"  
-							}}>
-								<FavoriteIcon color="error"/>
-							</div>
-							<img src={search?.recipe?.icon_path}/>
-						</li>
-					))}
-				</ul>
-			</div>
-			{fullRecipe === undefined ? (
-				<h1 className="3xl text-center mt-8 h-fit">Search for a recipe to get started</h1>
-			) : (
+		<div className="flex flex-row justify-between items-center p-4 col-span-2">
+			<h1 className="text-content-header">CRAFTING</h1>
+			<SearchBar handleSearch={handleSearch} isSearching={isSearching} />
+		</div>
+		<div className='mx-auto overflow-y-auto overflow-x-hidden border-custom-gray-200/50'>
+			<ul>
+				{recentRecipeSearches.filter(r => favoriteRecipes.includes(r.name)).map((search: any) => (
+					<li
+						key={uuidv4()}
+						title={search}
+						className="relative transition-transform cursor-pointer flex flex-row gap-2 items-center p-2 h-[64px] w-[64px]"
+						onClick={() => { handleSearch(search.recipe.name) }}
+					>
+						<div className="absolute left-0 top-0" style={{
+							display: favoriteRecipes.includes(search?.recipe?.name) ? "block" : "none"
+						}}>
+							<FavoriteIcon color="error" />
+						</div>
+						<img src={search?.recipe?.icon_path} />
+					</li>
+				))}
+			</ul>
+		</div>
+		{fullRecipe === undefined ? (
+			<h1 className="3xl text-center mt-8 h-fit">Search for a recipe to get started</h1>
+		) : (
 			<div className="border-l-4 border-custom-gray-200/50 flex flex-col">
-				<CraftingHeader 
-					craftingRequirements={recipeHeader} 
-					recipeData={fullRecipe} 
+				<CraftingHeader
+					craftingRequirements={recipeHeader}
+					recipeData={fullRecipe}
 					isFavorite={favoriteRecipes.includes(fullRecipe.name)}
 					toggleFavorite={toggleFavoriteRecipe}
 					playerJobs={playerJobs}
@@ -283,18 +276,33 @@ const RecipeSearch: React.FC = () => {
 				<div className='m-2 ' style={{
 					gridTemplateRows: calculateGridTemplateRows(),
 				}}>
+					<div className="flex flex-row gap-2 mb-2">
+						<img src={fullRecipe.icon_path} className="h-16 w-16"/>
+						<div className="font-forum flex-grow-0  flex-shrink-0">
+							<h1 className='text-2xl'>{fullRecipe.name}</h1>
+							<div className="text-xl forum flex flex-row gap-2">
+								{fullRecipe.crafting ? (
+									<img src={JobIconList[fullRecipe.crafting.job_name || ""]} className="h-[1.2em] w-[1.2em] inline" />
+								) : null}
+								{fullRecipe.gathering ? fullRecipe.gathering.types.map((t) => (
+									<img src={JobIconList[t.name]} className="h-[1.2em] w-[1.2em] inline" />
+								)) : null}
+								<p>Lvl. {fullRecipe.crafting?.level || -1}</p>
+							</div>
+						</div>
+					</div>
 					<div id="raw materials" className="mb-2">
 						<div className='flex flex-row items-center gap-2'>
 							<DropdownButton droppedDown={rawMaterialsDroppedDown} setDroppedDown={setRawMaterialsDroppedDown} />
 							<h1 className="text-custom-text-secondary-300 text-xl bloom">Raw Materials</h1>
 						</div>
 						<div className="overflow-auto transition-[max-height]" style={{
-								maxHeight: rawMaterialsDroppedDown ? '2500px' : '0px',
+							maxHeight: rawMaterialsDroppedDown ? '2500px' : '0px',
 						}}>
-							<div className="transition-[max-height]" style={{ 
+							<div className="transition-[max-height]" style={{
 								maxHeight: calcMaxHeightRawMaterials()
 							}}>
-								{rawMaterials.map((r) => <RecipeTree key={uuidv4()} RecipeData={r} IsFirst={true}/>)}
+								{rawMaterials.map((r) => <RecipeTree key={uuidv4()} RecipeData={r} IsFirst={true} />)}
 							</div>
 						</div>
 					</div>
@@ -303,23 +311,23 @@ const RecipeSearch: React.FC = () => {
 							<DropdownButton droppedDown={recipeDroppedDown} setDroppedDown={setRecipeDroppedDown} />
 							<h1 className="text-custom-text-secondary-300 text-xl bloom">Recipe</h1>
 						</div>
-						<div className='overflow-auto transition-[max-height]' style={{ 
-								maxHeight: recipeDroppedDown ? '2500px' : '0px',
+						<div className='overflow-auto transition-[max-height]' style={{
+							maxHeight: recipeDroppedDown ? '2500px' : '0px',
 						}}>
-							<div className="flex flex-col transition-[max-height] flex-grow" style={{ 
-								maxHeight: calcMaxHeightRecipes() 
+							<div className="flex flex-col transition-[max-height] flex-grow" style={{
+								maxHeight: calcMaxHeightRecipes()
 							}}>
-								{fullRecipe.ingredients 
+								{fullRecipe.ingredients
 									? fullRecipe.ingredients.map((ingredient) => (
-										<RecipeTree key={uuidv4()} RecipeData={ingredient} IsFirst={true}/>
+										<RecipeTree key={uuidv4()} RecipeData={ingredient} IsFirst={true} />
 									)) : null}
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-			)}
-		</div>);
+		)}
+	</div>);
 };
 
 export default RecipeSearch;

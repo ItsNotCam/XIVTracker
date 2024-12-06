@@ -40,18 +40,37 @@ const CraftingHeader: React.FC<CraftingHeaderProps> = ({
 	playerJobs,
 	toggleFavorite
 }) => {
+	const recipeNameTruncated = recipeData.name.length > 20 
+		? recipeData.name.slice(0, 20) + "..." 
+		: recipeData.name;
 
 	const playerJobMap = playerJobs?.reduce((acc, job) => {
 		acc[job.job_name] = job;
 		return acc;
 	}, {} as Record<string, JobState>) || [];
 
+	const canCraftItem = (req: any) => {
+		if(!req.job || !req.level || !playerJobMap[req.job]) return false;
+
+		const job = playerJobMap[req.job];
+
+		const reqLevel = req.level;
+		const jobLevel = job.level;
+
+		if(reqLevel % 10 === 0) {
+			return (reqLevel - jobLevel) <= 5;
+		}
+
+		const nearestLowerMultipleOfFive = reqLevel - (reqLevel % 5);
+		return (jobLevel >= reqLevel) || (jobLevel >= nearestLowerMultipleOfFive);
+	}
+
 	return (
-		<div className="flex flex-row gap-2 pl-2 items-center pb-2 border-b-[4px] border-custom-gray-200/50">
+		<div className="flex flex-row pl-2 items-center pb-2 border-b-[4px] border-custom-gray-200/50">
 			<FavoriteButton isFavorite={isFavorite} toggleFavorite={toggleFavorite}/>
-			<img src={recipeData.icon_path} className="max-w-[3.5rem] " alt="Recipe Icon" />
-			<div className="font-forum flex-grow-0  flex-shrink-0">
-				<h1 className='text-2xl'>{recipeData.name}</h1>
+			{/* <img src={recipeData.icon_path} className="max-w-[3.5rem] " alt="Recipe Icon" /> */}
+			{/* <div className="font-forum flex-grow-0  flex-shrink-0">
+				<h1 className='text-2xl'>{recipeNameTruncated}</h1>
 				<div className="text-xl forum flex flex-row gap-2">
 					{recipeData.crafting ? (
 						<img src={JobIconList[recipeData.crafting.job_name || ""]} className="h-[1.2em] w-[1.2em] inline" />
@@ -61,8 +80,8 @@ const CraftingHeader: React.FC<CraftingHeaderProps> = ({
 					)) : null}
 					<p>Lvl. {recipeData.crafting?.level || -1}</p>
 				</div>
-			</div>
-			<div className="flex flex-row gap-[0.25rem] overflow-x-visible overflow-y-visible z-10">
+			</div> */}
+			<div className="ml-2 flex flex-row flex-grow gap-[0.25rem] overflow-y-visible overflow-x-auto z-10">
 				{craftingRequirements?.map((req) => (
 					<div 
 						key={uuidv4()} 
@@ -70,9 +89,9 @@ const CraftingHeader: React.FC<CraftingHeaderProps> = ({
 						title={toTitleCase(req.job)}
 					>
 						<img src={req.icon_path} className="grid-centered h-[50px] w-[50px]" />
-						<div className="h-[80%] w-[80%] bg-black/20 group-hover:bg-black/0 grid place-items-center grid-centered rounded-lg transition-colors duration-100">
-							<h1 className="absolute -bottom-6 text-lg pointer-events-none" style={{
-								color: playerJobMap[req.job] && playerJobMap[req.job].level >= req.level ? "lime" : "red"
+						<div className="h-[80%] w-[80%] bg-black/50 group-hover:bg-black/0 grid place-items-center grid-centered rounded-lg transition-colors duration-100">
+							<h1 className="text-lg pointer-events-none font-bold" style={{
+								color: canCraftItem(req) ? "lime" : "red"
 							}}>{req.level}</h1>
 						</div>
 					</div>

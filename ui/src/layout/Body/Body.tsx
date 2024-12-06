@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import Sidebar from '@ui/layout/Body/Sidebar';
 import RecipeSearch from './Recipes/Recipes';
 import { v4 as uuidv4 } from 'uuid';
+import Jobs from './Jobs/Jobs';
 
 const pages: JSX.Element[] = [
 	<RecipeSearch />,
-	<h1 className="text-content-header">Goals</h1>,
-	<h1 className="text-content-header">Jobs</h1>
+	<Jobs />,
+	<h1 className="text-content-header">Goals</h1>
 ];
 
 const Body: React.FC = () => {
