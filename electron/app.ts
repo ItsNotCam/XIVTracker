@@ -13,7 +13,7 @@ export default class XIVTrackerApp implements IDisposable {
 		this._win = win;
 
 		console.log("[App Init] Creating WebSocket client");
-		this._wsClient = new EzWs(50085, this.receiveMessage, this.handleWsConnected.bind(this));
+		this._wsClient = new EzWs(50085, this.receiveMessage, this.handleWsConnected);
 		
 		console.log("[App Init] Creating DB");
 		this._db = new EzDb();
@@ -50,12 +50,14 @@ export default class XIVTrackerApp implements IDisposable {
 	}
 
 	private handleWsConnected = (isConnected: boolean) => {
-		this.win.webContents.send("broadcast:tcp-connected", isConnected);
+		if(this.win && !this.win.isDestroyed()){
+			this.win.webContents.send("broadcast:tcp-connected", isConnected);
+		}
 	}
 
 	public dispose() {
-		this.wsClient.dispose();
-		this.db.dispose();
 		this.eventRegister.dispose();
+		this.db.dispose();
+		this.wsClient.dispose();
 	}
 }

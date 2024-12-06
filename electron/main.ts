@@ -27,7 +27,6 @@ async function createWindow() {
 		autoHideMenuBar: true,
 		frame: false,
 		minWidth: 800,
-		alwaysOnTop: true,
 	})
 
 	if (VITE_DEV_SERVER_URL) {

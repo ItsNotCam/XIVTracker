@@ -82,9 +82,7 @@ export default class EventManager implements IDisposable {
 
 	public ReceiveEvent = (flag: EzFlag, data?: any): void => {
 		const event = this.RecvEvents.get(flag);
-		if (event) {
-			event.handle(data);
-		}
+		event?.handle(data);
 	}
 
 	public init = () => {
