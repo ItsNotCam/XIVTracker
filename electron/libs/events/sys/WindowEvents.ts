@@ -51,9 +51,16 @@ export default class WindowEvents extends EventBase {
 	}
 
 	public override dispose = () => {
-		Object.entries(this.windowEvents).forEach(([eventType, handler]) => {
-			ipcMain.removeListener(eventType, handler);
-		});
+		if(this.windowEvents.size === 0) {
+			return;
+		}
+
+		Object
+			.entries(this.windowEvents)
+			.forEach((listener: [string, any]) => {
+				ipcMain.removeListener(...listener)
+			});
+
 		this.windowEvents.clear();
 	}
 }
