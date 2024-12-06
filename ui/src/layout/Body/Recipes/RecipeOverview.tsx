@@ -1,5 +1,4 @@
 import React from 'react';
-import { JobIconList } from '@ui/assets/images/jobs';
 import { toTitleCase } from '@ui/util/util';
 
 import FavoriteIcon from '@mui/icons-material/Favorite';
