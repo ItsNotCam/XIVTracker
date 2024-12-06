@@ -37,3 +37,4 @@ package-lock.json
 scripts/lumina_data
 scripts/__pycache__
 scripts/venv
+out/
