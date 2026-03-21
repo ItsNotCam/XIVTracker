@@ -1,5 +1,4 @@
-type EventType =
-	// Ask: renderer → main → Dalamud
+type JsonRpcAskMethod =
 	| "job.getMain"
 	| "job.getCurrent"
 	| "job.getAll"
@@ -13,16 +12,9 @@ type EventType =
 
 	| "time.get"
 	| "name.get"
-	| "currency.get"
-	| "connection.isConnected"
+	| "currency.get";
 
-	| "recipe.get"
-	| "recipe.isFavorite"
-	| "recipe.getFavorites"
-	| "recipe.getRecentSearches"
-	| "recipe.toggleFavorite"
-
-	// Notify: Dalamud → main → renderer
+type JsonRpcNotifyMethod =
 	| "job.changed"
 
 	| "location.changed"
@@ -35,14 +27,8 @@ type EventType =
 	| "time.changed"
 	| "name.changed"
 	| "currency.changed"
-	| "xp.changed"
-	| "level.changed"
 
 	| "loggedIn"
-	| "loggedOut"
-	| "connection.changed"
+	| "loggedOut";
 
-	// Window controls
-	| "exit"
-	| "minimize"
-	| "maximize";
+type JsonRpcMethod = JsonRpcAskMethod | JsonRpcNotifyMethod;

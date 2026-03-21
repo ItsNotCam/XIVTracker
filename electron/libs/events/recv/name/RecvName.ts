@@ -1,7 +1,7 @@
 import RecvEventBase from "../RecvEventBase";
 
 export default class RecvNameEvent extends RecvEventBase {
-	public override handle = (data: any): void => {
-		this.sendToClient("update:name", data.toString());
+	public override handle = (params: any): void => {
+		this.sendToClient("name.changed", params.name);
 	}
 }

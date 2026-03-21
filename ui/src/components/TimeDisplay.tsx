@@ -15,24 +15,23 @@ const Clock: React.FC = () => {
 		const AMPM = date.getHours() >= 12 ? 'PM' : 'AM';
 
 		let hours = date.getHours();
-		if(hours === 0) {
+		if (hours === 0) {
 			hours = 12;
 		} else {
 			hours = hours > 12 ? hours - 12 : hours;
 		}
 
 		const hoursStr = hours.toString().padStart(2, '0');
-
 		setCurrentTime(`${hoursStr}:${minutes} ${AMPM}`);
 	}
 
 	const updateWorldTime = async () => {
-		const newTime = await invoke("ask:time");
-		setWorldtime((oldTime: string) => newTime ? newTime.toUpperCase() : oldTime);
+		const newTime: TimeModel | undefined = await invoke("time.get");
+		setWorldtime((oldTime: string) => newTime?.eorzea?.toUpperCase() ?? oldTime);
 	}
 
 	const handleConnectionChange = (_: any, connected: boolean) => {
-		if(connected) {
+		if (connected) {
 			updateWorldTime();
 		}
 	}
@@ -43,18 +42,18 @@ const Clock: React.FC = () => {
 
 		realTimeInterval.current = setInterval(updateRealTime, 1000);
 
-		addListener("update:time", updateWorldTime);
-		addListener("broadcast:tcp-connected", handleConnectionChange);
-		addListener("broadcast:login", updateWorldTime);
+		addListener(updateWorldTime, "time.changed");
+		addListener(handleConnectionChange, "connection.changed");
+		addListener(updateWorldTime, "loggedIn");
 
 		return () => {
-			if(realTimeInterval.current) {
+			if (realTimeInterval.current) {
 				clearTimeout(realTimeInterval.current);
 			}
-			
-			removeListener("update:time", updateWorldTime);
-			removeListener("broadcast:tcp-connected", handleConnectionChange);
-			removeListener("broadcast:login", handleConnectionChange);
+
+			removeListener(updateWorldTime, "time.changed");
+			removeListener(handleConnectionChange, "connection.changed");
+			removeListener(handleConnectionChange, "loggedIn");
 		};
 	}, []);
 

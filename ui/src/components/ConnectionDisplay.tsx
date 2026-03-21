@@ -9,16 +9,16 @@ const ConnectionStatus: React.FC = () => {
 	}
 
 	const updateConnectionStatus = async() => {
-		const connected = await invoke("ask:tcp-connected");
+		const connected = await invoke("connection.isConnected");
 		setIsConnected(connected);
 	}
 
 	useEffect(() => {
 		updateConnectionStatus();
 
-		addListener("broadcast:tcp-connected", handleTcpConnected);
+		addListener(handleTcpConnected, "connection.changed");
 		return () => {
-			removeListener("broadcast:tcp-connected", handleTcpConnected);
+			removeListener(handleTcpConnected, "connection.changed");
 		}
 	}, []);
 	

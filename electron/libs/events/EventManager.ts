@@ -1,6 +1,5 @@
 import XIVTrackerApp from "../../app";
 import { BrowserWindow } from "electron";
-import { EzFlag } from "../../libs/net/EzWs";
 
 import EventBase from "./EventBase";
 
@@ -17,8 +16,6 @@ import RecvLoginEvent from "./recv/login-logout/RecvLoginEvent";
 import RecvLogoutEvent from "./recv/login-logout/RecvLogoutEvent";
 
 import RecvEventBase from "./recv/RecvEventBase";
-import RecvJobAllEvent from "./recv/jobs/RecvJobAllEvent";
-import RecvJobMainEvent from "./recv/jobs/RecvJobMainEvent";
 import RecvJobCurrentEvent from "./recv/jobs/RecvJobCurrentEvent";
 
 import RecvLocationEventAll from "./recv/location/RecvLocationEventAll";
@@ -35,9 +32,8 @@ import RecvCurrencyEvent from "./recv/currency/RecvCurrencyEvent";
 export default class EventManager implements IDisposable {
 	private readonly app: XIVTrackerApp;
 
-	// ask events
 	private AskEvents: EventBase[];
-	private RecvEvents: Map<EzFlag, RecvEventBase>;
+	private RecvEvents: Map<JsonRpcNotifyMethod, RecvEventBase>;
 
 	constructor(app: XIVTrackerApp) {
 		if (app === undefined) {
@@ -58,35 +54,32 @@ export default class EventManager implements IDisposable {
 			new WindowEvents(win)
 		];
 
-		this.RecvEvents = new Map<EzFlag, RecvEventBase>([
-			[EzFlag.LOGIN, new RecvLoginEvent(win)],
-			[EzFlag.LOGOUT, new RecvLogoutEvent(win)],
+		this.RecvEvents = new Map<JsonRpcNotifyMethod, RecvEventBase>([
+			['loggedIn', new RecvLoginEvent(win)],
+			['loggedOut', new RecvLogoutEvent(win)],
 
-			[EzFlag.JOB_ALL, new RecvJobAllEvent(win)],
-			[EzFlag.JOB_MAIN, new RecvJobMainEvent(win)],
-			[EzFlag.JOB_CURRENT, new RecvJobCurrentEvent(win)],
+			['job.changed', new RecvJobCurrentEvent(win)],
 
-			[EzFlag.LOCATION_ALL, new RecvLocationEventAll(win)],
-			[EzFlag.LOCATION_AREA, new RecvLocationEventArea(win)],
-			[EzFlag.LOCATION_POSITION, new RecvLocationEventPosition(win)],
-			[EzFlag.LOCATION_REGION, new RecvLocationEventRegion(win)],
-			[EzFlag.LOCATION_SUB_AREA, new RecvLocationEventSubArea(win)],
-			[EzFlag.LOCATION_TERRITORY, new RecvLocationEventTerritory(win)],
+			['location.changed', new RecvLocationEventAll(win)],
+			['location.areaChanged', new RecvLocationEventArea(win)],
+			['location.positionChanged', new RecvLocationEventPosition(win)],
+			['location.regionChanged', new RecvLocationEventRegion(win)],
+			['location.subAreaChanged', new RecvLocationEventSubArea(win)],
+			['location.territoryChanged', new RecvLocationEventTerritory(win)],
 
-			[EzFlag.TIME, new RecvTimeEvent(win)],
-			[EzFlag.NAME, new RecvNameEvent(win)],
+			['time.changed', new RecvTimeEvent(win)],
+			['name.changed', new RecvNameEvent(win)],
 
-			[EzFlag.CURRENCY, new RecvCurrencyEvent(win)]
+			['currency.changed', new RecvCurrencyEvent(win)]
 		]);
 	}
 
-	public ReceiveEvent = (flag: EzFlag, data?: any): void => {
-		const event = this.RecvEvents.get(flag);
-		event?.handle(data);
-	}
-
-	public init = () => {
+	public init = async () => {
 		this.AskEvents.forEach((event) => event.init());
+
+		for (const [method, handler] of this.RecvEvents) {
+			this.app.wsClient.on(method, (params) => handler.handle(params));
+		}
 	}
 
 	public dispose = () => {
@@ -96,6 +89,9 @@ export default class EventManager implements IDisposable {
 		});
 		this.AskEvents = [];
 
+		for (const method of this.RecvEvents.keys()) {
+			this.app.wsClient.off(method);
+		}
 		this.RecvEvents.clear();
 	}
 }

@@ -1,5 +1,4 @@
 import React from 'react';
-import { withCommas } from '@ui/util/util';
 
 interface XPBarProps {
 	currentXP: number;
@@ -14,7 +13,7 @@ const XPBar: React.FC<XPBarProps> = ({ currentXP, maxXP }) => (
 			}} className="h-[0.25rem] bg-gradient-xp-horizontal rounded-l-full w-full transition-[width]" />
 		</div>
 		<h1 className='text-custom-text-secondary-100 bloom'>
-			EXP {withCommas(currentXP)} / {withCommas(maxXP)}
+			EXP {currentXP.toLocaleString()} / {maxXP.toLocaleString()}
 		</h1>
 	</div>
 )

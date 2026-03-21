@@ -1,32 +1,36 @@
-enum DataTypes {
-	position, rotation
-}
-
-interface Position {
-	x: number;
-	y: number;
-}
-
-interface Rotation {
-	rot: number;
-}
-
-interface XIVJob {
-	level: number;
-	job_name: string;
-	current_xp: number;
-	max_xp: number;
-}
-
-interface XIVLocation {
-	region?: SheetObject;
-	territory?: SheetObject;
-	area?: SheetObject;
-	subarea?: SheetObject;
-	ward?: SheetObject;
-	position?: Position;
-	radius?: number;
-}
 interface IDisposable {
 	public abstract dispose(): void;
+}
+
+interface Vector3 {
+	x: number;
+	y: number;
+	z: number;
+}
+
+interface PlaceModel {
+	rowId: number;
+	name: string;
+}
+
+interface JobModel {
+	rowId: number;
+	name: string;
+	abbreviation: string;
+	level: number;
+	expCurrent: number;
+	expMax: number;
+}
+
+interface LocationModel {
+	position: Vector3;
+	area: PlaceModel;
+	territory: PlaceModel;
+	region: PlaceModel;
+	subArea: PlaceModel;
+}
+
+interface TimeModel {
+	local: string;
+	eorzea: string;
 }

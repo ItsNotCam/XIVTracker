@@ -1,4 +1,4 @@
-import JobState from '@electron-lib/JobState';
+import { JobModel as JobState } from '@electron-lib/JobState';
 import Job from '@ui/components/jobs/Job';
 import { invoke, addListener, removeListener } from '@ui/util/util';
 import React, { useEffect } from 'react';
@@ -12,7 +12,7 @@ const Jobs: React.FC = () => {
 	const updateJobs = (_: any, data: JobState[]) => setJobs(data);
 
 	const askJobs = async () => {
-		let data = await invoke("ask:job-all") || [];
+		let data = await invoke("job.getAll") || [];
 		if (!Array.isArray(data)) {
 			data = [data];
 		}
@@ -28,13 +28,13 @@ const Jobs: React.FC = () => {
 
 		getInitialJobs();
 
-		addListener("update:job-all", updateJobs);
+		addListener(updateJobs, "job.changed");
 		setLoading(false);
 
 		return () => {
 			setJobs([]);
 			setLoading(false);
-			removeListener("update:job-all", updateJobs);
+			removeListener(updateJobs, "job.changed");
 		}
 	}, []);
 

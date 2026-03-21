@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { invoke, addListener, removeListener, withCommas } from '@ui/util/util';
+import { invoke, addListener, removeListener } from '@ui/util/util';
 
 import GilImage from "@assets/images/etc-gil.png";
 
@@ -8,27 +8,27 @@ const GilDisplay: React.FC = () => {
 
 	const updateGilAmount = (_: any, amount: number) => {
 		console.log("Updating Gil amount to", amount);
-		setAmount(withCommas(amount));
+		setAmount(amount.toLocaleString());
 	}
 
 	const askCurrencies = async () => {
-		const gil = await invoke("ask:currency-gil");
+		const gil = await invoke("currency.get");
 		if(!isNaN(gil)) {
-			setAmount(withCommas(gil));
+			setAmount(gil.toLocaleString());
 		}
 	}
 
   useEffect(() => {	
 		askCurrencies();
 
-		addListener("update:currency-gil", updateGilAmount);
-		addListener("broadcast:login", askCurrencies);
-		addListener("broadcast:tcp-connected", askCurrencies);
+		addListener(updateGilAmount, "currency.changed");
+		addListener(askCurrencies, "loggedIn");
+		addListener(askCurrencies, "connection.changed");
 
 		return () => {
-			removeListener("update:currency-gil", updateGilAmount);
-			removeListener("broadcast:login", askCurrencies);
-			removeListener("broadcast:tcp-connected", askCurrencies);
+			removeListener(updateGilAmount, "currency.changed");
+			removeListener(askCurrencies, "loggedIn");
+			removeListener(askCurrencies, "connection.changed");
 		}
 	}, []);
 	

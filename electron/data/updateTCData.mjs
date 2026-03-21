@@ -61,7 +61,7 @@ const getCurrentAndLastestVersions = async(metadata) => {
 	if(savedReleaseDate === undefined) {
 		throw(new Error("[Update TC Data] Invalid meta file"));
 	} else {
-		repoReleaseDate = await getNewMetaVersion().catch(() => undefined);
+		repoReleaseDate = await getNewMetaVersion();
 	}
 
 	console.log("[Update TC Data] Current version:", savedReleaseDate);
@@ -111,22 +111,21 @@ const updateMetadataFile = async(metadata) => {
 }
 
 const downloadFiles = async (fileNames) => {
-	for (const fileName of fileNames) {
+	await Promise.all(filenames.map(async(filename) => {
 		const fileUrl = `${__rootRepoPath}/${fileName}`;
 		const filePath = resolve(__dataFolder, fileName);
-		try {
-			const response = await fetch(fileUrl);
-			if (!response.ok) {
-				throw new Error(`[Update TC Data] Failed to fetch ${fileName}`);
-			}
-			const fileData = await response.text();
-			await writeFile(filePath, fileData);
-			console.log(`[Update TC Data] Downloaded and saved ${__dataFolder}/${fileName}`);
-		} catch (error) {
-			console.error(`[Update TC Data] Error downloading ${fileName}:`, error);
-		}
-	}
-};
+
+		return fetch(fileUrl)
+			.then((response) => response.text())
+			.then((data) => writeFile(filePath, data))
+			.finally(() => {
+				console.log(`[Update TC Data] Downloaded and saved ${__dataFolder}/${fileName}`);
+			})
+			.catch((error) => {
+				console.error(`[Update TC Data] Error downloading data for ${fileName}:`, error);
+			})
+	}))
+}
 
 export const dataFolder = __dataFolder;
 

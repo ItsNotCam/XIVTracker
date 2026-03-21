@@ -8,28 +8,22 @@ export const toTitleCase = (str: string) => {
 	});
 }
 
+const ipc = () => window.ipcRenderer ?? null;
+
 export const invoke = async(event: EventType, ...args: any[]): Promise<any> => {
-	return await window.ipcRenderer.invoke(event, ...args);
+	return ipc()?.invoke(event, ...args) ?? null;
 }
 
-export const addListener = (events: EventType | EventType[], listener: (event: any, args: any[] | any) => void) => {
-	if(Array.isArray(events)) {
-		events.forEach((eventName: string) => {
-			window.ipcRenderer.on(eventName, listener);
-		});
-	} else {
-		window.ipcRenderer.on(events, listener);
-	}
+export const addListener = (listener: (event: any, args: any[] | any) => void, ...events: EventType[]) => {
+	events.forEach((eventName: string) => {
+		ipc()?.on(eventName, listener);
+	});
 }
 
-export const removeListener = (events: EventType | EventType[], listener: (event: any, args: any[] | any) => void) => {
-	if(Array.isArray(events)) {
-		events.forEach((eventName: string) => {
-			window.ipcRenderer.off(eventName, listener);
-		});
-	} else {
-		window.ipcRenderer.off(events, listener);
-	}
+export const removeListener = (listener: (event: any, args: any[] | any) => void, ...events: EventType[]) => {
+	events.forEach((eventName: string) => {
+		ipc()?.off(eventName, listener);
+	});
 }
 
 export const locAxisString = (loc: number) => loc.toFixed(2).toString().padStart(5,"0");

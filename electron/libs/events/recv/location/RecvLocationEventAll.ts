@@ -1,13 +1,8 @@
 import RecvLocationEventBase from "./@RecvLocationEventBase";
 
 export default class RecvLocationEventAll extends RecvLocationEventBase {
-	public override handle = (data: any): void => {
-		super.handle(data);
-		try {
-			const location = JSON.parse(data.toString());
-			this.sendToClient("update:location-all", location);
-		} catch(e) {
-			console.error("Failed to parse location:", e);
-		}
+	public override handle = (params: any): void => {
+		super.handle(params);
+		this.sendToClient("location.changed", params.location);
 	}
- }
+}

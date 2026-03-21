@@ -1,48 +1,44 @@
-import JobState from "../..//JobState";
-import { EzFlag } from "../..//net/EzWs";
 import AskEventBase from "./@AskEventBase";
+import { JobModel } from "../../JobState";
 
 export default class JobEvents extends AskEventBase {
 	public override init() {
 		super.init();
-		
-		super.addHandler("ask:job-main", this.handleAskJobMain);
-		super.addHandler("ask:job-current", this.handleAskJobCurrent);
-		super.addHandler("ask:job-all", this.handleAskJobAll);
+		super.addHandler("job.getMain", this.handleAskJobMain);
+		super.addHandler("job.getCurrent", this.handleAskJobCurrent);
+		super.addHandler("job.getAll", this.handleAskJobAll);
 	}
 
-	private handleAskJobMain = async(): Promise<JobState | undefined> => {
-		return await this.askJob(EzFlag.JOB_MAIN) as JobState;
-	}
-
-	private handleAskJobCurrent = async(): Promise<JobState | undefined> => {
-		return await this.askJob(EzFlag.JOB_CURRENT) as JobState;
-	}
-
-	private handleAskJobAll = async(): Promise<JobState[] | undefined> => {
-		return await this.askJob(EzFlag.JOB_ALL) as JobState[];
-	}
-
-	private askJob = async(routeFlag: EzFlag): Promise<JobState | JobState[] | undefined> => {
-		if (this.app.wsClient.isConnected() === false) {
-			return undefined;
-		}
-
-		let response: string | undefined;
+	private handleAskJobMain = async (): Promise<JobModel | undefined> => {
+		if (!this.app.wsClient.isConnected()) return undefined;
 		try {
-			response = await this.app.wsClient.ask(routeFlag);
+			const result = await this.app.wsClient.ask('job.getMain');
+			return result.job as JobModel;
 		} catch (e: any) {
 			console.log(`[${this.constructor.name}] Error getting job: ${e.message}`);
 			return undefined;
 		}
+	}
 
+	private handleAskJobCurrent = async (): Promise<JobModel | undefined> => {
+		if (!this.app.wsClient.isConnected()) return undefined;
 		try {
-			const js = JSON.parse(response!);
-			return Array.isArray(js) ? js as JobState[] : js as JobState;
+			const result = await this.app.wsClient.ask('job.getCurrent');
+			return result.job as JobModel;
 		} catch (e: any) {
-			console.log(`[${this.constructor.name}] Error parsing job data: ${e.message}`);
+			console.log(`[${this.constructor.name}] Error getting job: ${e.message}`);
+			return undefined;
 		}
+	}
 
-		return undefined;
+	private handleAskJobAll = async (): Promise<JobModel[] | undefined> => {
+		if (!this.app.wsClient.isConnected()) return undefined;
+		try {
+			const result = await this.app.wsClient.ask('job.getAll');
+			return result.jobs as JobModel[];
+		} catch (e: any) {
+			console.log(`[${this.constructor.name}] Error getting jobs: ${e.message}`);
+			return undefined;
+		}
 	}
 }

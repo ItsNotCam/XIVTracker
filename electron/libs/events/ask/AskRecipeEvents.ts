@@ -14,11 +14,11 @@ export default class RecipeEvents extends AskEventBase {
 		super.init();
 		
 		this.parser.init();
-		super.addHandler("ask:recipe", this.handleAskForRecipe);
-		super.addHandler("ask:recent-recipe-searches", this.handleAskRecentRecipeSearches);
-		super.addHandler("ask:favorite-recipes", this.handleAskFavoriteRecipes);
-		super.addHandler("ask:is-favorite", this.handleAskIsFavoriteRecipe);
-		super.addHandler("set:toggle-favorite-recipe", this.toggleFavoriteRecipes);
+		super.addHandler("recipe.get", this.handleAskForRecipe);
+		super.addHandler("recipe.getRecentSearches", this.handleAskRecentRecipeSearches);
+		super.addHandler("recipe.getFavorites", this.handleAskFavoriteRecipes);
+		super.addHandler("recipe.isFavorite", this.handleAskIsFavoriteRecipe);
+		super.addHandler("recipe.toggleFavorite", this.toggleFavoriteRecipes);
 	}
 	
 	private handleAskForRecipe = async(_: any, itemName: string): Promise<TCRecipe | null> => {

@@ -1,26 +1,19 @@
-import { EzFlag } from "../../net/EzWs";
 import AskEventBase from "./@AskEventBase";
 
 export default class CurrencyEvents extends AskEventBase {
 	public override init() {
 		super.init();
-		super.addHandler("ask:currency-gil", this.handleAskGil);
+		super.addHandler("currency.get", this.handleAskGil);
 	}
 
-	private handleAskGil = async(_: any): Promise<number | undefined> => {
-		if (this.app.wsClient.isConnected() === false) {
-			return undefined;
-		}
-
-		let gil: number | undefined = undefined;
+	private handleAskGil = async (): Promise<number | undefined> => {
+		if (!this.app.wsClient.isConnected()) return undefined;
 		try {
-			const response = await this.app.wsClient.ask(EzFlag.CURRENCY);
-			console.log(`[${this.constructor.name}] response: ${response}`);
-			gil = parseInt(response!);
+			const result = await this.app.wsClient.ask('currency.get');
+			return result.gil as number;
 		} catch (e: any) {
 			console.log(`[${this.constructor.name}] Error getting gil: ${e.message}`);
+			return undefined;
 		}
-
-		return gil;
 	}
 }

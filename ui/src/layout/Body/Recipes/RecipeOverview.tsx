@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { toTitleCase } from '@ui/util/util';
 
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -38,13 +38,30 @@ const CraftingHeader: React.FC<CraftingHeaderProps> = ({
 	playerJobs,
 	toggleFavorite
 }) => {
+	const [craftingReqs, setCraftingReqs] = useState<any[]>(craftingRequirements);
+
 	const playerJobMap = playerJobs?.reduce((acc, job) => {
-		acc[job.job_name] = job;
+		acc[job.name] = job;
 		return acc;
 	}, {} as Record<string, JobState>) || [];
 
+	const calculateCraftingRequirements = () => {
+		setCraftingReqs(craftingRequirements.map(r => ({
+			...r, canCraft: canCraftItem(r)
+		})))
+	}
+
+	useEffect(() => {
+		calculateCraftingRequirements()
+	},[]);
+	
+	useEffect(() => {
+		calculateCraftingRequirements()
+	},[craftingRequirements]);
+
 	const canCraftItem = (req: any) => {
-		if(!req.job || !req.level || !playerJobMap[req.job]) return false;
+		if(!req.job || !req.level || !playerJobMap[req.job]) 
+			return false;
 
 		const job = playerJobMap[req.job];
 
@@ -76,7 +93,7 @@ const CraftingHeader: React.FC<CraftingHeaderProps> = ({
 				</div>
 			</div> */}
 			<div className="ml-2 flex flex-row flex-grow gap-[0.25rem] overflow-y-visible overflow-x-auto z-10">
-				{craftingRequirements?.map((req) => (
+				{craftingReqs?.map((req) => (
 					<div 
 						key={uuidv4()} 
 						title={toTitleCase(req.job)}
@@ -91,7 +108,7 @@ const CraftingHeader: React.FC<CraftingHeaderProps> = ({
 							transition-colors duration-100
 						">
 							<h1 className="text-lg pointer-events-none font-bold" style={{
-								color: canCraftItem(req) ? "lime" : "red"
+								color: req.canCraft ? "lime" : "red"
 							}}>{req.level}</h1>
 						</div>
 					</div>

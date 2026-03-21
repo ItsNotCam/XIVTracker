@@ -4,26 +4,23 @@ import { invoke, addListener, removeListener } from '@ui/util/util';
 const NameDisplay: React.FC = () => {
 	const [name, setName] = useState<string>("???");
 
-	const updateName = (_: any, newName: string) => {	
-		setName(newName);
-	}
-
+	const updateName = (_: any, newName: string) => setName(newName);
 	const askName = async () => {
-		let name = await invoke("ask:name");
+		let name = await invoke("name.get");
 		setName(name);
 	}
 
 	useEffect(() => {
 		askName();
 
-		addListener("broadcast:login", askName);
-		addListener("broadcast:tcp-connected", askName);
-		addListener("update:name", updateName);
-		
+		addListener(askName, "loggedIn");
+		addListener(askName, "connection.changed");
+		addListener(updateName, "name.changed");
+
 		return () => {
-			removeListener("update:name", updateName);
-			removeListener("broadcast:tcp-connected", askName);
-			removeListener("broadcast:login", askName);
+			removeListener(updateName, "name.changed");
+			removeListener(askName, "connection.changed");
+			removeListener(askName, "loggedIn");
 		}
 	}, []);
 

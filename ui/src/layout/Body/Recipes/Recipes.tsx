@@ -32,12 +32,12 @@ const RecipeSearch: React.FC = () => {
 	const [playerJobs, setPlayerJobs] = React.useState<JobState[]>([]);
 
 	const getFavoriteRecipes = async () => {
-		const favoriteRecipes = await invoke("ask:favorite-recipes");
+		const favoriteRecipes = await invoke("recipe.getFavorites");
 		setFavoriteRecipes(favoriteRecipes);
 	}
 
 	const updateAllJobs = async () => {
-		const jobs = await invoke("ask:job-all") || [];
+		const jobs = await invoke("job.getAll") || [];
 		setPlayerJobs(jobs);
 	}
 
@@ -47,15 +47,17 @@ const RecipeSearch: React.FC = () => {
 		getFavoriteRecipes();
 		updateAllJobs();
 
-		addListener("update:job-all", handleUpdateAllJobs);
-		addListener("broadcast:login", updateAllJobs);
-		addListener("broadcast:tcp-connected", updateAllJobs);
+		addListener(handleUpdateAllJobs, "job.changed");
+		addListener(handleUpdateAllJobs, "level.changed");
+		addListener(updateAllJobs, "loggedIn");
+		addListener(updateAllJobs, "connection.changed");
 
 		return () => {
 			setFavoriteRecipes([]);
-			removeListener("update:job-all", handleUpdateAllJobs);
-			removeListener("broadcast:tcp-connected", updateAllJobs);
-			removeListener("broadcast:login", updateAllJobs);
+			removeListener(handleUpdateAllJobs, "level.changed");
+			removeListener(handleUpdateAllJobs, "job.changed");
+			removeListener(updateAllJobs, "connection.changed");
+			removeListener(updateAllJobs, "loggedIn");
 		}
 	}, []);
 
@@ -68,7 +70,7 @@ const RecipeSearch: React.FC = () => {
 	}, [recipeHeader])
 
 	const sortRecentSearches = async (): Promise<any[]> => {
-		const recentSearches = await invoke("ask:recent-recipe-searches").then((r) =>
+		const recentSearches = await invoke("recipe.getRecentSearches").then((r) =>
 			r.sort((a: any, b: any) => {
 				if (a.name < b.name) return -1;
 				if (a.name > b.name) return 1;
@@ -96,7 +98,7 @@ const RecipeSearch: React.FC = () => {
 			setIsSearching(true);
 
 			try {
-				const result = await window.ipcRenderer.invoke('ask:recipe', recipeName);
+				const result = await window.ipcRenderer.invoke('recipe.get', recipeName);
 				onSearchComplete(result);
 			} catch (e: any) {
 				console.error(e);
@@ -150,6 +152,7 @@ const RecipeSearch: React.FC = () => {
 	const getAllCraftingRequirements = async (recipeData: TCRecipe): Promise<any[]> => {
 		let result: any = [];
 
+		console.log("getting crafting requirements");
 		await recipeData.ingredients.forEach(async (ingredient: TCRecipe) => {
 			const level = recipeData.crafting?.level;
 			const crafting = ingredient.crafting;
@@ -179,14 +182,21 @@ const RecipeSearch: React.FC = () => {
 					});
 				}
 			}
+
 			if (gathering && gathering.level > 1) {
 				const level = gathering.level;
 				gathering.types?.forEach((t: TCGatheringType) => {
-					let jobname = ""
-					if (t.name === "Mining" || t.name === "Quarrying") {
-						jobname = "miner";
-					} else {
-						jobname = "botanist";
+					let jobname = "botanist";
+
+					console.log("gathering");
+					console.log(t);
+					switch(t.name) {
+						case "mining":
+						case "quarrying":
+							jobname = "quarrying";
+							break;
+						default:
+							jobname = "botanist";
 					}
 
 					let changed = false;
@@ -223,7 +233,7 @@ const RecipeSearch: React.FC = () => {
 			return;
 		}
 
-		const isFavorite = await invoke("set:toggle-favorite-recipe", fullRecipe.name);
+		const isFavorite = await invoke("recipe.toggleFavorite", fullRecipe.name);
 		if (isFavorite) {
 			setFavoriteRecipes([...favoriteRecipes, fullRecipe.name]);
 		} else {
