@@ -1,4 +1,0 @@
-.crafting-requirement-container:has(>:hover) >:not(:hover) {
-	transition-duration: 200ms;
-	opacity: 0.5;
-}

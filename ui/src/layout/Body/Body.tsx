@@ -21,7 +21,7 @@ const Body: React.FC = () => {
 			{pages.map((page: any, i: number) => (
 				<div 
 					key={uuidv4()} 
-					className="bg-custom-gray-500 flex-grow" 
+					className="bg-custom-gray-500 grow" 
 					style={{ display: currentTab === i ? 'block' : 'none' }}
 				>
 					{page}

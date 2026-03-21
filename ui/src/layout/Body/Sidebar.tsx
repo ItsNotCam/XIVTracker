@@ -15,7 +15,7 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ setCurrentTab, currentTab, className }) => (
-	<ul className={`w-[80px] flex-shrink-0 ${className || ""}`}>
+	<ul className={`w-20 shrink-0 ${className || ""}`}>
 		{tabs.map((tab, index) => (
 			<li
 				key={uuidv4()} 
@@ -25,7 +25,7 @@ const Sidebar: React.FC<SidebarProps> = ({ setCurrentTab, currentTab, className 
 					duration-100 hover:bg-custom-gray-500 ${currentTab === index && " bg-custom-gray-500"}
 				`}
 			>
-				<img className="w-[56px] mx-auto" src={tab.src}/>
+				<img className="w-14 mx-auto" src={tab.src}/>
 			</li>
 		))}
 	</ul>

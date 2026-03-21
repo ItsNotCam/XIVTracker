@@ -10,7 +10,7 @@ const XPBar: React.FC<XPBarProps> = ({ currentXP, maxXP }) => (
 		<div className="bg-custom-gray-200 rounded-full">
 			<div style={{
 				width: `${(currentXP / maxXP) * 100}%`
-			}} className="h-[0.25rem] bg-gradient-xp-horizontal rounded-l-full w-full transition-[width]" />
+			}} className="h-1 bg-gradient-xp-horizontal rounded-l-full w-full transition-[width]" />
 		</div>
 		<h1 className='text-custom-text-secondary-100 bloom'>
 			EXP {currentXP.toLocaleString()} / {maxXP.toLocaleString()}

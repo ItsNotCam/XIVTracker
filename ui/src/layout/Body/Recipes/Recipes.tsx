@@ -47,7 +47,7 @@ const RecipeSearch: React.FC = () => {
 		getFavoriteRecipes();
 		updateAllJobs();
 
-		addListener(handleUpdateAllJobs, "job.changed");
+		addListener(updateAllJobs, "job.changed");
 		addListener(handleUpdateAllJobs, "level.changed");
 		addListener(updateAllJobs, "loggedIn");
 		addListener(updateAllJobs, "connection.changed");
@@ -55,7 +55,7 @@ const RecipeSearch: React.FC = () => {
 		return () => {
 			setFavoriteRecipes([]);
 			removeListener(handleUpdateAllJobs, "level.changed");
-			removeListener(handleUpdateAllJobs, "job.changed");
+			removeListener(updateAllJobs, "job.changed");
 			removeListener(updateAllJobs, "connection.changed");
 			removeListener(updateAllJobs, "loggedIn");
 		}
@@ -253,7 +253,7 @@ const RecipeSearch: React.FC = () => {
 		return "50vh";
 	}
 
-	return (<div className={`grid grid-rows-[72px] grid-cols-[75px,1fr] h-[calc(100vh-180px)] `}>
+	return (<div className={`grid grid-rows-[72px] grid-cols-[75px_1fr] h-[calc(100vh-180px)] `}>
 		<div className="flex flex-row justify-between items-center p-4 col-span-2">
 			<h1 className="text-content-header">CRAFTING</h1>
 			<SearchBar handleSearch={handleSearch} isSearching={isSearching} />
@@ -264,7 +264,7 @@ const RecipeSearch: React.FC = () => {
 					<li
 						key={uuidv4()}
 						title={search}
-						className="relative transition-transform cursor-pointer flex flex-row gap-2 items-center p-2 h-[64px] w-[64px]"
+						className="relative transition-transform cursor-pointer flex flex-row gap-2 items-center p-2 h-16 w-16"
 						onClick={() => { handleSearch(search.recipe.name) }}
 					>
 						<div className="absolute left-0 top-0" style={{
@@ -293,7 +293,7 @@ const RecipeSearch: React.FC = () => {
 				}}>
 					<div className="flex flex-row gap-2 mb-2">
 						<img src={fullRecipe.icon_path} className="h-16 w-16"/>
-						<div className="font-forum flex-grow-0  flex-shrink-0">
+						<div className="font-forum grow-0  shrink-0">
 							<h1 className='text-2xl'>{fullRecipe.name}</h1>
 							<div className="text-xl forum flex flex-row gap-2">
 								{fullRecipe.crafting ? (
@@ -329,7 +329,7 @@ const RecipeSearch: React.FC = () => {
 						<div className='overflow-auto transition-[max-height]' style={{
 							maxHeight: recipeDroppedDown ? '2500px' : '0px',
 						}}>
-							<div className="flex flex-col transition-[max-height] flex-grow" style={{
+							<div className="flex flex-col transition-[max-height] grow" style={{
 								maxHeight: calcMaxHeightRecipes()
 							}}>
 								{fullRecipe.ingredients

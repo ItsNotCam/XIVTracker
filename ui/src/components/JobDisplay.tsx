@@ -75,7 +75,7 @@ const JobDisplay: React.FC = () => {
 	}, []);
 
 	return (
-		<div className="relative grid grid-cols-[70px,1fr] grid-rows-[auto,1fr,auto] h-full w-[300px] p-4">
+		<div className="relative grid grid-cols-[70px_1fr] grid-rows-[auto_1fr_auto] h-full w-75 p-4">
 			<img
 				className="col-start-1 col-end-2 row-start-1 row-end-3"
 				src={job ? JobIconList[job.name.toLowerCase().replace(/ /g, "-")] : JobIconList["dark-knight"]}

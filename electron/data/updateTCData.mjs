@@ -111,18 +111,18 @@ const updateMetadataFile = async(metadata) => {
 }
 
 const downloadFiles = async (fileNames) => {
-	await Promise.all(filenames.map(async(filename) => {
-		const fileUrl = `${__rootRepoPath}/${fileName}`;
-		const filePath = resolve(__dataFolder, fileName);
+	await Promise.all(fileNames.map(async(filename) => {
+		const fileUrl = `${__rootRepoPath}/${filename}`;
+		const filePath = resolve(__dataFolder, filename);
 
 		return fetch(fileUrl)
 			.then((response) => response.text())
 			.then((data) => writeFile(filePath, data))
 			.finally(() => {
-				console.log(`[Update TC Data] Downloaded and saved ${__dataFolder}/${fileName}`);
+				console.log(`[Update TC Data] Downloaded and saved ${__dataFolder}/${filename}`);
 			})
 			.catch((error) => {
-				console.error(`[Update TC Data] Error downloading data for ${fileName}:`, error);
+				console.error(`[Update TC Data] Error downloading data for ${filename}:`, error);
 			})
 	}))
 }

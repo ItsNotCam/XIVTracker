@@ -38,7 +38,7 @@ const LocationDisplay: React.FC = () => {
 	}, []);
 
 	return (
-		<ul className={`h-[80%] text-right mr-6 border-r-2
+		<ul className={`h-8/10 text-right mr-6 border-r-2
 			border-custom-gray-200 pr-6 flex flex-col
 			justify-center my-auto text-lg max-[700px]:hidden
 		`}>

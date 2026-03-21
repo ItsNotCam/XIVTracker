@@ -4,7 +4,7 @@ import Frame from '@ui/layout/Frame/Frame'
 import '@styles/globals.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-	<div className="grid grid-rows-[auto,1fr] h-screen rounded-lg">
+	<div className="grid grid-rows-[auto_1fr] h-screen rounded-lg">
 		<Frame />
 		<App />
 	</div>

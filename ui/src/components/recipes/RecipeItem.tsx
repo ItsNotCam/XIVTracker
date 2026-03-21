@@ -33,7 +33,7 @@ const RecipeItem: React.FC<RecipeItemProps> = ({ RecipeData, toggleDropdown, has
 	>
 		<div className="flex flex-row gap-2 items-center hover:bg-custom-gray-200" onClick={toggleDropdown}>
 			<div className='flex flex-row gap-2 items-center cursor-pointer'>
-				<img src={RecipeData.icon_path} className="h-[32px]"/>
+				<img src={RecipeData.icon_path} className="h-8"/>
 				<h1>
 					<span className='text-custom-text-secondary-300 bloom'>
 						{`${RecipeData.amount}x `}

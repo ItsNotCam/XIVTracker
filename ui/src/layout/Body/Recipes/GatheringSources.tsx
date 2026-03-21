@@ -10,7 +10,7 @@ const GatheringSources: React.FC<{ data: TCGathering }> = ({ data }) => {
 	return (
 		<div>
 			<h1 className="text-md text-custom-text-secondary-500">Gathering Locations</h1>
-			<ol className="flex flex-col max-h-[10rem] overflow-auto">
+			<ol className="flex flex-col max-h-40 overflow-auto">
 				{data.locations.map(loc => <GatheringSource key={uuidv4()} location={loc} />)}
 			</ol>
 		</div>

@@ -9,8 +9,6 @@ const Jobs: React.FC = () => {
 	const [jobs, setJobs] = React.useState<any[]>([]);
 	const [loading, setLoading] = React.useState<boolean>(true);
 
-	const updateJobs = (_: any, data: JobState[]) => setJobs(data);
-
 	const askJobs = async () => {
 		let data = await invoke("job.getAll") || [];
 		if (!Array.isArray(data)) {
@@ -28,13 +26,13 @@ const Jobs: React.FC = () => {
 
 		getInitialJobs();
 
-		addListener(updateJobs, "job.changed");
+		addListener(askJobs, "job.changed");
 		setLoading(false);
 
 		return () => {
 			setJobs([]);
 			setLoading(false);
-			removeListener(updateJobs, "job.changed");
+			removeListener(askJobs, "job.changed");
 		}
 	}, []);
 

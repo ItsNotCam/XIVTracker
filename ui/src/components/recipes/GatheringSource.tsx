@@ -6,7 +6,7 @@ const GatheringSource: React.FC<{ location: TCGatheringNode }> = ({ location }) 
 	<li 
 		key={uuidv4()} 
 		className="border-t border-custom-gray-200 grid 
-		grid-cols-[5rem,10rem,auto,4.5rem,4.5rem] gap-2 px-2 
+		grid-cols-[5rem_10rem_auto_4.5rem_4.5rem] gap-2 px-2 
 		items-center hover:bg-custom-gray-200"
 	>
 		<h1>Lvl. {location.level}</h1>

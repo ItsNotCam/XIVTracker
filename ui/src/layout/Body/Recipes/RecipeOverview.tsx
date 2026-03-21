@@ -25,7 +25,7 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({ isFavorite, toggleFavor
 		<button 
 			onClick={toggleFavorite}
 			role="checkbox"
-			className='my-auto rounded-full self-start flex-grow-0 w-fit p-2 hover:bg-custom-gray-200/50 transition-colors'
+			className='my-auto rounded-full self-start grow-0 w-fit p-2 hover:bg-custom-gray-200/50 transition-colors'
 		>
 			{ isFavorite ? <FavoriteIcon color="error"/> : <FavoriteBorderIcon style={{ color: "gray" }}/> }
 		</button>
@@ -41,7 +41,7 @@ const CraftingHeader: React.FC<CraftingHeaderProps> = ({
 	const [craftingReqs, setCraftingReqs] = useState<any[]>(craftingRequirements);
 
 	const playerJobMap = playerJobs?.reduce((acc, job) => {
-		acc[job.name] = job;
+		acc[job.name.toLowerCase()] = job;
 		return acc;
 	}, {} as Record<string, JobState>) || [];
 
@@ -77,7 +77,7 @@ const CraftingHeader: React.FC<CraftingHeaderProps> = ({
 	}
 
 	return (
-		<div className="flex flex-row pl-2 items-center pb-2 border-b-[4px] border-custom-gray-200/50">
+		<div className="flex flex-row pl-2 items-center pb-2 border-b-4 border-custom-gray-200/50">
 			<FavoriteButton isFavorite={isFavorite} toggleFavorite={toggleFavorite}/>
 			{/* <img src={recipeData.icon_path} className="max-w-[3.5rem] " alt="Recipe Icon" /> */}
 			{/* <div className="font-forum flex-grow-0  flex-shrink-0">
@@ -92,16 +92,16 @@ const CraftingHeader: React.FC<CraftingHeaderProps> = ({
 					<p>Lvl. {recipeData.crafting?.level || -1}</p>
 				</div>
 			</div> */}
-			<div className="ml-2 flex flex-row flex-grow gap-[0.25rem] overflow-y-visible overflow-x-auto z-10">
+			<div className="ml-2 flex flex-row grow gap-1 overflow-y-visible overflow-x-auto z-10">
 				{craftingReqs?.map((req) => (
 					<div 
 						key={uuidv4()} 
 						title={toTitleCase(req.job)}
 						className="
 							relative grid place-items-center 
-							group flex-shrink-0 flex-grow-0 group overflow-visible
+							group shrink-0 grow-0 group overflow-visible
 					">
-						<img src={req.icon_path} className="grid-centered h-[50px] w-[50px]" />
+						<img src={req.icon_path} className="grid-centered h-12.5 w-12.5" />
 						<div className="
 							h-[80%] w-[80%] bg-black/50 group-hover:bg-black/0 
 							grid place-items-center grid-centered rounded-lg 

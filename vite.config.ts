@@ -4,6 +4,7 @@ import electron from 'vite-plugin-electron/simple'
 import react from '@vitejs/plugin-react'
 import TsconfigPaths from 'vite-plugin-tsconfig-paths';
 import { configDefaults  } from 'vitest/config';
+import tailwindcss from '@tailwindcss/vite';
 
 const root = (p: string) => path.join(path.resolve(__dirname), p);
 
@@ -38,12 +39,19 @@ export default defineConfig({
 		}
 	},
   plugins: [
+    tailwindcss(),
     react(),
 		TsconfigPaths(),
     electron({
       main: {
-        // Shortcut of `build.lib.entry`.
         entry: 'electron/main.ts',
+        vite: {
+          build: {
+            rollupOptions: {
+              external: ['ws', 'utf-8-validate', 'bufferutil'],
+            },
+          },
+        },
       },
       preload: {
         // Shortcut of `build.rollupOptions.input`.

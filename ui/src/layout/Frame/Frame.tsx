@@ -3,7 +3,7 @@ import GilDisplay from "@ui/components/GilDisplay";
 
 const Frame: React.FC = () => (
 	<div className={`bg-custom-gray-700 w-full shadow-lg flex flex-row justify-between items-center header py-2 h-8 px-3 `}>
-		<ul className="grid grid-cols-3 gap-2 flex-grow-0 items-center">
+		<ul className="grid grid-cols-3 gap-2 grow-0 items-center">
 			<li className="header-menu-button bg-custom-frame-red">
 				<svg 
 					onClick={() => window.ipcRenderer.send("exit")}

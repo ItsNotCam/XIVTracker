@@ -14,7 +14,7 @@ const Job: React.FC<JobProps> = ({ job }) => {
 
 	return (
 		<div className="flex flex-row gap-1 items-center">
-			<img src={JobIconList[jobImageName]} className="h-[48px] w-[48px]" />
+			<img src={JobIconList[jobImageName]} className="h-12 w-12" />
 			<div className="flex flex-col">
 				<span className="text-custom-text-secondary-300 bloom">Lvl. {jobLevel}</span>
 				<span>{toTitleCase(jobName)}</span>
