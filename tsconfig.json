@@ -37,7 +37,7 @@
 			"@components/*": ["ui/src/components/*"],
 			"@assets/*": ["ui/src/assets/*"],
 			"@layout/*": ["ui/src/layout/*"],
-			"@styles/*": ["ui/src/styles/*"],
+			"@styles/*": ["ui/styles/*"],
 		},
 		"rootDir": ".",
 		"outDir": "./dist"

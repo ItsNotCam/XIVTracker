@@ -1,5 +1,3 @@
-import './recipe-search.css';
-
 import React, { useEffect, useRef } from 'react';
 import SearchBar from './SearchForm';
 
