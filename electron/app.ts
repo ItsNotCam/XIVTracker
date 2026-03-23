@@ -3,7 +3,7 @@ import { BrowserWindow } from 'electron'
 import JsonRpcClient from './libs/net/JsonRpcClient';
 import EzDb from '../electron/libs/db/EzDb';
 
-export default class XIVTrackerApp implements IDisposable {
+export default class XIVTrackerApp implements Disposable {
 	private _win: BrowserWindow;
 	private _wsClient: JsonRpcClient;
 	private _db: EzDb;
@@ -51,7 +51,7 @@ export default class XIVTrackerApp implements IDisposable {
 		}
 	}
 
-	public dispose() {
+	[Symbol.dispose]() {
 		this.eventRegister.dispose();
 		this.db.dispose();
 		this.wsClient.dispose();

@@ -1,38 +1,38 @@
 import XIVTrackerApp from "../../app";
 import { BrowserWindow } from "electron";
-
-import EventBase from "./EventBase";
-
-import JobEvents from "./ask/AskJobEvents";
-import CurrencyEvents from "./ask/AskCurrencyEvents";
-import ConnectionEvents from "./ask/AskConnectionEvents";
-import LocationEvents from "./ask/AskLocationEvents";
-import RecipeEvents from "./ask/AskRecipeEvents";
-import TimeEvents from "./ask/AskTimeEvents";
-import NameEvents from "./ask/AskNameEvents";
 import WindowEvents from "./sys/WindowEvents";
+import AskEventBase from "./@AskEventBase";
+import RecvEventBase from "./@RecvEventBase";
+import {
+	AskConnectionEvents,
+	AskCurrencyEvents,
+	AskJobEvents,
+	AskLocationEvents,
+	AskNameEvents,
+	AskRecipeEvents,
+	AskTimeEvents
+} from "./ask";
+import { 
+	RecvLocationEventAll, 
+	RecvLocationEventArea, 
+	RecvLocationEventPosition,
+	RecvLocationEventRegion,
+	RecvLocationEventSubArea,
+	RecvLocationEventTerritory 
+} from "./recv/location";
 
-import RecvLoginEvent from "./recv/login-logout/RecvLoginEvent";
-import RecvLogoutEvent from "./recv/login-logout/RecvLogoutEvent";
-
-import RecvEventBase from "./recv/RecvEventBase";
-import RecvJobCurrentEvent from "./recv/jobs/RecvJobCurrentEvent";
-
-import RecvLocationEventAll from "./recv/location/RecvLocationEventAll";
-import RecvLocationEventArea from "./recv/location/RecvLocationEventArea";
-import RecvLocationEventRegion from "./recv/location/RecvLocationEventRegion";
-import RecvLocationEventSubArea from "./recv/location/RecvLocationEventSubArea";
-import RecvLocationEventPosition from "./recv/location/RecvLocationEventPosition";
-import RecvLocationEventTerritory from "./recv/location/RecvLocationEventTerritory";
-
-import RecvTimeEvent from "./recv/time/RecvTimeEvent";
+import { RecvLoginEvent, RecvLogoutEvent } from "./recv/login-logout";
+import { RecvJobCurrentEvent } from "./recv/jobs";
+import { RecvTimeEvent } from "./recv/time";
 import RecvNameEvent from "./recv/name/RecvName";
 import RecvCurrencyEvent from "./recv/currency/RecvCurrencyEvent";
 
-export default class EventManager implements IDisposable {
+
+export default class EventManager implements Disposable {
 	private readonly app: XIVTrackerApp;
 
-	private AskEvents: EventBase[];
+	private windowEvents: WindowEvents;
+	private AskEvents: AskEventBase[];
 	private RecvEvents: Map<JsonRpcNotifyMethod, RecvEventBase>;
 
 	constructor(app: XIVTrackerApp) {
@@ -43,18 +43,19 @@ export default class EventManager implements IDisposable {
 		this.app = app;
 		const win: BrowserWindow = this.app.win;
 
+		this.windowEvents = new WindowEvents(win);
+
 		this.AskEvents = [
-			new JobEvents(app),
-			new CurrencyEvents(app),
-			new ConnectionEvents(app),
-			new LocationEvents(app),
-			new RecipeEvents(app),
-			new TimeEvents(app),
-			new NameEvents(app),
-			new WindowEvents(win)
+			new AskJobEvents(app),
+			new AskCurrencyEvents(app),
+			new AskConnectionEvents(app),
+			new AskLocationEvents(app),
+			new AskRecipeEvents(app),
+			new AskTimeEvents(app),
+			new AskNameEvents(app),
 		];
 
-		this.RecvEvents = new Map<JsonRpcNotifyMethod, RecvEventBase>([
+		this.RecvEvents = new Map<JsonRpcNotifyMethod, RecvEventBase<any>>([
 			['loggedIn', new RecvLoginEvent(win)],
 			['loggedOut', new RecvLogoutEvent(win)],
 
@@ -82,11 +83,8 @@ export default class EventManager implements IDisposable {
 		}
 	}
 
-	public dispose = () => {
-		this.AskEvents.forEach((event) => {
-			console.log(`[${this.constructor.name}] -= ${event.constructor.name}`);
-			event.dispose()
-		});
+	public [Symbol.dispose] = () => {
+		this.windowEvents[Symbol.dispose]();
 		this.AskEvents = [];
 
 		for (const method of this.RecvEvents.keys()) {

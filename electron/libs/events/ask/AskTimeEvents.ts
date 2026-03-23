@@ -1,18 +1,14 @@
-import AskEventBase from "./@AskEventBase";
+import { TimeModel } from "@electron/types";
+import AskEventBase from "../@AskEventBase";
+import { TimeIPCEvent } from "../ipc-event-types";
 
-export default class TimeEvents extends AskEventBase {
+export default class TimeEvents extends AskEventBase<TimeIPCEvent> {
 	public override init() {
 		super.init();
-		super.addHandler("time.get", this.handleAskTime);
+		super.addHandler("ask:time.get", this.handleAskTime);
 	}
 
 	private handleAskTime = async (): Promise<TimeModel | undefined> => {
-		if (!this.app.wsClient.isConnected()) return undefined;
-		try {
-			return await this.app.wsClient.ask<TimeModel>('time.get');
-		} catch (e: any) {
-			console.log(`[${this.constructor.name}] Error getting time: ${e.message}`);
-			return undefined;
-		}
+		return await this.app.wsClient.ask<TimeModel>('time.get');
 	}
 }

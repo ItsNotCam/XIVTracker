@@ -1,0 +1,1 @@
+export { default as RecvCurrencyEvents } from './RecvCurrencyEvent';

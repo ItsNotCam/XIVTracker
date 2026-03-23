@@ -1,28 +1,23 @@
-import { useEffect, useState } from "react";
-import { invoke, addListener, removeListener } from '@ui/util/util';
+import { useStore } from "@ui/store/store";
+import { invoke } from "@ui/util/util";
+import { useEffect } from "react";
 
 const NameDisplay: React.FC = () => {
-	const [name, setName] = useState<string>("???");
-
-	const updateName = (_: any, newName: string) => setName(newName);
-	const askName = async () => {
-		let name = await invoke("name.get");
-		setName(name);
-	}
+	const { name, isInitialized } = useStore();
 
 	useEffect(() => {
-		askName();
-
-		addListener(askName, "loggedIn");
-		addListener(askName, "connection.changed");
-		addListener(updateName, "name.changed");
-
-		return () => {
-			removeListener(updateName, "name.changed");
-			removeListener(askName, "connection.changed");
-			removeListener(askName, "loggedIn");
+		const interval = setInterval(() => {
+			console.log("Store initialized?")
+			if(isInitialized) updateSelf();
+		}, 1000)
+		
+		const updateSelf = () => {
+			console.log("ASKLING NAME")
+			invoke("ask:name.get")
+			clearInterval(interval);
 		}
-	}, []);
+
+	}, [isInitialized]);
 
 	return (
 		<h1 className="text-3xl text-custom-text-secondary-300 uppercase mr-6">

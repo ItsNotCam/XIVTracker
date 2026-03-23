@@ -44,7 +44,7 @@ app.on('window-all-closed', () => {
 	}
 
 	if(TrackerApp) {
-		TrackerApp.dispose();
+		TrackerApp[Symbol.dispose]();
 	}
 
 	app.quit();

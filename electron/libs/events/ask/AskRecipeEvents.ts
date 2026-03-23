@@ -1,8 +1,9 @@
-import XIVTrackerApp from "../../../app";
-import RecipeProvider from "../../db/RecipeProvider";
-import AskEventBase from "./@AskEventBase";
+import XIVTrackerApp from "@electron/app";
+import AskEventBase from "../@AskEventBase";
+import RecipeProvider from "@electron-lib/db/RecipeProvider";
+import { RecipeIPCEvent } from "../ipc-event-types";
 
-export default class RecipeEvents extends AskEventBase {
+export default class RecipeEvents extends AskEventBase<RecipeIPCEvent> {
 	private readonly parser: RecipeProvider;
 
 	constructor(app: XIVTrackerApp) {
@@ -14,11 +15,11 @@ export default class RecipeEvents extends AskEventBase {
 		super.init();
 		
 		this.parser.init();
-		super.addHandler("recipe.get", this.handleAskForRecipe);
-		super.addHandler("recipe.getRecentSearches", this.handleAskRecentRecipeSearches);
-		super.addHandler("recipe.getFavorites", this.handleAskFavoriteRecipes);
-		super.addHandler("recipe.isFavorite", this.handleAskIsFavoriteRecipe);
-		super.addHandler("recipe.toggleFavorite", this.toggleFavoriteRecipes);
+		super.addHandler("ipc:recipe.get", this.handleAskForRecipe);
+		super.addHandler("ipc:recipe.getRecentSearches", this.handleAskRecentRecipeSearches);
+		super.addHandler("ipc:recipe.getFavorites", this.handleAskFavoriteRecipes);
+		super.addHandler("ipc:recipe.isFavorite", this.handleAskIsFavoriteRecipe);
+		super.addHandler("ipc:recipe.toggleFavorite", this.toggleFavoriteRecipes);
 	}
 	
 	private handleAskForRecipe = async(_: any, itemName: string): Promise<TCRecipe | null> => {

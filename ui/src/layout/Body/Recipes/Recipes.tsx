@@ -2,14 +2,14 @@ import React, { useEffect, useRef } from 'react';
 import SearchBar from './SearchForm';
 
 import { JobIconList } from '@ui/assets/images/jobs';
-import { invoke, addListener, removeListener } from '@ui/util/util';
+import { invoke } from '@ui/util/util';
 import CraftingHeader from './RecipeOverview';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import DropdownButton from '@ui/components/DropdownButton';
-import JobState from '@electron-lib/JobState';
 
 import { v4 as uuidv4 } from 'uuid';
 import RecipeTree from '../../../components/recipes/RecipeTree';
+import { useStore } from '@ui/store/store';
 
 const RecipeSearch: React.FC = () => {
 	const craftReqsRef = useRef<any[]>([])
@@ -27,35 +27,17 @@ const RecipeSearch: React.FC = () => {
 	const [recentRecipeSearches, setRecentRecipeSearches] = React.useState<TCRecipe[]>([]);
 	const [favoriteRecipes, setFavoriteRecipes] = React.useState<string[]>([]);
 
-	const [playerJobs, setPlayerJobs] = React.useState<JobState[]>([]);
+	const { jobs } = useStore();
 
 	const getFavoriteRecipes = async () => {
-		const favoriteRecipes = await invoke("recipe.getFavorites");
-		setFavoriteRecipes(favoriteRecipes);
+		const favoriteRecipes = await invoke<string[]>("recipe.getFavorites");
+		if(favoriteRecipes) setFavoriteRecipes(favoriteRecipes);
 	}
-
-	const updateAllJobs = async () => {
-		const jobs = await invoke("job.getAll") || [];
-		setPlayerJobs(jobs);
-	}
-
-	const handleUpdateAllJobs = (_: any, jobs: JobState[]) => setPlayerJobs(jobs);
 
 	useEffect(() => {
 		getFavoriteRecipes();
-		updateAllJobs();
-
-		addListener(updateAllJobs, "job.changed");
-		addListener(handleUpdateAllJobs, "level.changed");
-		addListener(updateAllJobs, "loggedIn");
-		addListener(updateAllJobs, "connection.changed");
-
 		return () => {
 			setFavoriteRecipes([]);
-			removeListener(handleUpdateAllJobs, "level.changed");
-			removeListener(updateAllJobs, "job.changed");
-			removeListener(updateAllJobs, "connection.changed");
-			removeListener(updateAllJobs, "loggedIn");
 		}
 	}, []);
 
@@ -68,20 +50,20 @@ const RecipeSearch: React.FC = () => {
 	}, [recipeHeader])
 
 	const sortRecentSearches = async (): Promise<any[]> => {
-		const recentSearches = await invoke("recipe.getRecentSearches").then((r) =>
-			r.sort((a: any, b: any) => {
+		let recentSearches = await invoke<string[]>("recipe.getRecentSearches");
+		if(recentSearches) {
+			recentSearches = recentSearches.sort((a: any, b: any) => {
 				if (a.name < b.name) return -1;
 				if (a.name > b.name) return 1;
 				return new Date(b.date).getTime() - new Date(a.date).getTime()
 			})
-		);
-		return recentSearches;
+		}
+
+		return recentSearches ?? [];
 	}
 
 	const handleSearch = (recipeName: string) => {
-		if (isSearching) {
-			return;
-		}
+		if (isSearching) return;
 
 		const isSearchingTimeout = setTimeout(() => {
 			setIsSearching(false);
@@ -284,7 +266,7 @@ const RecipeSearch: React.FC = () => {
 					recipeData={fullRecipe}
 					isFavorite={favoriteRecipes.includes(fullRecipe.name)}
 					toggleFavorite={toggleFavoriteRecipe}
-					playerJobs={playerJobs}
+					playerJobs={jobs ?? []}
 				/>
 				<div className='m-2 ' style={{
 					gridTemplateRows: calculateGridTemplateRows(),

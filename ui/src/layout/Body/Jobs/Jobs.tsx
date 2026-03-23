@@ -1,40 +1,15 @@
 import { JobModel as JobState } from '@electron-lib/JobState';
 import Job from '@ui/components/jobs/Job';
-import { invoke, addListener, removeListener } from '@ui/util/util';
 import React, { useEffect } from 'react';
 
 import RefreshIcon from '@mui/icons-material/Refresh';
+import { useStore } from '@ui/store/store';
 
 const Jobs: React.FC = () => {
-	const [jobs, setJobs] = React.useState<any[]>([]);
 	const [loading, setLoading] = React.useState<boolean>(true);
-
-	const askJobs = async () => {
-		let data = await invoke("job.getAll") || [];
-		if (!Array.isArray(data)) {
-			data = [data];
-		}
-		setJobs(data);
-	}
-
-	useEffect(() => {
-		const getInitialJobs = async () => {
-			setLoading(true);
-			await askJobs();
-			setLoading(false);
-		}
-
-		getInitialJobs();
-
-		addListener(askJobs, "job.changed");
-		setLoading(false);
-
-		return () => {
-			setJobs([]);
-			setLoading(false);
-			removeListener(askJobs, "job.changed");
-		}
-	}, []);
+	
+	const { jobs } = useStore();
+	useEffect(() => setLoading(jobs === null), [jobs])
 
 	return (
 		<div>

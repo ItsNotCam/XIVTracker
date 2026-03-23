@@ -1,31 +1,12 @@
-import { invoke, addListener, removeListener } from '@ui/util/util';
-import { useState, useEffect } from 'react';
+import { useStore } from '@ui/store/store';
 
 const ConnectionStatus: React.FC = () => {
-	const [isConnected, setIsConnected] = useState(false);
-
-	const handleTcpConnected = (_event: any, connected: boolean) => {
-		setIsConnected(connected);
-	}
-
-	const updateConnectionStatus = async() => {
-		const connected = await invoke("connection.isConnected");
-		setIsConnected(connected);
-	}
-
-	useEffect(() => {
-		updateConnectionStatus();
-
-		addListener(handleTcpConnected, "connection.changed");
-		return () => {
-			removeListener(handleTcpConnected, "connection.changed");
-		}
-	}, []);
+	const { socketConnected } = useStore();
 	
 	return (
-		<span title={`TCP ${isConnected ? "Connected" : "Disconnected"}`} className="py-4">
+		<span title={`TCP ${socketConnected ? "Connected" : "Disconnected"}`} className="py-4">
 			<svg 
-				className={isConnected ? 'fill-custom-frame-green' : 'fill-custom-frame-red'} 
+				className={socketConnected ? 'fill-custom-frame-green' : 'fill-custom-frame-red'} 
 				xmlns="http://www.w3.org/2000/svg" 
 				width="24px" 
 				height="24px" 

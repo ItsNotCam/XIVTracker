@@ -1,7 +1,7 @@
-import EventBase from "../EventBase";
 import { ipcMain } from "electron";
+import IXIVEvent from "../IXIVEvent";
 
-export default class WindowEvents extends EventBase {
+export default class WindowEvents extends IXIVEvent implements Disposable {
 	private readonly win: Electron.BrowserWindow | null;
 	private windowEvents: Map<string, (...args: any) => any>;
 
@@ -50,7 +50,7 @@ export default class WindowEvents extends EventBase {
 		ipcMain.addListener(event, handler);
 	}
 
-	public override dispose = () => {
+	public [Symbol.dispose] = () => {
 		if(this.windowEvents.size === 0) {
 			return;
 		}

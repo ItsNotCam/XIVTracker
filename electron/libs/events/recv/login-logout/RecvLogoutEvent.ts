@@ -1,7 +1,8 @@
-import RecvEventBase from "../RecvEventBase";
+import { LoginLogoutIPCEvent } from "@electron-lib/events/ipc-event-types";
+import RecvEventBase from "../../@RecvEventBase";
 
-export default class RecvLogoutEvent extends RecvEventBase {
+export default class RecvLogoutEvent extends RecvEventBase<LoginLogoutIPCEvent> {
 	public override handle = (): void => {
-		this.sendToClient("loggedOut");
+		this.sendToClient("recv:loggedOut");
 	}
 }

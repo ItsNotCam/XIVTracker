@@ -1,19 +1,15 @@
-import AskEventBase from "./@AskEventBase";
+import { LocationModel } from "@electron/types";
+import AskEventBase from "../@AskEventBase";
+import { LocationIPCEvent } from "../ipc-event-types";
 
-export default class LocationEvents extends AskEventBase {
+export default class LocationEvents extends AskEventBase<LocationIPCEvent> {
 	public override init() {
 		super.init();
-		super.addHandler("location.getAll", this.handleGetLocationAll);
+		super.addHandler("ask:location.getAll", this.handleGetLocationAll);
 	}
 
-	private handleGetLocationAll = async (): Promise<LocationModel | undefined> => {
-		if (!this.app.wsClient.isConnected()) return undefined;
-		try {
-			const result = await this.app.wsClient.ask('location.getAll');
-			return result.location as LocationModel;
-		} catch (e: any) {
-			console.log(`[${this.constructor.name}] Error getting location: ${e.message}`);
-			return undefined;
-		}
+	private handleGetLocationAll = async (): Promise<LocationModel> => {
+		const { location } = await this.app.wsClient.ask<{ location: LocationModel }>('location.getAll');
+		return location;
 	}
 }

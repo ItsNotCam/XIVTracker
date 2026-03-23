@@ -1,44 +1,20 @@
-import AskEventBase from "./@AskEventBase";
-import { JobModel } from "../../JobState";
+import { JobModel } from "@electron/types";
+import AskEventBase from "../@AskEventBase";
+import { JobIPCEvent } from "../ipc-event-types";
 
-export default class JobEvents extends AskEventBase {
+export default class JobEvents extends AskEventBase<JobIPCEvent> {
 	public override init() {
 		super.init();
-		super.addHandler("job.getMain", this.handleAskJobMain);
-		super.addHandler("job.getCurrent", this.handleAskJobCurrent);
-		super.addHandler("job.getAll", this.handleAskJobAll);
+		super.addHandler("ask:job.getMain", this.makeWsHandler<{ job: JobModel }>('job.getMain', 'job'));
+		super.addHandler("ask:job.getCurrent", this.makeWsHandler<{ job: JobModel }>('job.getCurrent', 'job'));
+		super.addHandler("ask:job.getAll", this.makeWsHandler<{ jobs: JobModel[] }>('job.getAll', 'jobs'));
 	}
-
-	private handleAskJobMain = async (): Promise<JobModel | undefined> => {
-		if (!this.app.wsClient.isConnected()) return undefined;
-		try {
-			const result = await this.app.wsClient.ask('job.getMain');
-			return result.job as JobModel;
-		} catch (e: any) {
-			console.log(`[${this.constructor.name}] Error getting job: ${e.message}`);
-			return undefined;
-		}
-	}
-
-	private handleAskJobCurrent = async (): Promise<JobModel | undefined> => {
-		if (!this.app.wsClient.isConnected()) return undefined;
-		try {
-			const result = await this.app.wsClient.ask('job.getCurrent');
-			return result.job as JobModel;
-		} catch (e: any) {
-			console.log(`[${this.constructor.name}] Error getting job: ${e.message}`);
-			return undefined;
-		}
-	}
-
-	private handleAskJobAll = async (): Promise<JobModel[] | undefined> => {
-		if (!this.app.wsClient.isConnected()) return undefined;
-		try {
-			const result = await this.app.wsClient.ask('job.getAll');
-			return result.jobs as JobModel[];
-		} catch (e: any) {
-			console.log(`[${this.constructor.name}] Error getting jobs: ${e.message}`);
-			return undefined;
+	
+	private makeWsHandler = <T>(action: JsonRpcAskMethod, key: keyof T) => {
+		return async (): Promise<T[keyof T]> => {
+			if (!this.app.wsClient.isConnected()) throw new Error("Websocket not connected");
+			const result = await this.app.wsClient.ask<T>(action);
+			return result[key];
 		}
 	}
 }

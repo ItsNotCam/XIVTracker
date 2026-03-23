@@ -1,7 +1,8 @@
-import RecvEventBase from "../RecvEventBase";
+import { TimeIPCEvent } from "@electron-lib/events/ipc-event-types";
+import RecvEventBase from "../../@RecvEventBase";
 
-export default class RecvTimeEvent extends RecvEventBase {
+export default class RecvTimeEvent extends RecvEventBase<TimeIPCEvent> {
 	public override handle = (params: any): void => {
-		this.sendToClient("time.changed", params);
+		this.sendToClient("recv:time.changed", params);
 	}
 }

@@ -1,79 +1,11 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import XPBar from '@ui/components/XPBar';
 import { JobIconList } from '@assets/images/jobs';
-import { invoke, addListener, removeListener } from '@ui/util/util';
+import { useStore } from '@ui/store/store';
 
 const JobDisplay: React.FC = () => {
-	const [job, setJob] = React.useState<JobModel>({
-		rowId: 0,
-		name: "???",
-		abbreviation: "???",
-		level: 0,
-		expCurrent: 0,
-		expMax: 0
-	});
-
-	const validateJob = (job: JobModel): boolean => {
-		return job &&
-			typeof job.name === "string" &&
-			typeof job.level === "number" &&
-			typeof job.expCurrent === "number" &&
-			typeof job.expMax === "number";
-	}
-
-	const getJobInfo = async() => {
-		const result = await invoke("job.getCurrent");
-
-		const isValidJob: boolean = validateJob(result as JobModel)
-		if (isValidJob) {
-			setJob(result as JobModel);
-		} else {
-			console.error(result, "Invalid JobModel received:");
-			setJob({ rowId: 0, name: "???", abbreviation: "???", level: 0, expCurrent: 0, expMax: 0 });
-		}
-	}
-
-	const handleJobChange = (_event: any, newJob: JobModel) => {
-		setJob((current: JobModel) => ({
-			...current,
-			...newJob
-		}));
-	}
-
-	const handleLevelChange = (_event: any, newLevel: JobModel) => {
-		setJob((current: JobModel) => ({
-			...current,
-			level: newLevel.level,
-			expCurrent: newLevel.expCurrent,
-			expMax: newLevel.expMax
-		}));
-	}
-
-	const handleXpChange = (_event: any, newXp: number) => {
-		setJob((current: JobModel) => ({
-			...current,
-			expCurrent: newXp
-		}));
-	}
-
-	useEffect(() => {
-		getJobInfo();
-
-		addListener(handleJobChange, "job.changed");
-		addListener(handleLevelChange, "level.changed");
-		addListener(handleXpChange, "xp.changed");
-		addListener(getJobInfo, "connection.changed");
-		addListener(getJobInfo, "loggedIn");
-
-		return () => {
-			removeListener(handleJobChange, "job.changed");
-			removeListener(handleLevelChange, "level.changed");
-			removeListener(handleXpChange, "xp.changed");
-			removeListener(getJobInfo, "connection.changed");
-			removeListener(getJobInfo, "loggedIn");
-		};
-	}, []);
-
+	const { job } = useStore();
+	
 	return (
 		<div className="relative grid grid-cols-[70px_1fr] grid-rows-[auto_1fr_auto] h-full w-75 p-4">
 			<img
@@ -95,7 +27,7 @@ const JobDisplay: React.FC = () => {
 				</span>
 			</h1>
 			<div className="col-span-2 mt-3">
-				<XPBar currentXP={job ? job.expCurrent : 0} maxXP={job ? job.expMax : 0} />
+				<XPBar />
 			</div>
 		</div>
 	);
