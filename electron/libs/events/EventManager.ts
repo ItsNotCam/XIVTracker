@@ -83,7 +83,11 @@ export default class EventManager implements Disposable {
 		}
 	}
 
-	public [Symbol.dispose] = () => {
+	public dispose = () => {
+		this[Symbol.dispose]();
+	}
+
+	[Symbol.dispose] = () => {
 		this.windowEvents[Symbol.dispose]();
 		this.AskEvents = [];
 

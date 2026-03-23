@@ -8,6 +8,7 @@ import ConnectionActions from './actions/connection';
 import JobActions from './actions/job';
 import UserActions from './actions/user';
 import LocationActions from './actions/location';
+import { IPCEvent } from "@electron-lib/events/ipc-event-types";
 
 export const createListeners = (
 	get: StoreApi<Store>['getState'],
@@ -22,6 +23,7 @@ export const createListeners = (
 	const userActions = new UserActions(get, set);
 	const locationActions = new LocationActions(get, set);
 
+	/* Create the Listeners */
 	return {
 		'global:init': [
 			currencyActions.askGil,
@@ -96,11 +98,11 @@ export const createListeners = (
 			connectionActions.askConnectionStatus
 		],
 
-		'recipe.get': [],
-		'recipe.isFavorite': [],
-		'recipe.getFavorites': [],
-		'recipe.getRecentSearches': [],
-		'recipe.toggleFavorite': [],
+		'ipc:recipe.get': [],
+		'ipc:recipe.isFavorite': [],
+		'ipc:recipe.getFavorites': [],
+		'ipc:recipe.getRecentSearches': [],
+		'ipc:recipe.toggleFavorite': [],
 
 		'recv:location.changed': [
 			locationActions.handleLocationChange
@@ -121,7 +123,7 @@ export const createListeners = (
 	}
 }
 
-export type ListenerFunc = (event: any, ...args: unknown[]) => void;
+export type ListenerFunc = (event: Electron.IpcRendererEvent, ...args: unknown[]) => void;
 export const typedListener = <T>(fn: (event: any, arg: T) => void): ListenerFunc => {
   return (event, ...args) => {
     fn(event, args[0] as T);

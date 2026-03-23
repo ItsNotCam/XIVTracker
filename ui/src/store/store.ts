@@ -67,7 +67,8 @@ export const useStore = create<Store>((set, get) => ({
 		registerListeners(listeners);
 
 		invoke("global:init");
-		set({ isInitialized: true })
+
+		set({ isInitialized: true });
 
 		return () => {
 			clearInterval(getRealWorldTimeInterval);

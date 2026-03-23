@@ -1,5 +1,5 @@
 import { ipcMain } from "electron";
-import IXIVEvent from "../IXIVEvent";
+import IXIVEvent from "../IXivEvent";
 
 export default class WindowEvents extends IXIVEvent implements Disposable {
 	private readonly win: Electron.BrowserWindow | null;
