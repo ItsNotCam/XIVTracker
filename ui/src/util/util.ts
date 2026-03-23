@@ -1,5 +1,6 @@
+import { IPCEvent } from "@electron-lib/events/ipc-event-types";
 import { ListenerFunc } from "@ui/store/listeners";
-import { ZodType } from "zod";
+import { z } from "zod";
 
 export const withCommas = (num: number) => {
 	return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") || "0";
@@ -14,31 +15,37 @@ const ipc = () => {
 	return window.ipcRenderer;
 }
 
-export const invoke = async<T, S extends ZodType<T> | undefined = undefined>(
-	event: IPCEvent, 
-	schema?: S,
-	...args: unknown[]
-): Promise<T> => {
-	const connector = ipc();
+export function ipcInvoke<S extends z.ZodType>(
+  event: IPCEvent,
+  schema: S,
+  ...args: unknown[]
+): Promise<z.infer<S>>;
 
-	try {
-		const result = connector.invoke(event, ...args ?? []);
-		if(schema) return schema.parse(result) as T;
-		return result;
-	} catch(e: any) {
-		throw new Error(`Failed to invoke ipc renderer action: ${e}`)
-	}
+export function ipcInvoke(
+  event: IPCEvent,
+  schema?: undefined,
+  ...args: unknown[]
+): Promise<unknown>;
+
+export async function ipcInvoke(
+  event: IPCEvent,
+  schema?: z.ZodType,
+  ...args: unknown[]
+): Promise<unknown> {
+	const result = await ipc().invoke(event, ...args);
+  if (schema) return schema.parse(result);
+  return result;
 }
 
-export const addListener = (listener: ListenerFunc, ...events: IPCEvent[]) => {
-	events.forEach((eventName: string) => {
-		ipc().on(eventName, listener);
+export const addIpcEventListener = (listenerFn: ListenerFunc, ...events: IPCEvent[]) => {
+	events.forEach((ipcEventName: string) => {
+		ipc().on(ipcEventName, listenerFn);
 	});
 }
 
-export const removeListener = (listener: ListenerFunc, ...events: IPCEvent[]) => {
-	events.forEach((eventName: string) => {
-		ipc().off(eventName, listener);
+export const removeIpcEventListener = (listenerFn: ListenerFunc, ...events: IPCEvent[]) => {
+	events.forEach((ipcEventName: string) => {
+		ipc().off(ipcEventName, listenerFn);
 	});
 }
 

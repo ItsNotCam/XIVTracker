@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { getRealTime, invoke } from '@ui/util/util';
+import { getRealTime, ipcInvoke } from '@ui/util/util';
 import { createListeners, registerListeners, unregisterListeners } from './listeners';
 import { JobModel, LocationModel } from '@electron/types';
 
@@ -34,8 +34,8 @@ export const useStore = create<Store>((set, get) => ({
 	socketConnected: false,
 
 	/* Time */
-	currentTime: "00:00 PM",
-	worldTime: "00:00 PM",
+	currentTime: "00:00 AM",
+	worldTime: "00:00 AM",
 
 	/* Currency */
 	gil: 0,
@@ -43,7 +43,6 @@ export const useStore = create<Store>((set, get) => ({
 	/* Job */
 	job: null,
 	jobs: null,
-	loadingJobs: false,
 
 	/* Name */
 	name: null,
@@ -66,9 +65,7 @@ export const useStore = create<Store>((set, get) => ({
 		let listeners = createListeners(get, set)
 		registerListeners(listeners);
 
-		invoke("global:init");
-
-		set({ isInitialized: true });
+		ipcInvoke("global:init").then(() => set({ isInitialized: true }))
 
 		return () => {
 			clearInterval(getRealWorldTimeInterval);

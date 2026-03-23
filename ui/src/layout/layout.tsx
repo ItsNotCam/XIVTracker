@@ -5,9 +5,7 @@ import { useEffect } from 'react';
 
 const App: React.FC = () => {
 	// App.tsx
-	useEffect(() => {
-		useStore.getState().init();
-	}, []);
+	useEffect(() => useStore.getState().init(), []);
 
 	//  grid grid-rows-[auto_1fr]">
 	// <main className="bg-custom-gray-300 h-screen w-screen"> 

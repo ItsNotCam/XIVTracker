@@ -1,6 +1,6 @@
 import { StoreApi } from "zustand";
 import { Store } from "./store";
-import { addListener, removeListener } from "@ui/util/util";
+import { addIpcEventListener, removeIpcEventListener } from "@ui/util/util";
 
 import CurrencyActions from './actions/currency';
 import TimeActions from './actions/time';
@@ -39,8 +39,6 @@ export const createListeners = (
 			timeActions.setWorldTime
 		],
 
-		'ask:time.get': [],
-
 		'recv:currency.changed': [
 			currencyActions.setGil
 		],
@@ -59,7 +57,6 @@ export const createListeners = (
 			locationActions.askLocation
 		],
 
-		'recv:loggedOut': [],
 		'recv:loggedIn': [
 			locationActions.askLocation,
 			currencyActions.askGil,
@@ -68,12 +65,8 @@ export const createListeners = (
 			userActions.askName
 		],
 
-		'ask:job.getMain': [],
-		'ask:job.getCurrent': [],
-		'ask:job.getAll': [],
 		'recv:job.changed': [
-			jobActions.handleJobChange,
-			jobActions.askJobs
+			jobActions.handleJobChange
 		],
 
 		'recv:xp.changed': [
@@ -84,12 +77,6 @@ export const createListeners = (
 			jobActions.handleJobChange
 		],
 
-		'ask:location.getAll': [],
-		'ask:location.getPosition': [],
-		'ask:location.getArea': [],
-		'ask:location.getTerritory': [],
-		'ask:location.getRegion': [],
-		'ask:location.getSubArea': [],
 		'ask:name.get': [
 			userActions.askName
 		],
@@ -98,46 +85,31 @@ export const createListeners = (
 			connectionActions.askConnectionStatus
 		],
 
-		'ipc:recipe.get': [],
-		'ipc:recipe.isFavorite': [],
-		'ipc:recipe.getFavorites': [],
-		'ipc:recipe.getRecentSearches': [],
-		'ipc:recipe.toggleFavorite': [],
-
 		'recv:location.changed': [
 			locationActions.handleLocationChange
 		],
-		'recv:location.positionChanged': [],
-		'recv:location.areaChanged': [],
-		'recv:location.territoryChanged': [],
-		'recv:location.regionChanged': [],
-		'recv:location.subAreaChanged': [],
-
+	
 		'recv:name.changed': [
 			userActions.setName
 		],
-
-		'minimize': [],
-		'maximize': [],
-		'exit': []
 	}
 }
 
 export type ListenerFunc = (event: Electron.IpcRendererEvent, ...args: unknown[]) => void;
-export const typedListener = <T>(fn: (event: any, arg: T) => void): ListenerFunc => {
+export const typedListener = <T>(fn: (event: Electron.IpcRendererEvent, arg: T) => void): ListenerFunc => {
   return (event, ...args) => {
     fn(event, args[0] as T);
   };
 }
 
-type ListenerMap = Record<IPCEvent, ListenerFunc[]>
+type ListenerMap = Partial<Record<IPCEvent, ListenerFunc[]>>
 const castListenerEntries = (listeners: ListenerMap) => Object.entries(listeners) as [IPCEvent, ListenerFunc[]][]
 
 export const registerListeners = (listeners: ListenerMap) => {
 	castListenerEntries(listeners)
 		.forEach(([event, registeredListeners]) => {
 			console.log(`Registering ${registeredListeners.length} listeners for ${event}`)
-			registeredListeners.forEach((listener) => addListener(listener, event))
+			registeredListeners.forEach((listener) => addIpcEventListener(listener, event))
 		})
 }
 
@@ -145,7 +117,7 @@ export const unregisterListeners = (listeners: ListenerMap) => {
 	castListenerEntries(listeners)
 		.forEach(([event, registeredListeners]) => {
 			console.log(`Unregistering ${registeredListeners.length} listeners for ${event}`)
-			registeredListeners.forEach((listener) => removeListener(listener, event))
+			registeredListeners.forEach((listener) => removeIpcEventListener(listener, event))
 		})
 }
 

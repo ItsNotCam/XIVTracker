@@ -1,14 +1,19 @@
-import { invoke } from "@ui/util/util";
+import { ipcInvoke } from "@ui/util/util";
 import IPCActionBase from "./action";
 import { TimeModel } from "@electron/types";
 import { typedListener } from "../listeners";
 
 export default class TimeActions extends IPCActionBase {
-	setWorldTime = typedListener<string>((_, worldTime) => this.set({ worldTime }))
+	setWorldTime = typedListener<TimeModel>((_, { eorzea }) => {
+		this.set({ worldTime: eorzea.toUpperCase() })
+	})
 
 	askWorldTime = async() => {
-		const gameTime = await invoke<TimeModel>("ask:time.get");
-		const worldTime = gameTime?.eorzea?.toUpperCase() ?? this.get().worldTime;
-		this.set({ worldTime })
+		try {
+			const gameTime = await ipcInvoke("ask:time.get", TimeModel);
+			this.set({ worldTime: gameTime.eorzea })
+		} catch(e: any) {
+			console.error(e);
+		}
 	}
 }

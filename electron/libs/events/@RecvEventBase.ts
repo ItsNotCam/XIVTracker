@@ -12,7 +12,7 @@ export default abstract class RecvEventBase<E extends IPCEvent = IPCEvent> {
 
 	protected sendToClient = (event: E, data?: any): void => {
     if (this.win.isDestroyed()) {
-      throw `[${this.constructor.name}] Window is destroyed`;
+      throw new Error(`[${this.constructor.name}] Window is destroyed`);
     }
     this.win.webContents.send(event, data);
   };

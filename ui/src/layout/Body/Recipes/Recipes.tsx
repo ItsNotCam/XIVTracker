@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import SearchBar from './SearchForm';
 
 import { JobIconList } from '@ui/assets/images/jobs';
-import { invoke } from '@ui/util/util';
+import { ipcInvoke } from '@ui/util/util';
 import CraftingHeader from './RecipeOverview';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import DropdownButton from '@ui/components/DropdownButton';
@@ -30,7 +30,7 @@ const RecipeSearch: React.FC = () => {
 	const { jobs } = useStore();
 
 	const getFavoriteRecipes = async () => {
-		const favoriteRecipes = await invoke<string[]>("recipe.getFavorites");
+		const favoriteRecipes = await ipcInvoke<string[]>("recipe.getFavorites");
 		if(favoriteRecipes) setFavoriteRecipes(favoriteRecipes);
 	}
 
@@ -50,7 +50,7 @@ const RecipeSearch: React.FC = () => {
 	}, [recipeHeader])
 
 	const sortRecentSearches = async (): Promise<any[]> => {
-		let recentSearches = await invoke<string[]>("recipe.getRecentSearches");
+		let recentSearches = await ipcInvoke<string[]>("recipe.getRecentSearches");
 		if(recentSearches) {
 			recentSearches = recentSearches.sort((a: any, b: any) => {
 				if (a.name < b.name) return -1;
@@ -213,7 +213,7 @@ const RecipeSearch: React.FC = () => {
 			return;
 		}
 
-		const isFavorite = await invoke("recipe.toggleFavorite", fullRecipe.name);
+		const isFavorite = await ipcInvoke("recipe.toggleFavorite", fullRecipe.name);
 		if (isFavorite) {
 			setFavoriteRecipes([...favoriteRecipes, fullRecipe.name]);
 		} else {
