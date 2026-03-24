@@ -2,6 +2,8 @@ import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import path from 'path';
 
+import { DBSchema, DBSearchItem, TCRecipe } from '@xiv-types'
+
 export default class EzDb implements Disposable {
 	public static readonly DEFAULT_DB_PATH = path.resolve(path.join(`electron/data/db/db.db`));
 

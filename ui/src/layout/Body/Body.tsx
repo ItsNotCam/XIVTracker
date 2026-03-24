@@ -17,7 +17,7 @@ const Body: React.FC = () => {
 			<nav>
 				<Sidebar currentTab={currentTab} setCurrentTab={setCurrentTab}/>
 			</nav>
-			{pages.map((page: any, i: number) => (
+			{pages.map((page: JSX.Element, i: number) => (
 				<div 
 					key={crypto.randomUUID()} 
 					className="bg-custom-gray-500 grow" 

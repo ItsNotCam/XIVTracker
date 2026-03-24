@@ -1,6 +1,6 @@
-import { ipcInvoke } from "@ui/util/util";
+import { ipcInvoke } from "@ui/util";
 import IPCActionBase from "./action";
-import { TimeModel } from "@backend/types";
+import { TimeModel } from "@xiv-types";
 import { typedListener } from "../listeners";
 
 export default class TimeActions extends IPCActionBase {
@@ -12,7 +12,7 @@ export default class TimeActions extends IPCActionBase {
 		try {
 			const gameTime = await ipcInvoke("ipc-ask:time.get", TimeModel);
 			this.set({ worldTime: gameTime.eorzea })
-		} catch(e: any) {
+		} catch(e: unknown) {
 			console.error(e);
 		}
 	}

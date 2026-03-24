@@ -1,4 +1,4 @@
-import { toTitleCase } from "@ui/util/util";
+import { toTitleCase } from "@ui/util";
 import { useStore } from "@ui/store/store";
 
 const LocationDisplay: React.FC = () => {

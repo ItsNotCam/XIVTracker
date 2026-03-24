@@ -1,4 +1,4 @@
-import { ipcInvoke } from "@ui/util/util";
+import { ipcInvoke } from "@ui/util";
 import IPCActionBase from "./action";
 import { typedListener } from "../listeners";
 import z from "zod";

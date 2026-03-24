@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { toTitleCase } from '@ui/util/util';
+import { toTitleCase } from '@ui/util';
 
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
-import { JobModel } from '@backend/types';
+import { JobModel, TCRecipe } from '@xiv-types';
 
 interface CraftingHeaderProps {
 	recipeData: TCRecipe;
@@ -58,7 +58,10 @@ const CraftingHeader: React.FC<CraftingHeaderProps> = ({
 		calculateCraftingRequirements()
 	},[craftingRequirements]);
 
-	const canCraftItem = (req: any) => {
+	const canCraftItem = (req: {
+		job: string | null,
+		level: number
+	}) => {
 		if(!req.job || !req.level || !playerJobMap[req.job]) 
 			return false;
 

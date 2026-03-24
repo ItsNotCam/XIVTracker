@@ -1,6 +1,7 @@
 import path from "path";
 import * as fs from "node:fs/promises";
 import * as fsSync from "node:fs";
+import { TCDropSource, TCGathering, TCGatheringNode, TCGatheringType, TCRecipe } from "@xiv-types";
 
 export type TCDataType = 
 	"items"
@@ -20,7 +21,7 @@ export type TCDataType =
 | "xiv_nodes-by-item-id";
 
 export default class RecipeProvider implements Disposable {
-	private files: Map<TCDataType, any>;
+	private files: Map<TCDataType, unknown>;
 	
 	private readonly dataTypes: TCDataType[] = [
 		"items", "xiv_item-id-by-name", "xiv_recipe-by-id", "item-level", "item-icons", "job-name",
@@ -29,7 +30,7 @@ export default class RecipeProvider implements Disposable {
 	]
 
 	constructor() {
-		this.files = new Map<TCDataType, any>();
+		this.files = new Map<TCDataType, unknown>();
 	}
 
 	public isSetup = (): boolean => this.files !== null;
@@ -42,41 +43,41 @@ export default class RecipeProvider implements Disposable {
 	}
 
 	public init = async(): Promise<RecipeProvider> => {
-		this.files = new Map<TCDataType, any>();
+		this.files = new Map<TCDataType, unknown>();
 
     for (const [,dt] of this.dataTypes.entries()) {
 			try { 
 				const data = await this.loadData((dt));
-				this.files!.set(dt, data);
+				this.files.set(dt, data);
 			} catch(e) { 
 				console.error("Failed to get data for:", dt, e);
-			};
+			}
 		}
 
 		return this;
 	}
 	
 	public initSync = (): RecipeProvider => {
-		this.files! = new Map<TCDataType, any>();
+		this.files = new Map<TCDataType, unknown>();
 
-    for (const dt in this.dataTypes) {
-			try { 
-				const data = this.loadDataSync(this.dataTypes[dt]); 
-				this.files!.set(dt as TCDataType, data);
-			} catch(e) { 
-				console.error("Failed to get data for:", this.dataTypes[dt], e);
+    for (const dt of this.dataTypes) {
+			try {
+				const data = this.loadDataSync(dt);
+				this.files.set(dt, data);
+			} catch(e) {
+				console.error("Failed to get data for:", dt, e);
 			}
 		}
 
 		return this;
 	}
 
-	public loadDataSync = (dataType: TCDataType): any => {
-		if(!this.isSetup()) {
+	public loadDataSync = (dataType: TCDataType): unknown => {
+		if(!this.isSetup() || !this.files) {
 			throw(new Error("Parser not initialized"));
 		}
 
-		if(this.files!.has(dataType)) {
+		if(this.files.has(dataType)) {
 			throw(new Error("Data already loaded: " + dataType));
 		}
 
@@ -86,16 +87,16 @@ export default class RecipeProvider implements Disposable {
 			throw(new Error("File does not exist: " + filepath));
 		}
 
-		const data: any = fsSync.readFileSync(filepath);
+		const data = fsSync.readFileSync(filepath);
 		return JSON.parse(data.toString());
 	}
 	
-	public loadData = async(dataType: TCDataType): Promise<any> => {
-		if(!this.isSetup()) {
+	public loadData = async(dataType: TCDataType): Promise<unknown> => {
+		if(!this.isSetup() || !this.files) {
 			throw(new Error("Parser not initialized"));
 		}
 
-		if(this.files!.has(dataType)) {
+		if(this.files.has(dataType)) {
 			throw(new Error("Data already loaded: " + dataType));
 		}
 
@@ -106,50 +107,45 @@ export default class RecipeProvider implements Disposable {
 			throw new Error("File does not exist: " + filepath);
 		}
 
-		const data: any = await fs.readFile(filepath);
+		const data = await fs.readFile(filepath);
 		return JSON.parse(data.toString());
 	}
 
 	public getItemNameFromId =(itemId: number): string | null => {
-		if(!this.isSetup()) {
+		if(!this.isSetup() || !this.files) {
 			throw(new Error("Parser not initialized"));
 		}
 
-		const items = this.files!.get("items");
-		if(items.hasOwnProperty(itemId)) {
-			return items[itemId].en;
+		const items = this.files.get("items") as { en: string }[];
+		if(items && items[itemId]) {
+			return items[itemId]?.en;
 		}
 
 		return null;
 	}
 
 	public getIdFromItemName = (itemName: string): number | null => {
-		if(!this.isSetup()) {
+		if(!this.isSetup() || !this.files) {
 			throw(new Error("Parser not initialized"));
 		}
-		const items = this.files!.get("xiv_item-id-by-name");
-		if(items === undefined) {
-			throw(new Error("Items not loaded, " + this.files!.size));
+
+		const items = this.files.get("xiv_item-id-by-name") as Record<string, number> | null;
+		if(!items) {
+			throw(new Error("Items not loaded, " + this.files.size));
 		}
 
-		if(items.hasOwnProperty(itemName)) {
-			return items[itemName];
-		}
-
-		return null;
+		return items[itemName] ?? null;
 	}
 
 	public getRootRecipe = (recipeId: number): any | null => {
-		if(!this.isSetup()) {
+		if(!this.isSetup() || !this.files) {
 			throw(new Error("Parser not initialized"));
 		}
 
-		const items = this.files!.get("xiv_recipe-by-id");
-		if(items.hasOwnProperty(recipeId)) {
-			return items[recipeId];
-		}
+		const items = this.files.get("xiv_recipe-by-id") as Record<string, any> | undefined;
+		if(!items) return null;
 
-		return null;
+		return items[recipeId] ?? null;
 	}
 
 	public getRecipeByItemIdentifier = (itemIdentifier: string | number): TCRecipe | null => {
@@ -172,12 +168,12 @@ export default class RecipeProvider implements Disposable {
 	}
 
 	public getIconPathOfItemId = (itemId: number): string | null => {
-		if(!this.isSetup()) {
+		if(!this.isSetup() || !this.files) {
 			throw(new Error("Parser not initialized"));
 		}
 		
-		const items = this.files!.get("item-icons");
-		if(items.hasOwnProperty(itemId)) {
+		const items = this.files.get("item-icons") as Record<string, string> | null;
+		if(items && items[itemId]) {
 			return `https://xivapi.com${items[itemId]}`;
 		}
 
@@ -185,12 +181,12 @@ export default class RecipeProvider implements Disposable {
 	}
 
 	public getJobNameById = (jobId: number): string | null => {
-		if(!this.isSetup()) {
+		if(!this.isSetup() || !this.files) {
 			throw(new Error("Parser not initialized"));
 		}
 
-		const jobs = this.files!.get("job-name");
-		if(jobs.hasOwnProperty(jobId.toString())) {
+		const jobs = this.files.get("job-name") as Record<string,{ en: string }> | null;
+		if(jobs && jobs[jobId]) {
 			return jobs[jobId]["en"];
 		}
 
@@ -198,41 +194,42 @@ export default class RecipeProvider implements Disposable {
 	}
 
 	public getGatheringLevelById = (itemId: number): number | null => {
-		if(!this.isSetup()) {
+		if(!this.isSetup() || !this.files) {
 			throw(new Error("Parser not initialized"));
 		}
 
-		const levels = this.files!.get("xiv_gathering-items-by-id");
-		if(levels.hasOwnProperty(itemId.toString())) {
-			return parseInt(levels[itemId].level);
+		const levels = this.files.get("xiv_gathering-items-by-id") as Record<string, { level: string }> | null;
+		if(levels && levels[itemId]) {
+			return parseInt(levels[itemId]?.level);
 		}
 
 		return null;
 	}
 
 	public getGatheringNameById = (itemId: number): string | null => {
-		if(!this.isSetup()) {
+		if(!this.isSetup() || !this.files) {
 			throw(new Error("Parser not initialized"));
 		}
 
-		const gt = this.files!.get("gathering-types");
-		if(gt.hasOwnProperty(itemId.toString())) {
-			return gt[itemId.toString()].en;
+		const gt = this.files.get("gathering-types") as Record<string, { en: string }> | null;
+		if(gt && gt[itemId]) {
+			return gt[itemId]?.en;
 		}
 		return null;
 	}
 
 	public getGatheringTypesById = (itemId: number): TCGatheringType[] | null => {
-		if(!this.isSetup()) {
+		if(!this.isSetup() || !this.files) {
 			throw(new Error("Parser not initialized"));
 		}
 
-		const levels = this.files!.get("gathering-search-index");
-		const gt = this.files!.get("gathering-types");
-		if(levels.hasOwnProperty(itemId.toString())) {
+		const gt = this.files.get("gathering-types") as Record<string, { en: string }> | null;
+		const levels = this.files.get("gathering-search-index") as Record<string, { types: number[] }>;
+
+		if(gt && levels && levels[itemId]) {
 			return levels[itemId].types.map((type: number) => ({
 				id: type,
-				name: gt[type.toString()]?.en
+				name: gt[type]?.en
 			}));
 		}
 
@@ -240,13 +237,16 @@ export default class RecipeProvider implements Disposable {
 	}
 
 	public getAllDropsOfMob = (mobId: number): any => {
-		if(!this.isSetup()) {
+		if(!this.isSetup() || !this.files) {
 			throw(new Error("Parser not initialized"));
 		}
 
-		const dropSources = this.files!.get("drop-sources");
+		const dropSources = this.files.get("drop-sources") as Record<string, number[]> | null;
+		if(!dropSources) {
+			throw new Error("Drop sources not loaded");
+		}
 
-		let sources: any = [];
+		const sources: any = [];
 		Object.keys(dropSources).forEach((itemId: string) => {
 			const source = dropSources[itemId];
 			if(source.includes(mobId)) {
@@ -262,78 +262,81 @@ export default class RecipeProvider implements Disposable {
 		return sources;
 	}
 
-	public getMobLocationsById = (mobId: number): TCDropSource | null => {
-		if(!this.isSetup()) {
+	public getMobLocationsById = (mobId: number): TCDropSource[] | null => {
+		if(!this.isSetup() || !this.files) {
 			throw(new Error("Parser not initialized"));
 		}
 
-		const monsters = this.files!.get("xiv_monsters-by-id");
+		const monsters = this.files.get("xiv_monsters-by-id") as Record<string, { positions: any}> | null;
 
-		const mapEntries = this.files!.get("xiv_map-entries-by-id");
-		const zoneEntries = this.files!.get("places");
+		const mapEntries = this.files.get("xiv_map-entries-by-id") as Record<string, { name: string }> | null;
+		const zoneEntries = this.files.get("places") as Record<string, { en: string }> | null;
 		
-		let data = null;
-		if(monsters.hasOwnProperty(mobId.toString())) {
-			const monster = monsters[mobId];
-			data = monster.positions.map((pos: any) => {
-				const mapId = pos.map;
-				const zoneId = pos.zoneid;
-
-				const mapName = mapEntries[mapId].name;
-				const zoneName = zoneEntries[zoneId].en;
-
-				return {
-					...pos,
-					map_name: mapName,
-					zone_name: zoneName
-				}
-			});
+		if(!monsters || !mapEntries || !zoneEntries || !monsters[mobId]) {
+			return null;
 		}
+
+		const monster = monsters[mobId];
+		const data: TCDropSource[] = monster.positions.map((pos: any) => {
+			const mapId = pos.map;
+			const zoneId = pos.zoneid;
+
+			const mapName = mapEntries[mapId]?.name;
+			const zoneName = zoneEntries[zoneId]?.en;
+
+			return {
+				...pos,
+				map_name: mapName,
+				zone_name: zoneName
+			}
+		});
 
 		return data;
 	}
 
 	public getDropSourceById = (itemId: number): TCDropSource[] | null => {
-		if(!this.isSetup()) {
+		if(!this.isSetup() || !this.files) {
 			throw(new Error("Parser not initialized"));
 		}
 
-		const dropSources = this.files!.get("drop-sources");
-		if(dropSources === undefined || !dropSources.hasOwnProperty(itemId.toString()) || dropSources[itemId].length === 0) {
+		const dropSources = this.files.get("drop-sources") as Record<string, number[]> | null;
+		if(!dropSources || !dropSources[itemId] || dropSources[itemId].length === 0) {
 			return null;
 		}
 
-		const mobs = this.files!.get("mobs");
+		const mobs = this.files.get("mobs") as Record<string, { en: string }> | null;
 		const outData = dropSources[itemId].map((source: number) => {
 			const mobId = source;
-			const mobName = mobs[source].en;
+			const mobName = mobs ? mobs[source]?.en : null;
 
 			const allDrops = this.getAllDropsOfMob(mobId);
-			let positions = this.getMobLocationsById(mobId);
+			const positions = this.getMobLocationsById(mobId);
 			
-			return {
+			const dropSource: TCDropSource = {
 				id: mobId,
-				name: mobName,
+				name: mobName ?? "?",
 				drops: allDrops,
-				positions: positions
+				positions: positions?.flatMap((p) => p.positions) ?? []
 			}
+
+			return dropSource;
 		});
 
 		return outData;
 	}
 
 	public getGatheringLocationsById = (itemId: number): TCGatheringNode[] | null => {
-		if(!this.isSetup()) {
+		if(!this.isSetup() || !this.files) {
 			throw(new Error("Parser not initialized"));
 		}
 
-		const nodes = this.files!.get("xiv_nodes-by-item-id");
-		if(nodes === undefined || !nodes.hasOwnProperty(itemId.toString())) {
+		const nodes = this.files.get("xiv_nodes-by-item-id") as Record<string, any[]>;
+		if(nodes === undefined || !nodes[itemId]) {
 			console.log("No nodes found for item id: " + itemId);
 			return null;
 		}
 
-		let outData = []
+		const outData = []
 		const nodeData = nodes[itemId.toString()];
 		for(const node of nodeData) {
 			const mapId = node.map;
@@ -342,14 +345,14 @@ export default class RecipeProvider implements Disposable {
 			let mapName = "";
 			let zoneName = "";
 
-			const mapEntries = this.files!.get("xiv_map-entries-by-id");
-			if(mapId !== undefined && mapEntries !== undefined && mapEntries.hasOwnProperty(mapId.toString())) {
-				mapName = mapEntries[mapId.toString()].name;
+			const mapEntries = this.files.get("xiv_map-entries-by-id") as Record<string, { name: string }>
+			if(mapId && mapEntries && mapEntries[mapId]) {
+				mapName = mapEntries[mapId]?.name
 			}
 
-			const zoneEntries = this.files!.get("places");
-			if(zoneId !== undefined && zoneEntries !== undefined && zoneEntries.hasOwnProperty(zoneId.toString())) {
-				zoneName = zoneEntries[zoneId.toString()].en;
+			const zoneEntries = this.files.get("places") as Record<string, { en: string}>;
+			if(zoneId && zoneEntries && zoneEntries[zoneId]) {
+				zoneName = zoneEntries[zoneId]?.en
 			}
 
 			const job_name = this.getGatheringNameById(node.type);
@@ -370,7 +373,7 @@ export default class RecipeProvider implements Disposable {
 		parentAmount: number = 1, 
 		depth: number = 0
 	): TCRecipe | null => {
-		if(!this.isSetup()) {
+		if(!this.isSetup() || !this.files) {
 			throw(new Error("Parser not initialized"));
 		}
 
@@ -387,23 +390,9 @@ export default class RecipeProvider implements Disposable {
 	
 		const rootRecipe = this.getRootRecipe(itemId);
 		if(!rootRecipe) {
-			// console.log("  ".repeat(depth*2), this.files?.get("items")[itemId].en,":", parentAmount);
 			return null;
 		}
 
-		console.log(
-			"  ".repeat(depth * 2),
-			this.files?.get("items")[rootRecipe.result].en, 
-			// ":", 
-			// parentAmount, 
-			// rootRecipe.yields, 
-			// `${rootRecipe.yields}x=${parentAmount}`,
-			// `${parentAmount / (rootRecipe.yields || 1)}`,
-			// `${Math.ceil(parentAmount / (rootRecipe.yields || 1))}`,
-			// `=> ${Math.ceil(parentAmount / (rootRecipe.yields || 1)) * (rootRecipe.yields || 1)}`,
-			`=> ${Math.ceil(parentAmount / (rootRecipe.yields || 1))}`,
-			// Math.ceil(parentAmount / (rootRecipe.yields || 1))
-		);
 		const amountNeeded = Math.ceil(parentAmount / (rootRecipe.yields || 1));
 		const itemName = this.getItemNameFromId(itemId);
 		const iconPath = this.getIconPathOfItemId(itemId);
@@ -426,7 +415,7 @@ export default class RecipeProvider implements Disposable {
 			dropSources = dropSource;
 		}
 
-		let newRecipe: TCRecipe = {
+		const newRecipe: TCRecipe = {
 			id: itemId,
 			amount: amountNeeded,
 			name: itemName || "",
@@ -459,7 +448,7 @@ export default class RecipeProvider implements Disposable {
 						
 				const dropSources: TCDropSource[] | null = this.getDropSourceById(rId);
 
-				let newIngredient: TCRecipe = {
+				const newIngredient: TCRecipe = {
 					id: rId,
 					amount: amountNeeded * ingredient.amount,
 					name: ingredientName,

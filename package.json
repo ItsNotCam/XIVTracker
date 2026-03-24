@@ -12,17 +12,11 @@
     "build": "tsc && vite build && electron-builder -w",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "postinstall": "install-app-deps",
-    "start": "electron-forge start",
-    "package": "electron-forge package",
-    "make": "electron-forge make --arch=\"x64\""
+    "start": "electron-builder -w --dir",
+    "make": "electron-builder -w"
   },
   "dependencies": {
-    "bufferutil": "^4.0.8",
     "dotenv": "^16.4.5",
-    "electron-squirrel-startup": "^1.0.1",
-    "net": "^1.0.2",
-    "uuid": "^11.0.3",
     "ws": "^8.18.0",
     "zod": "^4.3.6",
     "zustand": "^5.0.12"
@@ -36,12 +30,10 @@
     "@electron-forge/plugin-auto-unpack-natives": "^7.6.0",
     "@electron-forge/plugin-fuses": "^7.6.0",
     "@electron/fuses": "^1.8.0",
-    "@emotion/react": "^11.13.5",
-    "@emotion/styled": "^11.13.5",
     "@eslint/object-schema": "^2.1.4",
     "@mui/icons-material": "^6.1.8",
-    "@mui/material": "^6.1.8",
     "@tailwindcss/vite": "^4.2.2",
+    "@types/bun": "latest",
     "@types/lowdb": "^1.0.15",
     "@types/node": "^22.9.0",
     "@types/react": "^18.2.64",
@@ -56,7 +48,6 @@
     "@vitest/coverage-v8": "^4.0.18",
     "@vitest/ui": "^4.0.18",
     "electron": "^41.0.3",
-    "electron-rebuild": "^3.2.9",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "fs-promise": "^2.0.3",
@@ -65,7 +56,6 @@
     "postcss": "^8.4.47",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "regenerator-runtime": "^0.14.1",
     "rimraf": "^6.0.1",
     "tailwindcss": "^4.2.2",
     "ts-node": "^10.9.2",
@@ -77,6 +67,5 @@
     "vite-plugin-tsconfig-paths": "^1.4.1",
     "vitest": "^4.0.18"
   },
-  "postinstall": "electron-builder install-app-deps",
   "main": "dist-electron/main.js"
 }

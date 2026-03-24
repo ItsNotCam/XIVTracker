@@ -1,10 +1,10 @@
 // import { JobModel as JobState } from '@backend-lib/JobState';
-import Job from '@ui/components/jobs/Job';
+import Job from '@components/jobs/Job';
 import React, { useEffect } from 'react';
 
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { useStore } from '@ui/store/store';
-import { JobModel } from '@backend/types';
+import { JobModel } from '@xiv-types';
 
 const Jobs: React.FC = () => {
 	const [loading, setLoading] = React.useState<boolean>(true);

@@ -1,4 +1,4 @@
-import { ipcInvoke } from "@ui/util/util";
+import { ipcInvoke } from "@ui/util";
 import IPCActionBase from "./action";
 import { typedListener } from "../listeners";
 import z from "zod";
@@ -9,7 +9,7 @@ export default class CurrencyActions extends IPCActionBase {
 		try {
 			const { gil } = await ipcInvoke("ipc-ask:currency.get", z.object({ gil: z.number() }));
 			if(!isNaN(gil)) this.set({ gil });
-		} catch(e: any) {
+		} catch(e: unknown) {
 			console.error(e);
 		}
 	}

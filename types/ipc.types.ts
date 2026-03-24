@@ -1,4 +1,5 @@
 import JsonRpcClient from "@backend-lib/net/JsonRpcClient"
+import { JsonRpcNotifyMethod } from './rpc.types';
 
 export type LocationIPCEvent =
 	// Ask: renderer → main → Dalamu
@@ -74,7 +75,7 @@ export type IPCEvent =
 	| WindowIPCEvent
 
 
-export type AskHandler = (ws: JsonRpcClient, ...args: any[]) => any
+export type AskHandler = (ws: JsonRpcClient, ...args: unknown[]) => unknown
 
 export interface DomainHandlers {
 	ask?: Partial<Record<IPCEvent, AskHandler>>

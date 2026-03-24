@@ -1,5 +1,5 @@
-import { IPCEvent } from "@backend-lib/events/types";
-import { ListenerFunc } from "@ui/store/listeners";
+import { ListenerFunc } from "@ui/store/types";
+import { IPCEvent } from "@xiv-types";
 import { z } from "zod";
 
 export const withCommas = (num: number) => {

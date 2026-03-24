@@ -5,7 +5,7 @@ import { locationHandlers } from './location'
 import { timeHandlers } from './time'
 import { nameHandlers } from './name'
 import { loginLogoutHandlers } from './login-logout'
-import type { DomainHandlers } from '../types'
+import type { DomainHandlers } from '@xiv-types'
 
 export const ALL_HANDLERS: DomainHandlers[] = [
   jobHandlers,

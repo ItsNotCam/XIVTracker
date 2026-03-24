@@ -2,14 +2,15 @@ import React, { useEffect, useRef } from 'react';
 import SearchBar from './SearchForm';
 
 import { JobIconList } from '@ui/assets/images/jobs';
-import { ipcInvoke } from '@ui/util/util';
+import { ipcInvoke } from '@ui/util';
 import CraftingHeader from './RecipeOverview';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import DropdownButton from '@ui/components/DropdownButton';
+import DropdownButton from '@components/ui/DropdownButton';
 
 import RecipeTree from '../../../components/recipes/RecipeTree';
 import { useStore } from '@ui/store/store';
 import z from 'zod';
+import { TCGatheringType, TCRecipe } from '@xiv-types';
 
 const RecipeSearch: React.FC = () => {
 	const craftReqsRef = useRef<any[]>([])
@@ -71,14 +72,14 @@ const RecipeSearch: React.FC = () => {
 
 		if (searchTimeoutRef.current) {
 			clearTimeout(searchTimeoutRef.current)
-		};
+		}
 		searchTimeoutRef.current = setTimeout(() => { setIsSearching(false); }, 2000);
 
 		const getRecipe = async () => {
 			setIsSearching(true);
 
 			try {
-				const result = await window.ipcRenderer.invoke('recipe.get', recipeName);
+				const result = await ipcInvoke("ipc:recipe.get", z.any(), recipeName);
 				onSearchComplete(result);
 			} catch (e: any) {
 				console.error(e);
@@ -130,7 +131,7 @@ const RecipeSearch: React.FC = () => {
 	}
 
 	const getAllCraftingRequirements = async (recipeData: TCRecipe): Promise<any[]> => {
-		let result: any = [];
+		const result: any = [];
 
 		console.log("getting crafting requirements");
 		await recipeData.ingredients.forEach(async (ingredient: TCRecipe) => {
@@ -148,7 +149,7 @@ const RecipeSearch: React.FC = () => {
 					if (curJob.job === crafting?.job_name) {
 						curJob = {
 							...curJob,
-							level: Math.max(curJob.level, level)
+							level: Math.max(curJob?.level, level)
 						}
 						changed = true;
 					}
@@ -163,8 +164,8 @@ const RecipeSearch: React.FC = () => {
 				}
 			}
 
-			if (gathering && gathering.level > 1) {
-				const level = gathering.level;
+			if (gathering && gathering?.level > 1) {
+				const level = gathering?.level;
 				gathering.types?.forEach((t: TCGatheringType) => {
 					let jobname = "botanist";
 
@@ -184,7 +185,7 @@ const RecipeSearch: React.FC = () => {
 						if (curJob.job === jobname) {
 							curJob = {
 								...curJob,
-								level: Math.max(curJob.level, level)
+								level: Math.max(curJob?.level, level)
 							}
 							changed = true;
 						}
@@ -204,7 +205,7 @@ const RecipeSearch: React.FC = () => {
 			combineRawMaterials(result, newResults);
 		});
 
-		setRawMaterials((_) => result);
+		setRawMaterials(() => result);
 		return result;
 	}
 

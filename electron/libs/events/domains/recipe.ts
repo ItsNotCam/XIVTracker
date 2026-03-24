@@ -1,12 +1,12 @@
 import EzDb from '@backend-lib/db/EzDb'
 import RecipeProvider from '@backend-lib/db/RecipeProvider';
-import { IPCEvent } from '../types';
+import { DBSearchItem, IPCEvent, TCRecipe } from '@xiv-types';
 
 let _parser: RecipeProvider | null = null;
 
 const parser = () => {
 	if(_parser) return _parser;
-	_parser = new RecipeProvider();
+	_parser = new RecipeProvider().initSync();
 	return _parser;
 }
 
@@ -27,30 +27,26 @@ const handleAskForRecipe = async (db: EzDb, itemName: string): Promise<TCRecipe 
 	return recipe;
 }
 
-const handleAskRecentRecipeSearches = async (db: EzDb): Promise<any> => {
+const handleAskRecentRecipeSearches = async (db: EzDb): Promise<unknown> => {
 	const recentSearches = db.getRecentSearches();
 
-	const r = await new Promise(async (resolve, _) => {
-		const result = await Promise.all(recentSearches.map(async (search: DBSearchItem) => {
-			const recipe = await db.tryGetRecipe(search.name).catch(console.error);
-			return {
-				name: search.name,
-				date: search.date,
-				recipe: recipe
-			}
-		}));
-		resolve(result);
-	});
+	const r = await Promise.all(recentSearches.map(async (search: DBSearchItem) => {
+		return db.tryGetRecipe(search.name).catch(console.error).then((recipe) => ({
+			name: search.name,
+			date: search.date,
+			recipe: recipe
+		}))
+	}));
 
 	return r;
 }
 
-export const recipeHandlers = (db: EzDb): Partial<Record<IPCEvent, (event: Electron.Event, ...args: any[]) => void>>  => {
+export const recipeHandlers = (db: EzDb): Partial<Record<IPCEvent, (event: Electron.Event, ...args: unknown[]) => void>>  => {
 	return {
-			"ipc:recipe.get": (_,name) => handleAskForRecipe(db, name),
-			"ipc:recipe.getRecentSearches": (_) => handleAskRecentRecipeSearches(db),
-			"ipc:recipe.getFavorites": (_) => db.getFavoriteRecipes(),
-			"ipc:recipe.isFavorite": (_, name: string) => db.isFavoriteRecipe(name),
-			"ipc:recipe.toggleFavorite": (_, name: string) => db.toggleFavoriteRecipe(name),
+			"ipc:recipe.get": (_,name) => handleAskForRecipe(db, name as string),
+			"ipc:recipe.getRecentSearches": () => handleAskRecentRecipeSearches(db),
+			"ipc:recipe.getFavorites": () => db.getFavoriteRecipes(),
+			"ipc:recipe.isFavorite": (_, name) => db.isFavoriteRecipe(name as string),
+			"ipc:recipe.toggleFavorite": (_, name) => db.toggleFavoriteRecipe(name as string),
 	}
 }

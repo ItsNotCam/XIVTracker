@@ -1,4 +1,4 @@
-import UpdateTCData, { clearAllData, metaFiles, dataFolder } from "../electron/data/updateTCData.mjs";
+import UpdateTCData, { clearAllData, metaFiles, dataFolder } from "../updateTCData.mjs";
 
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -16,7 +16,7 @@ const validateTCFiles = async () => {
 		return false;
 	}
 
-	for (let file of metaFiles) {
+	for (const file of metaFiles) {
 		console.log("Checking file", file);
 		files = files.filter(f => f !== file);
 	}

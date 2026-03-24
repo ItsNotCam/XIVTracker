@@ -1,4 +1,4 @@
-import { locAxisString } from '@ui/util/util';
+import { locAxisString } from '@ui/util';
 import React from 'react';
 
 

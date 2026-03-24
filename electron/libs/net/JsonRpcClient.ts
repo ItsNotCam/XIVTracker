@@ -1,3 +1,4 @@
+import { JsonRpcAskMethod, JsonRpcMethod, JsonRpcNotifyMethod } from '@xiv-types';
 import WebSocket from 'ws';
 
 type PendingRequest = {

@@ -1,4 +1,4 @@
-import { CraftingImage, GoalsImage, JobsImage } from '@ui/assets/images/tabs';
+import { CraftingImage, GoalsImage, JobsImage } from '@assets/images/tabs';
 import React from 'react';
 
 const tabs = [

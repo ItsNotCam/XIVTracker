@@ -1,14 +1,26 @@
 import { StoreApi } from "zustand";
 import { Store } from "./store";
-import { addIpcEventListener, removeIpcEventListener } from "@ui/util/util";
 
-import CurrencyActions from './actions/currency';
-import TimeActions from './actions/time';
-import ConnectionActions from './actions/connection';
-import JobActions from './actions/job';
-import UserActions from './actions/user';
-import LocationActions from './actions/location';
-import { IPCEvent } from "@backend-lib/events/types";
+import { 
+	addIpcEventListener, 
+	removeIpcEventListener
+} from "@ui/util";
+
+import {
+	CurrencyActions,
+	TimeActions,
+	ConnectionActions,
+	JobActions,
+	UserActions,
+	LocationActions 
+} from './actions';
+
+import { 
+	ListenerFunc, 
+	ListenerMap 
+} from "./types";
+
+import { IPCEvent } from "@xiv-types";
 
 export const createListeners = (
 	get: StoreApi<Store>['getState'],
@@ -85,14 +97,13 @@ export const createListeners = (
 	}
 }
 
-export type ListenerFunc = (event: Electron.IpcRendererEvent, ...args: unknown[]) => void;
+
 export const typedListener = <T>(fn: (event: Electron.IpcRendererEvent, arg: T) => void): ListenerFunc => {
   return (event, ...args) => {
     fn(event, args[0] as T);
   };
 }
 
-type ListenerMap = Partial<Record<IPCEvent, ListenerFunc[]>>
 const castListenerEntries = (listeners: ListenerMap) => Object.entries(listeners) as [IPCEvent, ListenerFunc[]][]
 
 export const registerListeners = (listeners: ListenerMap) => {

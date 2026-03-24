@@ -1,21 +1,21 @@
-interface TCGatheringType {
+export interface TCGatheringType {
 	id: number;
 	name: string;
 }
 
-interface TCGathering {
+export interface TCGathering {
 	level: number;
 	types: TCGatheringType[];
 	locations: TCGatheringNode[];
 }
 
-interface TCDrop {
+export interface TCDrop {
 	id: number;
 	name: string;
 	icon_path: string;
 }
 
-interface TCPosition {
+export interface TCPosition {
 	map: number;
 	zoneid: number;
 	level: number;
@@ -28,35 +28,34 @@ interface TCPosition {
 	zone_name: string;
 }
 
-interface TCDropSource {
+export interface TCDropSource {
 	id: number;
 	name: string;
 	drops: TCDrop[];
 	positions: TCPosition[];
 }
 
-interface TCCrafting {
+export interface TCCrafting {
 	job: number;
 	job_name: string;
 	level: number;
 }
 
 // recipe haha
-interface TCRecipe {
+export interface TCRecipe {
 	id: number;
 	amount: number;
 	name: string;
 	icon_path: string | undefined;
 	gathering: TCGathering | null,
 	drop_sources: TCDropSource[] | null;
-	icon_path: string;
 	crafting: TCCrafting | null;
 	ingredients: TCRecipe[];
 }
 
 
 // nodes
-interface TCGatheringNode {
+export interface TCGatheringNode {
 	limited: boolean;
 	level: number;
 	type: number;
@@ -77,23 +76,23 @@ interface TCGatheringNode {
 	zone_name: string;
 }
 
-interface MaterialJob {
+export interface MaterialJob {
 	name: string;
 	id: number;
 	level: number;
 }
-interface Experience {
+export interface Experience {
 	xp_current: number;
 	xp_max: number;
 	level: number;
 }
 
-interface SheetObject {
+export interface SheetObject {
 	name: string;
 	id: string;
 }
 
-interface Material {
+export interface Material {
 	name: string;
 	id: number;
 	icon: string;
@@ -101,7 +100,8 @@ interface Material {
 	materials: Material[];
 	location: Location;
 }
-type Recipe = {
+
+export type Recipe = {
 	id: number;
 	amount: number;
 	quality: number;

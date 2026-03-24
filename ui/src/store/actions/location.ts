@@ -1,6 +1,6 @@
-import { ipcInvoke } from "@ui/util/util";
+import { ipcInvoke } from "@ui/util";
 import IPCActionBase from "./action";
-import { LocationModel } from "@backend/types";
+import { LocationModel } from "@xiv-types";
 import { typedListener } from "../listeners";
 import z from "zod";
 

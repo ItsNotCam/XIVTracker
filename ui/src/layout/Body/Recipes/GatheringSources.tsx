@@ -1,5 +1,6 @@
 import React from 'react';
 import GatheringSource from '@components/recipes/GatheringSource';
+import { TCGathering } from '@xiv-types';
 
 const GatheringSources: React.FC<{ data: TCGathering }> = ({ data }) => {
 	data.locations = data.locations

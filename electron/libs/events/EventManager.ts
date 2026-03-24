@@ -3,7 +3,7 @@ import { ALL_HANDLERS } from './domains'
 import type JsonRpcClient from '@backend-lib/net/JsonRpcClient'
 import type EzDb from '@backend-lib/db/EzDb'
 import { recipeHandlers } from './domains/recipe'
-import { IPCEvent } from './types'
+import { IPCEvent, JsonRpcNotifyMethod } from '@xiv-types'
 
 export default class EventManager {
   constructor(

@@ -1,5 +1,5 @@
 import React from 'react';
-import XPBar from '@ui/components/XPBar';
+import XPBar from '@components/ui/XPBar';
 import { JobIconList } from '@assets/images/jobs';
 import { useStore } from '@ui/store/store';
 

@@ -1,6 +1,6 @@
-import { ipcInvoke } from "@ui/util/util";
+import { ipcInvoke } from "@ui/util";
 import IPCActionBase from "./action";
-import { JobModel } from "@backend/types";
+import { JobModel } from "@xiv-types";
 import z from "zod";
 import { typedListener } from "../listeners";
 
@@ -17,7 +17,7 @@ export default class JobActions extends IPCActionBase {
 	
 
 	handleXpChange = typedListener<number>((_, newXp) => {
-		let job = this.get().job;
+		const job = this.get().job;
 		if(!job) return;
 		job.expCurrent = newXp;
 		this.set({ job })

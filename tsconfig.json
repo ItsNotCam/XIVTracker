@@ -41,6 +41,7 @@
 			"@assets/*": ["ui/src/assets/*"],
 			"@layout/*": ["ui/src/layout/*"],
 			"@styles/*": ["ui/styles/*"],
+			"@xiv-types": ["types/index.ts"]
 		},
 		"rootDir": ".",
 		"outDir": "./dist"
@@ -55,7 +56,7 @@
 		// "@types/ez-net.ts",
 		// "@types/event-base.d.ts",
 		// "@types/disposable.d.ts",  
-		"electron/libs/providers/.RecipeProvider.ts.old", 
+		"electron/libs/providers/.RecipeProvider.ts.old", "types/ipc.types.ts", "schemas/ez-db.d.ts", "schemas/types.ts", "types/json-rpc-types.ts", "types/recipe.d.ts", 
 	],
   "references": [{ "path": "./tsconfig.node.json" }],
 }

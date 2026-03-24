@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { getRealTime } from '@ui/util/util';
+import { getRealTime } from '@ui/util';
 import { 
 	createInitActions,
 	createListeners,
@@ -7,7 +7,7 @@ import {
 	unregisterListeners 
 } from './listeners';
 
-import { JobModel, LocationModel } from '@backend/types';
+import { JobModel, LocationModel } from '@xiv-types';
 
 export interface Store {
 	/* Connection Status */
@@ -68,7 +68,7 @@ export const useStore = create<Store>((set, get) => ({
 		}, 1000);
 
 		/* Listeners */
-		let listeners = createListeners(get, set)
+		const listeners = createListeners(get, set)
 		registerListeners(listeners);
 
 		/* Setup */

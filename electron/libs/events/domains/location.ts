@@ -1,4 +1,4 @@
-import type { DomainHandlers } from '../types'
+import type { DomainHandlers } from '@xiv-types'
 
 export const locationHandlers: DomainHandlers = {
 	ask: {

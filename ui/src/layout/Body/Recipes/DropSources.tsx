@@ -1,5 +1,6 @@
 import React from 'react';
 import DropSource from '@components/recipes/DropSource';
+import { TCDropSource } from '@xiv-types';
 
 interface DropSourcesProps {
 	data: TCDropSource[];

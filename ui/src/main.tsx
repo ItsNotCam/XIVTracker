@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom/client'
-import App from '@ui/layout/layout'
-import Frame from '@ui/layout/Frame/Frame'
+import App from '@layout/layout'
+import Frame from '@layout/Frame/Frame'
 import '@styles/globals.css'
 import { Component, ReactNode } from 'react'
 

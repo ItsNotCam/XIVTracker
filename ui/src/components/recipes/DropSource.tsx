@@ -1,5 +1,5 @@
-import Position from '@ui/components/recipes/Position';
-import { toTitleCase } from '@ui/util/util';
+import Position from '@components/recipes/Position';
+import { toTitleCase } from '@ui/util';
 import React from 'react';
 
 

@@ -1,5 +1,5 @@
-import ConnectionStatus from "@components/ConnectionDisplay";
-import GilDisplay from "@components/GilDisplay";
+import ConnectionStatus from "@components/displays/ConnectionDisplay";
+import GilDisplay from "@components/displays/GilDisplay";
 
 const Frame: React.FC = () => (
 	<div className={`bg-custom-gray-700 w-full shadow-lg flex flex-row justify-between items-center header py-2 h-8 px-3 `}>

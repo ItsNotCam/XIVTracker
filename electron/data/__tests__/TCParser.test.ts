@@ -1,5 +1,5 @@
 import { it, expect, afterAll, suite, beforeAll, test, assert } from "vitest";
-import RecipeProvider, { TCDataType } from "../electron/libs/db/RecipeProvider";
+import RecipeProvider, { TCDataType } from "@backend-lib/db/RecipeProvider";
 
 // vi.spyOn(console, 'log').mockImplementation(() => {});
 // vi.spyOn(console, 'warn').mockImplementation(() => {});
@@ -246,8 +246,8 @@ suite("Parser Tests", async () => {
 			try {
 				tempValidParser[Symbol.dispose]();
 				assert.fail("Failed")
-			} catch(e: any) {
-				expect(e.message).toBe("Parser not initialized");
+			} catch(e: unknown) {
+				expect((e as Error).message).toBe("Parser not initialized");
 			}
 		});
 	})
@@ -263,8 +263,8 @@ suite("Parser Tests", async () => {
 			try {
 				validParser.loadDataSync("haha ok" as TCDataType);
 				assert.fail("Failed")
-			} catch(e: any) {
-				expect(e.message).toMatch(re);
+			} catch(e: unknown) {
+				expect((e as Error).message).toMatch(re);
 			}
 		});
 	
@@ -317,8 +317,8 @@ suite("Parser Tests", async () => {
 			const newParser = new RecipeProvider();
 			try {
 				newParser.initSync();
-			} catch (e: any) {
-				if (/Failed to get data for: .*/.test(e.message)) {
+			} catch (e: unknown) {
+				if (/Failed to get data for: .*/.test((e as Error).message)) {
 					newParser[Symbol.dispose]();
 				}
 				throw e;
@@ -355,8 +355,8 @@ suite("Parser Tests", async () => {
 			try {
 				invalidParser.getGatheringLocationsById(5132);
 				assert.fail("Failed")
-			} catch(e: any) {
-				expect(e.message).toBe("Parser not initialized");
+			} catch(e: unknown) {
+				expect((e as Error).message).toBe("Parser not initialized");
 			}
 		});
 
@@ -364,8 +364,8 @@ suite("Parser Tests", async () => {
 			try {
 				invalidParser.getDropSourceById(5132);
 				assert.fail("Failed")
-			} catch(e: any) {
-				expect(e.message).toBe("Parser not initialized");
+			} catch(e: unknown) {
+				expect((e as Error).message).toBe("Parser not initialized");
 			}
 		});
 
@@ -373,8 +373,8 @@ suite("Parser Tests", async () => {
 			try {
 				invalidParser.getRecipeRecursive(5132);
 				assert.fail("Failed")
-			} catch(e: any) {
-				expect(e.message).toBe("Parser not initialized");
+			} catch(e: unknown) {
+				expect((e as Error).message).toBe("Parser not initialized");
 			}
 		});
 

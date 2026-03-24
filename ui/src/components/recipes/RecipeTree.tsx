@@ -15,7 +15,7 @@ const RecipeTree: React.FC<RecipeTreeProps> = ({ RecipeData, IsFirst }) => {
 
 	return (
 		<div 
-			key={crypto.randomUUID()}
+			key={RecipeData.id}
 			style={{ 
 				marginLeft: IsFirst ? 0 : "1rem",
 				borderColor: IsFirst ? "transparent" : "gray"
@@ -41,7 +41,7 @@ const RecipeTree: React.FC<RecipeTreeProps> = ({ RecipeData, IsFirst }) => {
 					className="transition-[max-height] flex flex-col"
 				>
 					{RecipeData.ingredients.filter(i => !i.name.includes("shard")).map((ingredient) => (
-						<RecipeTree key={crypto.randomUUID()} RecipeData={ingredient} />
+						<RecipeTree key={RecipeData.id} RecipeData={ingredient} />
 					))}
 				</div>
 			) : null}

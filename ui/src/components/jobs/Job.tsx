@@ -1,6 +1,6 @@
 import { JobModel } from '@backend/types';
 import { JobIconList } from '@ui/assets/images/jobs';
-import { toTitleCase } from '@ui/util/util';
+import { toTitleCase } from '@ui/util';
 import React from 'react';
 
 interface JobProps {

@@ -1,4 +1,4 @@
-type JsonRpcAskMethod =
+export type JsonRpcAskMethod =
 	| "rpc:job.getMain"
 	| "rpc:job.getCurrent"
 	| "rpc:job.getAll"
@@ -14,7 +14,7 @@ type JsonRpcAskMethod =
 	| "rpc:name.get"
 	| "rpc:currency.get";
 
-type JsonRpcNotifyMethod =
+export type JsonRpcNotifyMethod =
 	| "rpc:job.changed"
 
 	| "rpc:location.changed"
@@ -31,4 +31,4 @@ type JsonRpcNotifyMethod =
 	| "rpc:loggedIn"
 	| "rpc:loggedOut";
 
-type JsonRpcMethod = JsonRpcAskMethod | JsonRpcNotifyMethod;
+export type JsonRpcMethod = JsonRpcAskMethod | JsonRpcNotifyMethod;

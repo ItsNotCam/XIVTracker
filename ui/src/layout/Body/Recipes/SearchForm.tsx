@@ -6,14 +6,11 @@ export interface SearchBarProps {
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({ handleSearch, isSearching }) => {
-	const [_, setSearchError] = React.useState<string | null>(null);
-
 	const handleSubmit = async(event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		const formData = new FormData(event.currentTarget as HTMLFormElement);
 		const recipeName = formData.get('recipe-search-name');
 		if(typeof recipeName !== 'string') {
-			setSearchError('Invalid recipe name');
 			return;
 		}
 

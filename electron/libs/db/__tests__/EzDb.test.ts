@@ -1,7 +1,7 @@
 import { afterAll, afterEach, beforeEach, expect, it, suite } from "vitest";
 
 import * as fs from 'fs/promises';
-import EzDb from '../electron/libs/db/EzDb';
+import EzDb from '../EzDb';
 
 let db: EzDb;
 const DB_PATH: string = "temp.db";
@@ -12,8 +12,8 @@ afterAll(async() => {
 	}
 	try {
 		await fs.unlink(DB_PATH);
-	} catch(e: any) {
-		console.error("Failed to delete the database file at", DB_PATH, ":", e.message);
+	} catch(e: unknown) {
+		console.error("Failed to delete the database file at", DB_PATH, ":", (e as Error).message);
 	}
 })
 
@@ -87,8 +87,7 @@ suite("Insert", async() => {
 	
 	it("Should not be able to insert more than the limit", async() => {
 		try {
-
-			let tempDB = await new EzDb("supertemp.db", 1).init();
+			const tempDB = await new EzDb("supertemp.db", 1).init();
 	
 			for(let i = 1; i <= 5; i++) {
 				await tempDB.addRecentSearch(i.toString());
