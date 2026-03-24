@@ -8,7 +8,7 @@ import ConnectionActions from './actions/connection';
 import JobActions from './actions/job';
 import UserActions from './actions/user';
 import LocationActions from './actions/location';
-import { IPCEvent } from "@backend-lib/events/ipc-event-types";
+import { IPCEvent } from "@backend-lib/events/types";
 
 export const createListeners = (
 	get: StoreApi<Store>['getState'],

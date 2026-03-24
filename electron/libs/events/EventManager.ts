@@ -1,99 +1,50 @@
-import XIVTrackerApp from "../../app";
-import { BrowserWindow } from "electron";
-import WindowEvents from "./sys/WindowEvents";
-import AskEventBase from "./@AskEventBase";
-import RecvEventBase from "./@RecvEventBase";
-import {
-	AskConnectionEvents,
-	AskCurrencyEvents,
-	AskJobEvents,
-	AskLocationEvents,
-	AskNameEvents,
-	AskRecipeEvents,
-	AskTimeEvents
-} from "./ask";
-import { 
-	RecvLocationEventAll, 
-	RecvLocationEventArea, 
-	RecvLocationEventPosition,
-	RecvLocationEventRegion,
-	RecvLocationEventSubArea,
-	RecvLocationEventTerritory 
-} from "./recv/location";
+import { ipcMain, BrowserWindow } from 'electron'
+import { ALL_HANDLERS } from './domains'
+import type JsonRpcClient from '@backend-lib/net/JsonRpcClient'
+import type EzDb from '@backend-lib/db/EzDb'
+import { recipeHandlers } from './domains/recipe'
+import { IPCEvent } from './types'
 
-import { RecvLoginEvent, RecvLogoutEvent } from "./recv/login-logout";
-import { RecvJobCurrentEvent } from "./recv/jobs";
-import { RecvTimeEvent } from "./recv/time";
-import RecvNameEvent from "./recv/name/RecvName";
-import RecvCurrencyEvent from "./recv/currency/RecvCurrencyEvent";
+export default class EventManager {
+  constructor(
+    private win: BrowserWindow,
+    private ws: JsonRpcClient,
+    private db: EzDb,
+  ) {}
 
+  register() {
+    this.registerDomains()
+    this.registerRecipes()
+    this.registerWindowEvents()
+  }
 
-export default class EventManager implements Disposable {
-	private readonly app: XIVTrackerApp;
+  private registerDomains() {
+    for (const domain of ALL_HANDLERS) {
+      if (domain.ask) {
+        for (const [channel, handler] of Object.entries(domain.ask)) {
+          ipcMain.handle(channel, (_, ...args) => handler(this.ws, ...args))
+        }
+      }
+      if (domain.recv) {
+        for (const [method, channel] of Object.entries(domain.recv) as [JsonRpcNotifyMethod, IPCEvent][]) {
+          this.ws.on(method, (data) => this.win.webContents.send(channel, data))
+        }
+      }
+    }
+  }
 
-	private windowEvents: WindowEvents;
-	private AskEvents: AskEventBase[];
-	private RecvEvents: Map<JsonRpcNotifyMethod, RecvEventBase>;
-
-	constructor(app: XIVTrackerApp) {
-		if (app === undefined) {
-			throw new Error("App is undefined");
+  private registerRecipes() {
+		const handlers = recipeHandlers(this.db);
+		for(const [channel, handler] of Object.entries(handlers)) {
+			ipcMain.handle(channel, handler);
 		}
+  }
 
-		this.app = app;
-		const win: BrowserWindow = this.app.win;
-
-		this.windowEvents = new WindowEvents(win);
-
-		this.AskEvents = [
-			new AskJobEvents(app),
-			new AskCurrencyEvents(app),
-			new AskConnectionEvents(app),
-			new AskLocationEvents(app),
-			new AskRecipeEvents(app),
-			new AskTimeEvents(app),
-			new AskNameEvents(app),
-		];
-
-		this.RecvEvents = new Map<JsonRpcNotifyMethod, RecvEventBase<any>>([
-			['rpc:loggedIn', new RecvLoginEvent(win)],
-			['rpc:loggedOut', new RecvLogoutEvent(win)],
-
-			['rpc:job.changed', new RecvJobCurrentEvent(win)],
-
-			['rpc:location.changed', new RecvLocationEventAll(win)],
-			['rpc:location.areaChanged', new RecvLocationEventArea(win)],
-			['rpc:location.positionChanged', new RecvLocationEventPosition(win)],
-			['rpc:location.regionChanged', new RecvLocationEventRegion(win)],
-			['rpc:location.subAreaChanged', new RecvLocationEventSubArea(win)],
-			['rpc:location.territoryChanged', new RecvLocationEventTerritory(win)],
-
-			['rpc:time.changed', new RecvTimeEvent(win)],
-			['rpc:name.changed', new RecvNameEvent(win)],
-
-			['rpc:currency.changed', new RecvCurrencyEvent(win)],
-		]);
-	}
-
-	public init = async () => {
-		this.AskEvents.forEach((event) => event.init());
-
-		for (const [method, handler] of this.RecvEvents) {
-			this.app.wsClient.on(method, (params) => handler.handle(params));
-		}
-	}
-
-	public dispose = () => {
-		this[Symbol.dispose]();
-	}
-
-	[Symbol.dispose] = () => {
-		this.windowEvents[Symbol.dispose]();
-		this.AskEvents = [];
-
-		for (const method of this.RecvEvents.keys()) {
-			this.app.wsClient.off(method);
-		}
-		this.RecvEvents.clear();
-	}
+  private registerWindowEvents() {
+    ipcMain.on('exit', () => this.win.close())
+    ipcMain.on('minimize', () => this.win.minimize())
+    ipcMain.on('maximize', () =>
+      this.win.isMaximized() ? this.win.unmaximize() : this.win.maximize()
+    )
+  }
 }

@@ -7,16 +7,11 @@ import { typedListener } from "../listeners";
 
 export default class JobActions extends IPCActionBase {
 	askJobInfo = async() => {
-		const job = await ipcInvoke("ipc-ask:job.getCurrent", JobModel);
+		const { job } = await ipcInvoke("ipc-ask:job.getCurrent", z.object({ job: JobModel }));
 		this.set({ job });
 	}
 
-	handleJobChange = typedListener<JobModel>((_, newLevel) => {
-		const job = {
-			...this.get().job,
-			...newLevel
-		};
-
+	handleJobChange = typedListener<{ job: JobModel }>((_, { job }) => {
 		this.set({ job })
 	})
 	
@@ -29,7 +24,7 @@ export default class JobActions extends IPCActionBase {
 	})
 
 	askJobs = async () => {
-		let jobs = await ipcInvoke("ipc-ask:job.getAll", z.array(JobModel));
+		const { jobs } = await ipcInvoke("ipc-ask:job.getAll", z.object({ jobs: z.array(JobModel) }));
 		this.set({ jobs });
 	}
 }

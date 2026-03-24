@@ -2,14 +2,15 @@ import { ipcInvoke } from "@ui/util/util";
 import IPCActionBase from "./action";
 import { LocationModel } from "@backend/types";
 import { typedListener } from "../listeners";
+import z from "zod";
 
 export default class LocationActions extends IPCActionBase {
 	askLocation = async() => {
-		const newLocation = await ipcInvoke("ipc-ask:location.getAll", LocationModel);
-		this.changeLocation(newLocation);
+		const { location } = await ipcInvoke("ipc-ask:location.getAll", z.object({ location: LocationModel }));
+		this.changeLocation(location);
 	}
 
-	handleLocationChange = typedListener<LocationModel>((_, newLocation) => this.changeLocation(newLocation)); 
+	handleLocationChange = typedListener<{ location: LocationModel }>((_, { location }) => this.changeLocation(location));
 	
 	changeLocation = (newLocation: LocationModel) => {
 		if (!newLocation) return;

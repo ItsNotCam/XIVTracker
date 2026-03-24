@@ -1,4 +1,6 @@
-export type LocationIPCEvent = 
+import JsonRpcClient from "@backend-lib/net/JsonRpcClient"
+
+export type LocationIPCEvent =
 	// Ask: renderer → main → Dalamu
 	| "ipc-ask:location.getAll"
 	| "ipc-ask:location.getPosition"
@@ -6,7 +8,7 @@ export type LocationIPCEvent =
 	| "ipc-ask:location.getTerritory"
 	| "ipc-ask:location.getRegion"
 	| "ipc-ask:location.getSubArea"
-	
+
 	// Notify: Dalamud → main → renderer
 	| "ipc-recv:location.changed"
 	| "ipc-recv:location.positionChanged"
@@ -15,7 +17,7 @@ export type LocationIPCEvent =
 	| "ipc-recv:location.regionChanged"
 	| "ipc-recv:location.subAreaChanged"
 
-export type JobIPCEvent = 
+export type JobIPCEvent =
 	// Ask: renderer → main → Dalamud
 	| "ipc-ask:job.getMain"
 	| "ipc-ask:job.getCurrent"
@@ -27,7 +29,7 @@ export type JobIPCEvent =
 	| "ipc-recv:level.changed"
 
 export type TimeIPCEvent = 
-	| "ipc-ask:time.get"
+	| "ipc-ask:time.get" 
 	| "ipc-recv:time.changed"
 
 export type NameIPCEvent = 
@@ -39,10 +41,10 @@ export type CurrencyIPCEvent =
 	| "ipc-recv:currency.changed"
 
 export type ConnectionIPCEvent = 
-	| "ipc-ask:connection.isConnected"
+	| "ipc-ask:connection.isConnected" 
 	| "ipc-recv:connection.changed"
 
-	// Get: renderer → main
+// Get: renderer → main
 export type RecipeIPCEvent = 
 	| "ipc:recipe.get"
 	| "ipc:recipe.isFavorite"
@@ -54,14 +56,13 @@ export type LoginLogoutIPCEvent =
 	| "ipc-recv:loggedIn"
 	| "ipc-recv:loggedOut"
 
-	// Window controls
+// Window controls
 export type WindowIPCEvent = 
 	| "exit"
 	| "minimize"
 	| "maximize"
 
-
-export type IPCEvent =
+export type IPCEvent = 
 	| LocationIPCEvent
 	| JobIPCEvent
 	| TimeIPCEvent
@@ -71,3 +72,11 @@ export type IPCEvent =
 	| RecipeIPCEvent
 	| LoginLogoutIPCEvent
 	| WindowIPCEvent
+
+
+export type AskHandler = (ws: JsonRpcClient, ...args: any[]) => any
+
+export interface DomainHandlers {
+	ask?: Partial<Record<IPCEvent, AskHandler>>
+	recv?: Partial<Record<JsonRpcNotifyMethod, IPCEvent>>
+}

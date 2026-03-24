@@ -12,7 +12,7 @@ const normalizeMethod = (method: JsonRpcMethod) => {
 		return method.replace(/^[^:]+:/, '')
 }
 
-export default class JsonRpcClient {
+export default class JsonRpcClient implements Disposable {
 	private socket: WebSocket | null = null
 	private pending = new Map<number, PendingRequest>()
 	private handlers = new Map<string, NotificationHandler>()
@@ -101,7 +101,7 @@ export default class JsonRpcClient {
 		}, 2000)
 	}
 
-	dispose(): void {
+	[Symbol.dispose]() {
 		if (this.reconnectTimer) clearTimeout(this.reconnectTimer)
 		this.socket?.close()
 	}

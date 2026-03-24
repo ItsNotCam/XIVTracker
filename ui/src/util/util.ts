@@ -1,4 +1,4 @@
-import { IPCEvent } from "@backend-lib/events/ipc-event-types";
+import { IPCEvent } from "@backend-lib/events/types";
 import { ListenerFunc } from "@ui/store/listeners";
 import { z } from "zod";
 
