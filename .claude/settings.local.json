@@ -4,7 +4,8 @@
       "Bash(npm install:*)",
       "Bash(npx tsc:*)",
       "Bash(timeout 3 npx ts-node src/index.ts)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(grep -r global:init /d/XIV/xivelectron --include=*.ts --include=*.tsx)"
     ]
   }
 }

@@ -1,7 +1,13 @@
 import { create } from 'zustand';
-import { getRealTime, ipcInvoke } from '@ui/util/util';
-import { createListeners, registerListeners, unregisterListeners } from './listeners';
-import { JobModel, LocationModel } from '@electron/types';
+import { getRealTime } from '@ui/util/util';
+import { 
+	createInitActions,
+	createListeners,
+	registerListeners,
+	unregisterListeners 
+} from './listeners';
+
+import { JobModel, LocationModel } from '@backend/types';
 
 export interface Store {
 	/* Connection Status */
@@ -65,7 +71,10 @@ export const useStore = create<Store>((set, get) => ({
 		let listeners = createListeners(get, set)
 		registerListeners(listeners);
 
-		ipcInvoke("global:init").then(() => set({ isInitialized: true }))
+		/* Setup */
+		const initActions = createInitActions(get, set);
+		Promise.all(initActions.map(action => action()))
+			.then(() => set({ isInitialized: true }))
 
 		return () => {
 			clearInterval(getRealWorldTimeInterval);

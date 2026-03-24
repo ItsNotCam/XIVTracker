@@ -1,8 +1,8 @@
 import React from 'react';
-import LocationDisplay from '@ui/components/LocationDisplay';
-import NameDisplay from '@ui/components/NameDisplay';
-import JobDisplay from '@ui/components/JobDisplay';
-import Clock from '@ui/components/TimeDisplay';
+import LocationDisplay from '@components/LocationDisplay';
+import NameDisplay from '@components/NameDisplay';
+import JobDisplay from '@components/JobDisplay';
+import Clock from '@components/TimeDisplay';
 
 const Header: React.FC = () => (
 	<section className="grid grid-cols-[auto_1fr_auto]">

@@ -1,11 +1,16 @@
 import WebSocket from 'ws';
 
 type PendingRequest = {
+	method: string
 	resolve: (result: any) => void
 	reject: (reason: any) => void
 }
 
 type NotificationHandler = (params: any) => void
+
+const normalizeMethod = (method: JsonRpcMethod) => {
+		return method.replace(/^[^:]+:/, '')
+}
 
 export default class JsonRpcClient {
 	private socket: WebSocket | null = null
@@ -21,6 +26,7 @@ export default class JsonRpcClient {
 
 	connect(): void {
 		try {
+			console.log("Creating new websocket:", this)
 			this.socket = new WebSocket(this.url)
 		} catch {
 			this.onConnected(false)
@@ -36,28 +42,32 @@ export default class JsonRpcClient {
 		this.socket.on('message', (data) => this.handleMessage(data.toString()))
 	}
 
-	ask<T = any>(method: JsonRpcAskMethod, params: object = {}): Promise<T> {
+	request<T = any>(method: JsonRpcAskMethod, params: object = {}): Promise<T> {
+		const wsMethod = normalizeMethod(method);
+		console.log(`Requesting ${wsMethod}`);
+
 		return new Promise((resolve, reject) => {
-			if (!this.isConnected()) return reject(new Error('Not connected'))
+			if (!this.isConnected() || !this.socket) return reject(new Error('Not connected'))
 
 			const id = this.nextId++
-			this.pending.set(id, { resolve, reject })
-			this.socket!.send(JSON.stringify({ jsonrpc: '2.0', method, params, id }))
+			this.pending.set(id, { method, resolve, reject })
+			
+			this.socket.send(JSON.stringify({ jsonrpc: '2.0', method: wsMethod, params, id }))
 
 			setTimeout(() => {
 				if (!this.pending.has(id)) return
 				this.pending.delete(id)
-				reject(new Error(`Request ${method} timed out`))
+				reject(new Error(`Request ${wsMethod} timed out`))
 			}, 5000)
 		})
 	}
 
 	on(method: JsonRpcNotifyMethod, handler: NotificationHandler): void {
-		this.handlers.set(method, handler)
+		this.handlers.set(normalizeMethod(method), handler)
 	}
 
 	off(method: JsonRpcNotifyMethod): void {
-		this.handlers.delete(method)
+		this.handlers.delete(normalizeMethod(method))
 	}
 
 	isConnected(): boolean {
@@ -68,13 +78,17 @@ export default class JsonRpcClient {
 		let msg: any
 		try { msg = JSON.parse(data) } catch { return }
 
+		
 		if (msg.id !== undefined) {
 			const handler = this.pending.get(msg.id)
+			console.log(`[${handler?.method}] Received ${data}`);
+			
 			if (!handler) return
 			this.pending.delete(msg.id)
 			if (msg.error) handler.reject(new Error(msg.error.message))
-			else handler.resolve(msg.result)
+				else handler.resolve(msg.result)
 		} else {
+			console.log(`Received ${data}`);
 			this.handlers.get(msg.method)?.(msg.params)
 		}
 	}

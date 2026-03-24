@@ -56,22 +56,22 @@ export default class EventManager implements Disposable {
 		];
 
 		this.RecvEvents = new Map<JsonRpcNotifyMethod, RecvEventBase<any>>([
-			['loggedIn', new RecvLoginEvent(win)],
-			['loggedOut', new RecvLogoutEvent(win)],
+			['rpc:loggedIn', new RecvLoginEvent(win)],
+			['rpc:loggedOut', new RecvLogoutEvent(win)],
 
-			['job.changed', new RecvJobCurrentEvent(win)],
+			['rpc:job.changed', new RecvJobCurrentEvent(win)],
 
-			['location.changed', new RecvLocationEventAll(win)],
-			['location.areaChanged', new RecvLocationEventArea(win)],
-			['location.positionChanged', new RecvLocationEventPosition(win)],
-			['location.regionChanged', new RecvLocationEventRegion(win)],
-			['location.subAreaChanged', new RecvLocationEventSubArea(win)],
-			['location.territoryChanged', new RecvLocationEventTerritory(win)],
+			['rpc:location.changed', new RecvLocationEventAll(win)],
+			['rpc:location.areaChanged', new RecvLocationEventArea(win)],
+			['rpc:location.positionChanged', new RecvLocationEventPosition(win)],
+			['rpc:location.regionChanged', new RecvLocationEventRegion(win)],
+			['rpc:location.subAreaChanged', new RecvLocationEventSubArea(win)],
+			['rpc:location.territoryChanged', new RecvLocationEventTerritory(win)],
 
-			['time.changed', new RecvTimeEvent(win)],
-			['name.changed', new RecvNameEvent(win)],
+			['rpc:time.changed', new RecvTimeEvent(win)],
+			['rpc:name.changed', new RecvNameEvent(win)],
 
-			['currency.changed', new RecvCurrencyEvent(win)]
+			['rpc:currency.changed', new RecvCurrencyEvent(win)],
 		]);
 	}
 

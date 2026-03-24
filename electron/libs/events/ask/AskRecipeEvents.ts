@@ -1,6 +1,6 @@
-import XIVTrackerApp from "@electron/app";
+import XIVTrackerApp from "@backend/app";
 import AskEventBase from "../@AskEventBase";
-import RecipeProvider from "@electron-lib/db/RecipeProvider";
+import RecipeProvider from "@backend-lib/db/RecipeProvider";
 import { RecipeIPCEvent } from "../ipc-event-types";
 
 export default class RecipeEvents extends AskEventBase<RecipeIPCEvent> {
@@ -15,6 +15,7 @@ export default class RecipeEvents extends AskEventBase<RecipeIPCEvent> {
 		super.init();
 		
 		this.parser.init();
+		
 		super.addHandler("ipc:recipe.get", this.handleAskForRecipe);
 		super.addHandler("ipc:recipe.getRecentSearches", this.handleAskRecentRecipeSearches);
 		super.addHandler("ipc:recipe.getFavorites", this.handleAskFavoriteRecipes);
@@ -58,7 +59,7 @@ export default class RecipeEvents extends AskEventBase<RecipeIPCEvent> {
 
 		const r = await new Promise(async (resolve, _) => {
 			const result = await Promise.all(recentSearches.map(async (search: DBSearchItem) => {
-				const recipe = await this.app.db.tryGetRecipe(search.name).catch((e) => { console.log(e) });
+				const recipe = await this.app.db.tryGetRecipe(search.name).catch(console.error);
 				return {
 					name: search.name,
 					date: search.date,

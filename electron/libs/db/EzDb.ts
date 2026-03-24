@@ -2,7 +2,7 @@ import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import path from 'path';
 
-export default class EzDb implements IDisposable {
+export default class EzDb implements Disposable {
 	public static readonly DEFAULT_DB_PATH = path.resolve(path.join(`electron/data/db/db.db`));
 
 	private static readonly DB_NOT_CONNECTED = new Error("DB not connected");
@@ -275,7 +275,7 @@ export default class EzDb implements IDisposable {
 		}
 	}
 	
-	public dispose = async(): Promise<void> => {
+	public [Symbol.dispose] = async(): Promise<void> => {
 		await this.db?.write();
 		this.db = null;
 	}

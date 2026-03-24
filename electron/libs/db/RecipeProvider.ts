@@ -19,7 +19,7 @@ export type TCDataType =
 | "places"
 | "xiv_nodes-by-item-id";
 
-export default class RecipeProvider implements IDisposable {
+export default class RecipeProvider implements Disposable {
 	private files: Map<TCDataType, any>;
 	
 	private readonly dataTypes: TCDataType[] = [
@@ -34,7 +34,7 @@ export default class RecipeProvider implements IDisposable {
 
 	public isSetup = (): boolean => this.files !== null;
 
-	public dispose = () => {
+	public [Symbol.dispose] = () => {
 		if(!this.isSetup()) {
 			throw(new Error("Parser not initialized"));
 		}

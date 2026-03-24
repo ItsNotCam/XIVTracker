@@ -1,7 +1,7 @@
 import { app, BrowserWindow } from 'electron'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
-import UpdateTCData from "../electron/data/updateTCData.mjs";
+import UpdateTCData from "@backend/data/updateTCData.mjs";
 import XIVTrackerApp from './app';
 
 // const require = createRequire(import.meta.url)

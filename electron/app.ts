@@ -12,16 +12,16 @@ export default class XIVTrackerApp implements Disposable {
 	constructor(win: BrowserWindow) {
 		this._win = win;
 
-		console.log("[App Init] Creating WebSocket client");
+		console.log("[XIVTrackerApp Creation] Creating WebSocket client");
 		this._wsClient = new JsonRpcClient('ws://localhost:50085', this.handleWsConnected);
 
-		console.log("[App Init] Creating DB");
+		console.log("[XIVTrackerApp Creation] Creating DB");
 		this._db = new EzDb();
 
-		console.log("[App Init] Creating event register");
+		console.log("[XIVTrackerApp Creation] Creating event register");
 		this._eventRegister = new EventManager(this);
 
-		console.log("[App Init] Completed initialization");
+		console.log("[XIVTrackerApp Creation] Completed creation");
 	}
 
 	public get win(): BrowserWindow { return this._win }
@@ -37,11 +37,18 @@ export default class XIVTrackerApp implements Disposable {
 	private set wsClient(value: JsonRpcClient) { this._wsClient = value; }
 
 	public async init(): Promise<XIVTrackerApp> {
-		await Promise.all([
-			this.db.init(),
-			this.eventRegister.init()
-		]);
+		console.log("[XIVTrackerApp Init] XIV Tracker app initialized called");
+		
+		console.log("[XIVTrackerApp Init] Initializing database");
+		await this.db.init();
+		
+		console.log("[XIVTrackerApp Init] Initializing event register");
+		this.eventRegister.init()
+
+		console.log("[XIVTrackerApp Init] Connecting to websocket client")
 		this.wsClient.connect();
+
+		console.log("[XIVTrackerApp Init] XIVTrackerApp Initialized")
 		return this;
 	}
 
@@ -53,7 +60,7 @@ export default class XIVTrackerApp implements Disposable {
 
 	[Symbol.dispose]() {
 		this.eventRegister.dispose();
-		this.db.dispose();
+		this.db[Symbol.dispose]();
 		this.wsClient.dispose();
 	}
 }

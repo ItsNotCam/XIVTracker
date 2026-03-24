@@ -220,31 +220,31 @@ suite("Parser Tests", async () => {
 		it("Should be able to open", async () => {
 			const tempValidParser = await new RecipeProvider().init();
 			expect(tempValidParser.isSetup()).toBe(true);
-			tempValidParser.dispose();
+			tempValidParser[Symbol.dispose]();
 		});
 
 		it("Should be able to close", async () => {
 			const tempValidParser = await new RecipeProvider().init();
 			expect(tempValidParser.isSetup()).toBe(true);
-			tempValidParser.dispose();
+			tempValidParser[Symbol.dispose]();
 			expect(tempValidParser.isSetup()).toBe(false);
 		});
 
 		it("Should be able to reopen", async () => {
 			const tempValidParser = new RecipeProvider().initSync();
 			expect(tempValidParser.isSetup()).toBe(true);
-			tempValidParser.dispose();
+			tempValidParser[Symbol.dispose]();
 			expect(tempValidParser.isSetup()).toBe(false);
 			tempValidParser.initSync();
 			expect(tempValidParser.isSetup()).toBe(true);
-			tempValidParser.dispose();
+			tempValidParser[Symbol.dispose]();
 			expect(tempValidParser.isSetup()).toBe(false);
 		});
 		
 		it("Should not be able to close", async () => {
 			const tempValidParser = await new RecipeProvider();
 			try {
-				tempValidParser.dispose();
+				tempValidParser[Symbol.dispose]();
 				assert.fail("Failed")
 			} catch(e: any) {
 				expect(e.message).toBe("Parser not initialized");
@@ -319,7 +319,7 @@ suite("Parser Tests", async () => {
 				newParser.initSync();
 			} catch (e: any) {
 				if (/Failed to get data for: .*/.test(e.message)) {
-					newParser.dispose();
+					newParser[Symbol.dispose]();
 				}
 				throw e;
 			}
@@ -562,5 +562,5 @@ suite("AI Generated Tests", () => {
 });
 
 afterAll(async () => {
-	await validParser.dispose();
+	await validParser[Symbol.dispose]();
 });

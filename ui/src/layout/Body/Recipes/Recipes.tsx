@@ -7,9 +7,9 @@ import CraftingHeader from './RecipeOverview';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import DropdownButton from '@ui/components/DropdownButton';
 
-import { v4 as uuidv4 } from 'uuid';
 import RecipeTree from '../../../components/recipes/RecipeTree';
 import { useStore } from '@ui/store/store';
+import z from 'zod';
 
 const RecipeSearch: React.FC = () => {
 	const craftReqsRef = useRef<any[]>([])
@@ -30,7 +30,7 @@ const RecipeSearch: React.FC = () => {
 	const { jobs } = useStore();
 
 	const getFavoriteRecipes = async () => {
-		const favoriteRecipes = await ipcInvoke<string[]>("recipe.getFavorites");
+		const favoriteRecipes = await ipcInvoke("ipc:recipe.getFavorites", z.array(z.string()));
 		if(favoriteRecipes) setFavoriteRecipes(favoriteRecipes);
 	}
 
@@ -50,7 +50,7 @@ const RecipeSearch: React.FC = () => {
 	}, [recipeHeader])
 
 	const sortRecentSearches = async (): Promise<any[]> => {
-		let recentSearches = await ipcInvoke<string[]>("recipe.getRecentSearches");
+		let recentSearches = await ipcInvoke("ipc:recipe.getRecentSearches", z.array(z.string()));
 		if(recentSearches) {
 			recentSearches = recentSearches.sort((a: any, b: any) => {
 				if (a.name < b.name) return -1;
@@ -213,7 +213,7 @@ const RecipeSearch: React.FC = () => {
 			return;
 		}
 
-		const isFavorite = await ipcInvoke("recipe.toggleFavorite", fullRecipe.name);
+		const isFavorite = await ipcInvoke("ipc:recipe.toggleFavorite", z.boolean(), fullRecipe.name);
 		if (isFavorite) {
 			setFavoriteRecipes([...favoriteRecipes, fullRecipe.name]);
 		} else {
@@ -242,7 +242,7 @@ const RecipeSearch: React.FC = () => {
 			<ul>
 				{recentRecipeSearches.filter(r => favoriteRecipes.includes(r.name)).map((search: any) => (
 					<li
-						key={uuidv4()}
+						key={crypto.randomUUID()}
 						title={search}
 						className="relative transition-transform cursor-pointer flex flex-row gap-2 items-center p-2 h-16 w-16"
 						onClick={() => { handleSearch(search.recipe.name) }}
@@ -297,7 +297,7 @@ const RecipeSearch: React.FC = () => {
 							<div className="transition-[max-height]" style={{
 								maxHeight: calcMaxHeightRawMaterials()
 							}}>
-								{rawMaterials.map((r) => <RecipeTree key={uuidv4()} RecipeData={r} IsFirst={true} />)}
+								{rawMaterials.map((r) => <RecipeTree key={crypto.randomUUID()} RecipeData={r} IsFirst={true} />)}
 							</div>
 						</div>
 					</div>
@@ -314,7 +314,7 @@ const RecipeSearch: React.FC = () => {
 							}}>
 								{fullRecipe.ingredients
 									? fullRecipe.ingredients.map((ingredient) => (
-										<RecipeTree key={uuidv4()} RecipeData={ingredient} IsFirst={true} />
+										<RecipeTree key={crypto.randomUUID()} RecipeData={ingredient} IsFirst={true} />
 									)) : null}
 							</div>
 						</div>

@@ -1,5 +1,5 @@
 import { ipcMain, IpcMainInvokeEvent } from "electron";
-import XIVTrackerApp from "@electron/app";
+import XIVTrackerApp from "@backend/app";
 import { IPCEvent } from "./ipc-event-types";
 
 export default abstract class AskEventBase<E extends IPCEvent = IPCEvent> implements Disposable {

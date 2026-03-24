@@ -46,6 +46,7 @@ export default defineConfig({
       main: {
         entry: 'electron/main.ts',
         vite: {
+          plugins: [TsconfigPaths()],
           build: {
             rollupOptions: {
               external: ['ws', 'utf-8-validate', 'bufferutil'],

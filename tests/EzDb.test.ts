@@ -1,14 +1,14 @@
-import EzDb from "@electron-lib/db/EzDb";
 import { afterAll, afterEach, beforeEach, expect, it, suite } from "vitest";
 
 import * as fs from 'fs/promises';
+import EzDb from '../electron/libs/db/EzDb';
 
 let db: EzDb;
 const DB_PATH: string = "temp.db";
 
 afterAll(async() => {
 	if(db) {
-		await db.dispose();
+		await db[Symbol.dispose]();
 	}
 	try {
 		await fs.unlink(DB_PATH);
@@ -23,7 +23,7 @@ suite("Initialize", async() => {
 	});
 
 	afterEach(async() => {
-		await db.dispose();
+		await db[Symbol.dispose]();
 		await fs.unlink(DB_PATH);
 	});
 
@@ -35,7 +35,7 @@ suite("Initialize", async() => {
 			"DB not connected"
 		).toBe(true);
 
-		await db.dispose();
+		await db[Symbol.dispose]();
 	});
 
 	it("Should close the database", async() => {
@@ -45,12 +45,12 @@ suite("Initialize", async() => {
 			"DB Failed to initialize"
 		).toBe(true);
 
-		await db.dispose();
+		await db[Symbol.dispose]();
 		expect(
 			db.isConnected(),
 			"DB failed to close the database"
 		).toBe(false);
-		await db.dispose();
+		await db[Symbol.dispose]();
 	});
 });
 
@@ -60,7 +60,7 @@ suite("Insert", async() => {
 	});	
 	
 	afterEach(async() => {
-		await db.dispose();
+		await db[Symbol.dispose]();
 		await fs.unlink(DB_PATH);
 	});
 
@@ -107,7 +107,7 @@ suite("Update", async() => {
 	});	
 	
 	afterEach(async() => {
-		await db.dispose();
+		await db[Symbol.dispose]();
 		await fs.unlink(DB_PATH);
 	});
 
@@ -133,7 +133,7 @@ suite("Delete", async() => {
 	});	
 	
 	afterEach(async() => {
-		await db.dispose();
+		await db[Symbol.dispose]();
 		await fs.unlink(DB_PATH);
 	});
 

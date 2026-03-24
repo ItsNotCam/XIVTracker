@@ -1,6 +1,5 @@
 import React from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import GatheringSource from '../../../components/recipes/GatheringSource';
+import GatheringSource from '@components/recipes/GatheringSource';
 
 const GatheringSources: React.FC<{ data: TCGathering }> = ({ data }) => {
 	data.locations = data.locations
@@ -11,7 +10,7 @@ const GatheringSources: React.FC<{ data: TCGathering }> = ({ data }) => {
 		<div>
 			<h1 className="text-md text-custom-text-secondary-500">Gathering Locations</h1>
 			<ol className="flex flex-col max-h-40 overflow-auto">
-				{data.locations.map(loc => <GatheringSource key={uuidv4()} location={loc} />)}
+				{data.locations.map(loc => <GatheringSource key={crypto.randomUUID()} location={loc} />)}
 			</ol>
 		</div>
 	);

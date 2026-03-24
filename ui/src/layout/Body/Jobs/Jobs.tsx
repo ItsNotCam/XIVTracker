@@ -1,9 +1,10 @@
-import { JobModel as JobState } from '@electron-lib/JobState';
+// import { JobModel as JobState } from '@backend-lib/JobState';
 import Job from '@ui/components/jobs/Job';
 import React, { useEffect } from 'react';
 
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { useStore } from '@ui/store/store';
+import { JobModel } from '@backend/types';
 
 const Jobs: React.FC = () => {
 	const [loading, setLoading] = React.useState<boolean>(true);
@@ -20,7 +21,7 @@ const Jobs: React.FC = () => {
 				? <RefreshIcon className='ml-4 animate-spin'/>
 				: (
 					<div className="grid grid-cols-4 flex-wrap gap-2 px-4">
-						{jobs?.map((job: JobState) => <Job job={job}/>)}
+						{jobs?.map((job: JobModel) => <Job job={job}/>)}
 					</div>
 				)
 			}

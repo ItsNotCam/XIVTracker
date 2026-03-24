@@ -1,5 +1,5 @@
-import Header from '@ui/layout/Header/Header';
-import Body from '@ui/layout/Body/Body';
+import Header from '@layout/Header/Header';
+import Body from '@layout/Body/Body';
 import { useStore } from '@ui/store/store';
 import { useEffect } from 'react';
 

@@ -1,4 +1,4 @@
-import { IPCEvent } from "@electron-lib/events/ipc-event-types";
+import { IPCEvent } from "@backend-lib/events/ipc-event-types";
 import { ListenerFunc } from "@ui/store/listeners";
 import { z } from "zod";
 

@@ -1,13 +1,13 @@
 import { ipcInvoke } from "@ui/util/util";
 import IPCActionBase from "./action";
-import { JobModel } from "@electron/types";
+import { JobModel } from "@backend/types";
 import z from "zod";
 import { typedListener } from "../listeners";
 
 
 export default class JobActions extends IPCActionBase {
 	askJobInfo = async() => {
-		const job = await ipcInvoke("ask:job.getCurrent", JobModel);
+		const job = await ipcInvoke("ipc-ask:job.getCurrent", JobModel);
 		this.set({ job });
 	}
 
@@ -29,7 +29,7 @@ export default class JobActions extends IPCActionBase {
 	})
 
 	askJobs = async () => {
-		let jobs = await ipcInvoke("ask:job.getAll", z.array(JobModel));
+		let jobs = await ipcInvoke("ipc-ask:job.getAll", z.array(JobModel));
 		this.set({ jobs });
 	}
 }

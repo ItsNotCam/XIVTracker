@@ -29,8 +29,11 @@
 		"baseUrl": ".",
 		"paths": { 
 			"*": ["@types/*"],
-			"@electron-lib/*": ["electron/libs/*"],
-			"@electron/*": ["electron/*"],
+			// "@electron-lib/*": ["electron/libs/*"],
+			// "@electron/*": ["electron/*"]
+
+			"@backend-lib/*": ["electron/libs/*"],
+			"@backend/*": ["electron/*"],
 
 			// ui
 			"@ui/*": ["ui/src/*"],
@@ -43,9 +46,8 @@
 		"outDir": "./dist"
   },
   "include": [
-		"electron", 
-		"ui", 
-		"tests", 
+		"electron",
+		"ui",
 		"@types/**/*.d.ts", 
 		// "@types/idisposable.d.ts", 
 		// "@types/db.ts",
@@ -55,5 +57,5 @@
 		// "@types/disposable.d.ts",  
 		"electron/libs/providers/.RecipeProvider.ts.old", 
 	],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "references": [{ "path": "./tsconfig.node.json" }],
 }

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Sidebar from '@ui/layout/Body/Sidebar';
 import RecipeSearch from './Recipes/Recipes';
-import { v4 as uuidv4 } from 'uuid';
 import Jobs from './Jobs/Jobs';
 
 const pages: JSX.Element[] = [
@@ -20,7 +19,7 @@ const Body: React.FC = () => {
 			</nav>
 			{pages.map((page: any, i: number) => (
 				<div 
-					key={uuidv4()} 
+					key={crypto.randomUUID()} 
 					className="bg-custom-gray-500 grow" 
 					style={{ display: currentTab === i ? 'block' : 'none' }}
 				>

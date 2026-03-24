@@ -5,7 +5,7 @@ import z from "zod";
 export default class ConnectionActions extends IPCActionBase {
 	askConnectionStatus = async() => {
 		try {
-			const connected = await ipcInvoke("ask:connection.isConnected", z.boolean());
+			const connected = await ipcInvoke("ipc-ask:connection.isConnected", z.boolean());
 			this.set({ socketConnected: connected === true })
 		} catch(e: any) {
 			console.error(e);

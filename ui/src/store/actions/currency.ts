@@ -7,9 +7,8 @@ export default class CurrencyActions extends IPCActionBase {
 	setGil = typedListener<number>((_, gil) => this.set({ gil }));
 	askGil = async() => {
 		try {
-			const gil = await ipcInvoke("ask:currency.get", z.number());
-			if(!isNaN(gil)) return gil
-			throw new Error("Failed to get gil")
+			const gil = await ipcInvoke("ipc-ask:currency.get", z.number());
+			if(!isNaN(gil)) this.set({ gil });
 		} catch(e: any) {
 			console.error(e);
 		}

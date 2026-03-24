@@ -3,15 +3,14 @@ import { toTitleCase } from '@ui/util/util';
 
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import JobState from '@electron-lib/JobState';
 
-import { v4 as uuidv4 } from 'uuid';
+import { JobModel } from '@backend/types';
 
 interface CraftingHeaderProps {
 	recipeData: TCRecipe;
 	craftingRequirements: any[];
 	isFavorite: boolean;
-	playerJobs: JobState[];
+	playerJobs: JobModel[];
 	toggleFavorite: () => void;
 }
 
@@ -43,7 +42,7 @@ const CraftingHeader: React.FC<CraftingHeaderProps> = ({
 	const playerJobMap = playerJobs?.reduce((acc, job) => {
 		acc[job.name.toLowerCase()] = job;
 		return acc;
-	}, {} as Record<string, JobState>) || [];
+	}, {} as Record<string, JobModel>) || [];
 
 	const calculateCraftingRequirements = () => {
 		setCraftingReqs(craftingRequirements.map(r => ({
@@ -95,7 +94,7 @@ const CraftingHeader: React.FC<CraftingHeaderProps> = ({
 			<div className="ml-2 flex flex-row grow gap-1 overflow-y-visible overflow-x-auto z-10">
 				{craftingReqs?.map((req) => (
 					<div 
-						key={uuidv4()} 
+						key={crypto.randomUUID()} 
 						title={toTitleCase(req.job)}
 						className="
 							relative grid place-items-center 

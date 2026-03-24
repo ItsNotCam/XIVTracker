@@ -1,4 +1,4 @@
-import { JobModel } from '@electron-lib/JobState';
+import { JobModel } from '@backend/types';
 import { JobIconList } from '@ui/assets/images/jobs';
 import { toTitleCase } from '@ui/util/util';
 import React from 'react';

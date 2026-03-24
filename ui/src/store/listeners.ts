@@ -8,7 +8,7 @@ import ConnectionActions from './actions/connection';
 import JobActions from './actions/job';
 import UserActions from './actions/user';
 import LocationActions from './actions/location';
-import { IPCEvent } from "@electron-lib/events/ipc-event-types";
+import { IPCEvent } from "@backend-lib/events/ipc-event-types";
 
 export const createListeners = (
 	get: StoreApi<Store>['getState'],
@@ -25,29 +25,19 @@ export const createListeners = (
 
 	/* Create the Listeners */
 	return {
-		'global:init': [
-			currencyActions.askGil,
-			timeActions.askWorldTime,
-			connectionActions.askConnectionStatus,
-			jobActions.askJobInfo,
-			jobActions.askJobs,
-			userActions.askName,
-			locationActions.askLocation
-		],
-
-		'recv:time.changed': [
+		'ipc-recv:time.changed': [
 			timeActions.setWorldTime
 		],
 
-		'recv:currency.changed': [
+		'ipc-recv:currency.changed': [
 			currencyActions.setGil
 		],
 
-		'ask:currency.get': [
+		'ipc-ask:currency.get': [
 			currencyActions.askGil
 		],
 
-		'recv:connection.changed': [
+		'ipc-recv:connection.changed': [
 			currencyActions.askGil,
 			timeActions.askWorldTime,
 			connectionActions.askConnectionStatus,
@@ -57,7 +47,7 @@ export const createListeners = (
 			locationActions.askLocation
 		],
 
-		'recv:loggedIn': [
+		'ipc-recv:loggedIn': [
 			locationActions.askLocation,
 			currencyActions.askGil,
 			timeActions.askWorldTime,
@@ -65,31 +55,31 @@ export const createListeners = (
 			userActions.askName
 		],
 
-		'recv:job.changed': [
+		'ipc-recv:job.changed': [
 			jobActions.handleJobChange
 		],
 
-		'recv:xp.changed': [
+		'ipc-recv:xp.changed': [
 			jobActions.handleXpChange
 		],
 
-		'recv:level.changed': [
+		'ipc-recv:level.changed': [
 			jobActions.handleJobChange
 		],
 
-		'ask:name.get': [
+		'ipc-ask:name.get': [
 			userActions.askName
 		],
 
-		'ask:connection.isConnected': [
+		'ipc-ask:connection.isConnected': [
 			connectionActions.askConnectionStatus
 		],
 
-		'recv:location.changed': [
+		'ipc-recv:location.changed': [
 			locationActions.handleLocationChange
 		],
 	
-		'recv:name.changed': [
+		'ipc-recv:name.changed': [
 			userActions.setName
 		],
 	}
@@ -121,3 +111,25 @@ export const unregisterListeners = (listeners: ListenerMap) => {
 		})
 }
 
+export const createInitActions = (
+	get: StoreApi<Store>['getState'],
+	set: StoreApi<Store>['setState']
+): ((...args: unknown[]) => void)[] => {
+	/* Actions */
+	const currencyActions = new CurrencyActions(get, set);
+	const timeActions = new TimeActions(get, set);
+	const connectionActions = new ConnectionActions(get, set);
+	const jobActions = new JobActions(get, set);
+	const userActions = new UserActions(get, set);
+	const locationActions = new LocationActions(get, set);
+
+	return [
+			currencyActions.askGil,
+			timeActions.askWorldTime,
+			connectionActions.askConnectionStatus,
+			jobActions.askJobInfo,
+			jobActions.askJobs,
+			userActions.askName,
+			locationActions.askLocation
+		]
+}
