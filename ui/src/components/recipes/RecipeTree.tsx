@@ -41,7 +41,7 @@ const RecipeTree: React.FC<RecipeTreeProps> = ({ RecipeData, IsFirst }) => {
 					className="transition-[max-height] flex flex-col"
 				>
 					{RecipeData.ingredients.filter(i => !i.name.includes("shard")).map((ingredient) => (
-						<RecipeTree key={RecipeData.id} RecipeData={ingredient} />
+						<RecipeTree key={ingredient.id} RecipeData={ingredient} />
 					))}
 				</div>
 			) : null}

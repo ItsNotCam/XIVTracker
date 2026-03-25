@@ -7,7 +7,7 @@ import {
 	unregisterListeners 
 } from './listeners';
 
-import { JobModel, LocationModel } from '@xiv-types';
+import { JobModel, LocationModel, Recipe } from '@xiv-types';
 
 export interface Store {
 	/* Connection Status */
@@ -29,6 +29,10 @@ export interface Store {
 
 	/* Position */
 	location: LocationModel | null
+
+	/* Recipes */
+	selectedRecipe: Recipe | null
+	recentSearches: Recipe[]
 
 	/* Listeners - !!must call on app entry!! */
 	init: () => () => void
@@ -55,6 +59,10 @@ export const useStore = create<Store>((set, get) => ({
 
 	/* Location */
 	location: null,
+
+	/* Recipes */
+	selectedRecipe: null,
+	recentSearches: [],
 
 	isInitialized: false,
 

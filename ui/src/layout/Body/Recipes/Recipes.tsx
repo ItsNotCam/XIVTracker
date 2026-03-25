@@ -28,7 +28,7 @@ const RecipeSearch: React.FC = () => {
 	const [recentRecipeSearches, setRecentRecipeSearches] = React.useState<TCRecipe[]>([]);
 	const [favoriteRecipes, setFavoriteRecipes] = React.useState<string[]>([]);
 
-	const { jobs } = useStore();
+	const jobs = useStore(state => state.jobs);
 
 	const getFavoriteRecipes = async () => {
 		const favoriteRecipes = await ipcInvoke("ipc:recipe.getFavorites", z.array(z.string()));
@@ -298,7 +298,7 @@ const RecipeSearch: React.FC = () => {
 							<div className="transition-[max-height]" style={{
 								maxHeight: calcMaxHeightRawMaterials()
 							}}>
-								{rawMaterials.map((r) => <RecipeTree key={crypto.randomUUID()} RecipeData={r} IsFirst={true} />)}
+								{rawMaterials.map((r) => <RecipeTree key={r.id} RecipeData={r} IsFirst={true} />)}
 							</div>
 						</div>
 					</div>
@@ -315,7 +315,7 @@ const RecipeSearch: React.FC = () => {
 							}}>
 								{fullRecipe.ingredients
 									? fullRecipe.ingredients.map((ingredient) => (
-										<RecipeTree key={crypto.randomUUID()} RecipeData={ingredient} IsFirst={true} />
+										<RecipeTree key={ingredient.id} RecipeData={ingredient} IsFirst={true} />
 									)) : null}
 							</div>
 						</div>

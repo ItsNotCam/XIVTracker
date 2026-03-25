@@ -1,7 +1,7 @@
 import path from "path";
 import * as fs from "node:fs/promises";
 import * as fsSync from "node:fs";
-import { TCDropSource, TCGathering, TCGatheringNode, TCGatheringType, TCRecipe } from "@xiv-types";
+import { TCDropSource, TCGathering, TCGatheringNode, TCGatheringType, TCPosition, TCRecipe } from "@xiv-types";
 
 export type TCDataType = 
 	"items"
@@ -262,7 +262,7 @@ export default class RecipeProvider implements Disposable {
 		return sources;
 	}
 
-	public getMobLocationsById = (mobId: number): TCDropSource[] | null => {
+	public getMobLocationsById = (mobId: number): TCPosition[] | null => {
 		if(!this.isSetup() || !this.files) {
 			throw(new Error("Parser not initialized"));
 		}
@@ -277,7 +277,7 @@ export default class RecipeProvider implements Disposable {
 		}
 
 		const monster = monsters[mobId];
-		const data: TCDropSource[] = monster.positions.map((pos: any) => {
+		const data: TCPosition[] = monster.positions.map((pos: any) => {
 			const mapId = pos.map;
 			const zoneId = pos.zoneid;
 
@@ -316,7 +316,7 @@ export default class RecipeProvider implements Disposable {
 				id: mobId,
 				name: mobName ?? "?",
 				drops: allDrops,
-				positions: positions?.flatMap((p) => p.positions) ?? []
+				positions: positions ?? []
 			}
 
 			return dropSource;
