@@ -5,14 +5,13 @@ const LocationDisplay: React.FC = () => {
 	const { location } = useStore();
 
 	return (
-		<ul className={`h-8/10 text-right mr-6 border-r-2
-			border-custom-gray-200 pr-6 flex flex-col
-			justify-center my-auto text-lg max-[700px]:hidden
-		`}>
-			{location?.region    ? <li>{toTitleCase(location?.region.name    || "")}</li> : null}
-			{location?.territory ? <li>{toTitleCase(location?.territory.name || "")}</li> : null}
-			{location?.area      ? <li>{toTitleCase(location?.area.name      || "")}</li> : null}
-			{location?.subArea   ? <li>{toTitleCase(location?.subArea.name   || "")}</li> : null}
+		<ul className="flex flex-row gap-2">
+			{/* {location?.region    ? <li className="opacity-50">{toTitleCase(location?.region.name    || "")}</li> : null} */}
+			{location?.territory ? <li className="opacity-50">{toTitleCase(location?.territory.name || "")}</li> : null} 
+			<li className="opacity-50">•</li>
+			{location?.area      ? <li>{toTitleCase(location?.area.name  || "")}</li> : null}
+			<li className="opacity-50">•</li>
+			{location?.subArea   ? <li className="opacity-50">{toTitleCase(location?.subArea.name || "")}</li> : null}
 		</ul>
 	);
 };

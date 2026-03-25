@@ -10,6 +10,10 @@ import {
 import { JobModel, LocationModel, Recipe } from '@xiv-types';
 
 export interface Store {
+	/* Navigation */
+	currentPageIdx: number
+	setCurrentPageIdx(idx: number): void
+
 	/* Connection Status */
 	socketConnected: boolean
 
@@ -25,7 +29,7 @@ export interface Store {
 	jobs: JobModel[] | null
 
 	/* User */
-	name: string | null
+	playerName: string | null
 
 	/* Position */
 	location: LocationModel | null
@@ -40,6 +44,10 @@ export interface Store {
 }
 
 export const useStore = create<Store>((set, get) => ({
+	/* Navigation */
+	currentPageIdx: 0,
+	setCurrentPageIdx: (idx: number) => set({ currentPageIdx: idx }),
+
 	/* Connection Status */
 	socketConnected: false,
 
@@ -55,7 +63,7 @@ export const useStore = create<Store>((set, get) => ({
 	jobs: null,
 
 	/* Name */
-	name: null,
+	playerName: null,
 
 	/* Location */
 	location: null,

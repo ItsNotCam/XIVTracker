@@ -3,6 +3,9 @@ import App from '@layout/layout'
 import Frame from '@layout/Frame/Frame'
 import '@styles/globals.css'
 import { Component, ReactNode } from 'react'
+import { CraftingImage, JobsImage } from './assets/images/tabs'
+import Jobs from './layout/Body/Jobs/Jobs'
+import RecipeSearch from './layout/Body/Recipes/Recipes'
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
 	state = { error: null }
@@ -12,6 +15,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | 
 		return this.props.children
 	}
 }
+
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
 	<ErrorBoundary>

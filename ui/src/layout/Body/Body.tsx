@@ -1,29 +1,23 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Sidebar from '@ui/layout/Body/Sidebar';
-import RecipeSearch from './Recipes/Recipes';
-import Jobs from './Jobs/Jobs';
-
-const pages: JSX.Element[] = [
-	<RecipeSearch />,
-	<Jobs />,
-	<h1 className="text-content-header">Goals</h1>
-];
+import { useStore } from '@ui/store/store';
+import { pages } from '../layout';
 
 const Body: React.FC = () => {
-	const [currentTab, setCurrentTab] = useState<number>(0);
+	const { currentPageIdx } = useStore();
 
 	return (
 		<section className="h-[calc(100vh-180px)] flex flex-row">
 			<nav>
-				<Sidebar currentTab={currentTab} setCurrentTab={setCurrentTab}/>
+				<Sidebar />
 			</nav>
-			{pages.map((page: JSX.Element, i: number) => (
+			{Object.values(pages).map((page, i) => (
 				<div 
 					key={crypto.randomUUID()} 
 					className="bg-custom-gray-500 grow" 
-					style={{ display: currentTab === i ? 'block' : 'none' }}
+					style={{ display: currentPageIdx === i ? 'block' : 'none' }}
 				>
-					{page}
+					{page.component}
 				</div>
 			))}
 		</section>
