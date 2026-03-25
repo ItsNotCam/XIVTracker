@@ -1,4 +1,4 @@
-import { JobModel } from '@backend/types';
+import { JobModel } from '@xiv-types';
 import { JobIconList } from '@ui/assets/images/jobs';
 import { toTitleCase } from '@ui/util';
 import React from 'react';
