@@ -19,8 +19,9 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
 	<ErrorBoundary>
-		<div className="grid grid-rows-[auto_1fr] h-screen rounded-lg">
-			<Frame />
+		<div className="border border-blue-200 h-screen rounded-lg">
+		{/* <div className="grid grid-rows-[auto_1fr] h-screen rounded-lg"> */}
+			{/* <Frame /> */}
 			<App />
 		</div>
 	</ErrorBoundary>
