@@ -1,4 +1,5 @@
 import { locAxisString } from '@ui/util';
+import { TCPosition } from '@xiv-types';
 import React from 'react';
 
 const Position: React.FC<{ pos: TCPosition }> = ({ pos }) => (

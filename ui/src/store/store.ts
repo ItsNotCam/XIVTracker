@@ -13,6 +13,9 @@ export interface Store {
 	/* Navigation */
 	currentPageIdx: number
 	setCurrentPageIdx(idx: number): void
+	
+	showExitDialog: boolean,
+	setShowExitDialog: (showExitDialog: boolean) => void,
 
 	/* Connection Status */
 	socketConnected: boolean
@@ -50,6 +53,9 @@ export const useStore = create<Store>((set, get) => ({
 
 	/* Connection Status */
 	socketConnected: false,
+
+	showExitDialog: false,
+	setShowExitDialog: (showExitDialog: boolean) => set({ showExitDialog }),
 
 	/* Time */
 	currentTime: "00:00 AM",

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import RecipeItem from './RecipeItem';
+import { TCRecipe } from '@xiv-types';
 
 
 export interface RecipeTreeProps {

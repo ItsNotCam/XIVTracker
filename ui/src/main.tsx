@@ -1,11 +1,8 @@
 import ReactDOM from 'react-dom/client'
-import App from '@layout/layout'
-import Frame from '@layout/Frame/Frame'
+import App from '@ui/layout/Layout'
 import '@styles/globals.css'
 import { Component, ReactNode } from 'react'
-import { CraftingImage, JobsImage } from './assets/images/tabs'
-import Jobs from './layout/Body/Jobs/Jobs'
-import RecipeSearch from './layout/Body/Recipes/Recipes'
+import { ExitDialog } from './components/ui/ExitDialog'
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
 	state = { error: null }
@@ -19,10 +16,10 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
 	<ErrorBoundary>
-		<div className="border border-blue-200 h-screen rounded-lg">
-		{/* <div className="grid grid-rows-[auto_1fr] h-screen rounded-lg"> */}
-			{/* <Frame /> */}
+		<ExitDialog />
+		{/* <div className="border h-screen rounded-lg"> */}
+			{/* <div className='header h-5 w-full shrink-0' /> */}
 			<App />
-		</div>
+		{/* </div> */}
 	</ErrorBoundary>
 )

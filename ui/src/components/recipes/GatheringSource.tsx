@@ -1,4 +1,5 @@
 import { locAxisString } from '@ui/util';
+import { TCGatheringNode } from '@xiv-types';
 import React from 'react';
 
 
