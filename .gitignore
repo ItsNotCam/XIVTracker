@@ -38,3 +38,8 @@ scripts/lumina_data
 scripts/__pycache__
 scripts/venv
 out/
+
+\!old/
+*.db
+*.meta
+.claude/
