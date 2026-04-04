@@ -153,8 +153,8 @@ CREATE TABLE IF NOT EXISTS gatheringSearchIndexType (
     type            INTEGER NOT NULL,
     position        INTEGER NOT NULL, 
 
-    PRIMARY KEY (gatheringItemId, position),
-    FOREIGN KEY (gatheringItemId) REFERENCES gatheringItem(id)
+    PRIMARY KEY (gatheringItemId, position)
+		--,FOREIGN KEY (gatheringItemId) REFERENCES gatheringItem(id)
 );
 
 CREATE TABLE IF NOT EXISTS gatheringNode (

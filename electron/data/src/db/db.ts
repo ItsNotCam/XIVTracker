@@ -9,6 +9,7 @@ import {
 	DropSource,
 	GatheringItem,
 	GatheringSearchIndex,
+	GatheringSearchIndexType,
 	GatheringType,
 	Item,
 	ItemLevel,
@@ -65,7 +66,7 @@ const buildInsert = (table: string, schema: z.ZodObject<any>) => {
 const buildTransaction = (tableName: string, schema: z.ZodObject<any>): Transaction => {
 	const db = getDb();
 	const keys = Object.keys(schema.shape);
-	return db.transaction((items: x.DbItemLevel) => {
+	return db.transaction((items: any) => {
 		const statement = db.prepare(buildInsert(tableName, schema));
 		for (const item of items) {
 			const row: Record<string, unknown> = {};
@@ -83,6 +84,18 @@ const insertItems = (items: Record<string, unknown>, icons: Record<string, strin
 
 	const transaction = buildTransaction("item", Item);
 	transaction(data);
+}
+
+const insertGatheringSearchIndex = (gatheringSearchIndex: Record<string, unknown>) =>  {
+	const parsedData = x.DbGatheringSearchIndexSchema.parse(gatheringSearchIndex);
+	
+	const indexRows = parsedData.map(({ index }) => index);
+	buildTransaction("gatheringSearchIndex", GatheringSearchIndex)(indexRows);
+
+	const typeRows = parsedData.flatMap(({ index, types }) =>
+		types.map((type) => ({ ...index, ...type }))
+	);
+	buildTransaction("gatheringSearchIndexType", GatheringSearchIndexType)(typeRows);
 }
 
 export const seedDbWith = (data: Record<string, unknown>): void => {
@@ -115,11 +128,6 @@ export const seedDbWith = (data: Record<string, unknown>): void => {
 			data: jobName,
 			tableName: "job",
 			type: Job
-		},{
-			schema: x.DbPlacesSchema,
-			data: places,
-			tableName: "place",
-			type: Place
 		},{
 			schema: x.DbItemLevelSchema,
 			data: itemLevel,
@@ -155,11 +163,6 @@ export const seedDbWith = (data: Record<string, unknown>): void => {
 			data: gatheringItems,
 			tableName: "gatheringItem",
 			type: GatheringItem
-		},{
-			schema: x.DbGatheringSearchIndexSchema,
-			data: gatheringSearchIndex,
-			tableName: "gatheringSearchIndex",
-			type: GatheringSearchIndex
 		}
 	]
 
@@ -168,4 +171,6 @@ export const seedDbWith = (data: Record<string, unknown>): void => {
 		const parsed = schema.parse(data);
 		buildTransaction(tableName, type)(parsed);
 	}
+
+	insertGatheringSearchIndex(gatheringSearchIndex as Record<string, unknown>);
 }
